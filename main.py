@@ -1,10 +1,9 @@
 import cv2
 import mediapipe as mp
 import cv2
-import time
 import numpy as np
 
-from pathlib import Path
+import pyrealsense2 as rs
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph.opengl as gl
 import numpy as np
@@ -56,9 +55,37 @@ RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 128, 0)
 BLUE_COLOR = (255, 0, 0)
 
-# For webcam input:
-cap = cv2.VideoCapture(0)
+# # For webcam input:
+# cap = cv2.VideoCapture(0)
 
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
+
+# Get device product line for setting a supporting resolution
+pipeline_wrapper = rs.pipeline_wrapper(pipeline)
+pipeline_profile = config.resolve(pipeline_wrapper)
+device = pipeline_profile.get_device()
+device_product_line = str(device.get_info(rs.camera_info.product_line))
+
+found_rgb = False
+for s in device.sensors:
+    if s.get_info(rs.camera_info.name) == 'RGB Camera':
+        found_rgb = True
+        break
+if not found_rgb:
+    print("The demo requires Depth camera with Color sensor")
+    exit(0)
+
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+
+if device_product_line == 'L500':
+    config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+else:
+    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+
+# Start streaming
+pipeline.start(config)
 
 def _normalize_color(color):
     return tuple(v / 255. for v in color)
@@ -68,16 +95,22 @@ with mp_pose.Pose(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
         model_complexity=1) as pose:
-    while cap.isOpened():
-        success, image = cap.read()
-        if not success:
-            print("Ignoring empty camera frame.")
-            # If loading a video, use 'break' instead of 'continue'.
+    while True:
+
+        # Wait for a coherent pair of frames: depth and color
+        frames = pipeline.wait_for_frames()
+        depth_frame = frames.get_depth_frame()
+        color_frame = frames.get_color_frame()
+        if not depth_frame or not color_frame:
             continue
+
+        # Convert images to numpy arrays
+        depth_image = np.asanyarray(depth_frame.get_data())
+        color_image = np.asanyarray(color_frame.get_data())
 
         # Flip the image horizontally for a later selfie-view display, and convert
         # the BGR image to RGB.
-        image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
+        image = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
         image.flags.writeable = False
@@ -124,15 +157,6 @@ with mp_pose.Pose(
                 body_point_array[x][2] = landmark.z
                 x += 1
 
-            # a = 24
-            # limb_array[a][0] = blaze_pose_global_coords.landmark[a].x
-            # limb_array[a][1] = blaze_pose_global_coords.landmark[a].y
-            # limb_array[a][2] = blaze_pose_global_coords.landmark[a].z
-            #
-            # limb_array[a+1][0] = blaze_pose_global_coords.landmark[connection_dict[a]].x
-            # limb_array[a+1][1] = blaze_pose_global_coords.landmark[connection_dict[a]].y
-            # limb_array[a+1][2] = blaze_pose_global_coords.landmark[connection_dict[a]].z
-
             abc = 0
             for connection_index in range(0, 35):
                 if connection_index in connection_dict:
@@ -150,15 +174,11 @@ with mp_pose.Pose(
 
                         abc += 2
 
-            print("///")
-
-
 
         cv2.imshow('MediaPipe Pose', image)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
-cap.release()
 
 ## Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
