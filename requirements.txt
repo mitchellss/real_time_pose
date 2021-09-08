@@ -6,6 +6,7 @@ matplotlib==3.4.3
 mediapipe==0.8.7.2
 numpy==1.21.2
 opencv-contrib-python==4.5.3.56
+opencv-python==4.3.0.38
 Pillow==8.3.2
 protobuf==3.17.3
 PyOpenGL==3.1.5
