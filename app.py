@@ -12,12 +12,16 @@ import numpy as np
 app = QtGui.QApplication([])
 w = gl.GLViewWidget()
 w.show()
-g = gl.GLGridItem()
-w.addItem(g)
 
-b = np.ndarray((33,3))
+# create the background grids
+gz = gl.GLGridItem()
+gz.translate(0, 0, -1)
+w.addItem(gz)
 
-sp3 = gl.GLScatterPlotItem(pos=b)
+body_point_array = np.ndarray((33,3))
+
+sp3 = gl.GLScatterPlotItem(pos=body_point_array)
+sp3.rotate(90, -1, 0, 0)
 
 w.addItem(sp3)
 
@@ -82,9 +86,9 @@ with mp_pose.Pose(
     if (a != None):
         x = 0
         for landmark in a.landmark:
-            b[x][0] = landmark.x
-            b[x][1] = landmark.y
-            b[x][2] = landmark.z
+            body_point_array[x][0] = landmark.x
+            body_point_array[x][1] = landmark.y
+            body_point_array[x][2] = landmark.z
             x += 1
 
     
