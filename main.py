@@ -12,7 +12,7 @@ app = QtGui.QApplication([])
 w = gl.GLViewWidget()
 w.show()
 
-# create the background grids
+# Create the background grid
 gz = gl.GLGridItem()
 gz.translate(0, 0, -1)
 w.addItem(gz)
@@ -23,12 +23,15 @@ body_point_array = np.ndarray((33, 3))
 # Array of the 35 limbs (2 points for each limb)
 limb_array = np.ndarray((70,3))
 
+# Create 3D scatter plot for joints
 joint_scatter_plot = gl.GLScatterPlotItem(pos=body_point_array)
 joint_scatter_plot.rotate(90, -1, 0, 0)
 
+# Create 3D line plot for limbs
 limb_line_plot = gl.GLLinePlotItem(pos=limb_array, mode="lines", width=2.0)
 limb_line_plot.rotate(90, -1, 0, 0)
 
+# Add 3D scatter plot and line plot to pyqtgraph
 w.addItem(joint_scatter_plot)
 w.addItem(limb_line_plot)
 
@@ -55,10 +58,7 @@ RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 128, 0)
 BLUE_COLOR = (255, 0, 0)
 
-# # For webcam input:
-# cap = cv2.VideoCapture(0)
-
-# Configure depth and color streams
+# Configure depth and color streams 
 pipeline = rs.pipeline()
 config = rs.config()
 
@@ -68,6 +68,7 @@ pipeline_profile = config.resolve(pipeline_wrapper)
 device = pipeline_profile.get_device()
 device_product_line = str(device.get_info(rs.camera_info.product_line))
 
+# Tries to find the rgb camera
 found_rgb = False
 for s in device.sensors:
     if s.get_info(rs.camera_info.name) == 'RGB Camera':
@@ -90,7 +91,10 @@ pipeline.start(config)
 def _normalize_color(color):
     return tuple(v / 255. for v in color)
 
-
+# Model complexity:
+# 0 : Light
+# 1 : Full
+# 2 : Heavy
 with mp_pose.Pose(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
@@ -119,13 +123,19 @@ with mp_pose.Pose(
         # Draw the pose annotation on the image.
         image.flags.writeable = True
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+        # Draws joints and limbs on video
         mp_drawing.draw_landmarks(
             image,
             results.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
 
+        # Gets pose coordinates from the image processing results
         blaze_pose_global_coords = results.pose_world_landmarks
+
+        # Dictionary of where to connect limbs. Refer to here 
+        # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
         connection_dict = {
             16:[14, 18, 20, 22],
             18:[20],
@@ -149,30 +159,31 @@ with mp_pose.Pose(
             29:[31]
         }
 
+        # If global coords were successfully found
         if blaze_pose_global_coords is not None:
-            x = 0
-            for landmark in blaze_pose_global_coords.landmark:
-                body_point_array[x][0] = landmark.x
-                body_point_array[x][1] = landmark.y
-                body_point_array[x][2] = landmark.z
-                x += 1
+            landmarks = blaze_pose_global_coords.landmark
 
-            abc = 0
+            # Loop through results and add them to the body point numpy array
+            for landmark in range(0,len(landmarks)):
+                body_point_array[landmark][0] = landmarks[landmark].x
+                body_point_array[landmark][1] = landmarks[landmark].y
+                body_point_array[landmark][2] = landmarks[landmark].z
+
+            # Add limb coordinates to limb numpy array
+            index = 0
             for connection_index in range(0, 35):
                 if connection_index in connection_dict:
                     for connection in range(0, len(connection_dict[connection_index])):
 
-                        #print(f"Joint {connection_index} connected to joint {connection_dict[connection_index]}")
+                        limb_array[index][0] = blaze_pose_global_coords.landmark[connection_index].x
+                        limb_array[index][1] = blaze_pose_global_coords.landmark[connection_index].y
+                        limb_array[index][2] = blaze_pose_global_coords.landmark[connection_index].z
 
-                        limb_array[abc][0] = blaze_pose_global_coords.landmark[connection_index].x;
-                        limb_array[abc][1] = blaze_pose_global_coords.landmark[connection_index].y;
-                        limb_array[abc][2] = blaze_pose_global_coords.landmark[connection_index].z;
+                        limb_array[index + 1][0] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].x
+                        limb_array[index + 1][1] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].y
+                        limb_array[index + 1][2] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].z
 
-                        limb_array[abc + 1][0] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].x;
-                        limb_array[abc + 1][1] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].y;
-                        limb_array[abc + 1][2] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].z;
-
-                        abc += 2
+                        index += 2
 
 
         cv2.imshow('MediaPipe Pose', image)
