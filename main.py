@@ -8,6 +8,17 @@ from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph.opengl as gl
 import numpy as np
 
+_PRESENCE_THRESHOLD = 0.5
+_VISIBILITY_THRESHOLD = 0.5
+_RGB_CHANNELS = 3
+WHITE_COLOR = (224, 224, 224)
+BLACK_COLOR = (0, 0, 0)
+RED_COLOR = (0, 0, 255)
+GREEN_COLOR = (0, 128, 0)
+BLUE_COLOR = (255, 0, 0)
+NUM_LANDMARKS = 33
+NUM_CONNECTIONS = 35
+
 app = QtGui.QApplication([])
 w = gl.GLViewWidget()
 w.show()
@@ -18,18 +29,18 @@ gz.translate(0, 0, -1)
 w.addItem(gz)
 
 # Array of the 33 mapped points
-body_point_array = np.ndarray((33, 3))
+body_point_array = np.ndarray((NUM_LANDMARKS, 3))
 
-# Array of the 35 limbs (2 points for each limb)
-limb_array = np.ndarray((70,3))
+# Array of the 35 connections (2 points for each connection)
+limb_array = np.ndarray((NUM_CONNECTIONS*2 + 4, 3))
 
 # Create 3D scatter plot for joints
 joint_scatter_plot = gl.GLScatterPlotItem(pos=body_point_array)
-joint_scatter_plot.rotate(90, -1, 0, 0)
+joint_scatter_plot.rotate(90, -1, 0, 0) # Rotate to upright position
 
 # Create 3D line plot for limbs
 limb_line_plot = gl.GLLinePlotItem(pos=limb_array, mode="lines", width=2.0)
-limb_line_plot.rotate(90, -1, 0, 0)
+limb_line_plot.rotate(90, -1, 0, 0) # Rotate to upright position
 
 # Add 3D scatter plot and line plot to pyqtgraph
 w.addItem(joint_scatter_plot)
@@ -49,14 +60,6 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
-_PRESENCE_THRESHOLD = 0.5
-_VISIBILITY_THRESHOLD = 0.5
-_RGB_CHANNELS = 3
-WHITE_COLOR = (224, 224, 224)
-BLACK_COLOR = (0, 0, 0)
-RED_COLOR = (0, 0, 255)
-GREEN_COLOR = (0, 128, 0)
-BLUE_COLOR = (255, 0, 0)
 
 # Configure depth and color streams 
 pipeline = rs.pipeline()
@@ -91,6 +94,13 @@ pipeline.start(config)
 def _normalize_color(color):
     return tuple(v / 255. for v in color)
 
+def angle(v1, v2, acute):
+    angle = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+    if (acute == True):
+        return angle
+    else:
+        return 2 * np.pi - angle
+
 # Model complexity:
 # 0 : Light
 # 1 : Full
@@ -98,7 +108,7 @@ def _normalize_color(color):
 with mp_pose.Pose(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
-        model_complexity=1) as pose:
+        model_complexity=2) as pose:
     while True:
 
         # Wait for a coherent pair of frames: depth and color
@@ -185,6 +195,14 @@ with mp_pose.Pose(
 
                         index += 2
 
+            left_arm = body_point_array[11] - body_point_array[13] # technically the model's right arm but image is flipped
+            left_forearm = body_point_array[15] - body_point_array[13] 
+
+            right_arm = body_point_array[12] - body_point_array[14] # technically the model's left arm but image is flipped
+            right_forearm = body_point_array[16] - body_point_array[14] 
+
+            print(f"Right arm angle: {round(180*angle(left_arm,left_forearm,True)/np.pi,2)} \
+            Left arm angle: {round(180*angle(right_arm,right_forearm,True)/np.pi,2)}", end="\r")
 
         cv2.imshow('MediaPipe Pose', image)
         if cv2.waitKey(5) & 0xFF == 27:
