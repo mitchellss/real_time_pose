@@ -161,7 +161,7 @@ def main():
 
                 # Add limb coordinates to limb numpy array
                 index = 0
-                for connection_index in range(0, 35):
+                for connection_index in range(0, NUM_CONNECTIONS):
                     if connection_index in CONNECTION_DICT:
                         for connection in range(0, len(CONNECTION_DICT[connection_index])):
                             populate_limb_array(limb_array, blaze_pose_global_coords, index, connection_index, connection)
