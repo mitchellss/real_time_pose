@@ -102,6 +102,7 @@ def main():
         # Start streaming
         pipeline.start(config)
     elif args.camera_type == "webcam":
+        # TODO: webcam implementation
         pass
 
     # Model complexity:
