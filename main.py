@@ -1,9 +1,10 @@
 import cv2
 import mediapipe as mp
-import cv2
 import numpy as np
+import random
 
 from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import numpy as np
 
@@ -18,37 +19,49 @@ BLUE_COLOR = (255, 0, 0)
 NUM_LANDMARKS = 33
 NUM_CONNECTIONS = 35
 
-app = QtGui.QApplication([])
-w = gl.GLViewWidget()
-w.show()
+win = pg.GraphicsLayoutWidget(show=True)
+win.setWindowTitle('Python Step Counter')
 
-# Create the background grid
-gz = gl.GLGridItem()
-gz.translate(0, 0, -1)
-w.addItem(gz)
+# Create two plots, one for raw data and
+# the other for data after filters, etc.
+plot1 = win.addPlot()
+
+# Set X and Y limits on graph
+plot1.setXRange(-1, 1)
+plot1.setYRange(-1, 1)
+
+plot1.getViewBox().invertY(True)
 
 # Array of the 33 mapped points
-body_point_array = np.ndarray((NUM_LANDMARKS, 3))
+body_point_array = np.zeros((NUM_LANDMARKS, 2))
 
 # Array of the 35 connections (2 points for each connection)
-limb_array = np.ndarray((NUM_CONNECTIONS*2 + 4, 3))
+limb_array = np.ndarray((NUM_CONNECTIONS*2 + 4, 2))
 
-# Create 3D scatter plot for joints
-joint_scatter_plot = gl.GLScatterPlotItem(pos=body_point_array)
-joint_scatter_plot.rotate(90, -1, 0, 0) # Rotate to upright position
+scatter = pg.ScatterPlotItem(size=10, brush=pg.mkBrush(255, 255, 255, 120)) 
 
-# Create 3D line plot for limbs
-limb_line_plot = gl.GLLinePlotItem(pos=limb_array, mode="lines", width=2.0)
-limb_line_plot.rotate(90, -1, 0, 0) # Rotate to upright position
+point1 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255, 0, 0, 120)) 
+point2 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 0, 255, 120)) 
 
-# Add 3D scatter plot and line plot to pyqtgraph
-w.addItem(joint_scatter_plot)
-w.addItem(limb_line_plot)
+scatter1 = plot1.addItem(scatter)
+point11 = plot1.addItem(point1)
+point22 = plot1.addItem(point2)
+#curve1 = plot1.plot([1,2,3,4], [1,2,3,4])
 
+scatter.setData(pos=body_point_array)
+
+point1_x = 0
+point1_y = 0
+
+point2_x = 0
+point2_y = 0
+point1.setData(pos=[[point1_x, point1_y]])
+point2.setData(pos=[[point2_x, point2_y]])
 
 def update():
-    joint_scatter_plot.setData()
-    limb_line_plot.setData()
+    scatter.setData(pos=body_point_array)
+    point1.setData(pos=[[point1_x,point1_y]])
+    point2.setData(pos=[[point2_x,point2_y]])
 
 
 t = QtCore.QTimer()
@@ -146,7 +159,7 @@ with mp_pose.Pose(
             landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
 
         # Gets pose coordinates from the image processing results
-        blaze_pose_global_coords = results.pose_world_landmarks
+        blaze_pose_coords = results.pose_world_landmarks
 
         # Dictionary of where to connect limbs. Refer to here 
         # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
@@ -174,14 +187,14 @@ with mp_pose.Pose(
         }
 
         # If global coords were successfully found
-        if blaze_pose_global_coords is not None:
-            landmarks = blaze_pose_global_coords.landmark
+        if blaze_pose_coords is not None:
+            landmarks = blaze_pose_coords.landmark
 
             # Loop through results and add them to the body point numpy array
             for landmark in range(0,len(landmarks)):
                 body_point_array[landmark][0] = landmarks[landmark].x
                 body_point_array[landmark][1] = landmarks[landmark].y
-                body_point_array[landmark][2] = landmarks[landmark].z
+                #body_point_array[landmark][2] = landmarks[landmark].z
 
             # Add limb coordinates to limb numpy array
             index = 0
@@ -189,13 +202,13 @@ with mp_pose.Pose(
                 if connection_index in connection_dict:
                     for connection in range(0, len(connection_dict[connection_index])):
 
-                        limb_array[index][0] = blaze_pose_global_coords.landmark[connection_index].x
-                        limb_array[index][1] = blaze_pose_global_coords.landmark[connection_index].y
-                        limb_array[index][2] = blaze_pose_global_coords.landmark[connection_index].z
+                        limb_array[index][0] = blaze_pose_coords.landmark[connection_index].x
+                        limb_array[index][1] = blaze_pose_coords.landmark[connection_index].y
+                        #limb_array[index][2] = blaze_pose_coords.landmark[connection_index].z
 
-                        limb_array[index + 1][0] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].x
-                        limb_array[index + 1][1] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].y
-                        limb_array[index + 1][2] = blaze_pose_global_coords.landmark[connection_dict[connection_index][connection]].z
+                        limb_array[index + 1][0] = blaze_pose_coords.landmark[connection_dict[connection_index][connection]].x
+                        limb_array[index + 1][1] = blaze_pose_coords.landmark[connection_dict[connection_index][connection]].y
+                        #limb_array[index + 1][2] = blaze_pose_coords.landmark[connection_dict[connection_index][connection]].z
 
                         index += 2
 
@@ -205,8 +218,17 @@ with mp_pose.Pose(
             right_arm = body_point_array[12] - body_point_array[14] # technically the model's left arm but image is flipped
             right_forearm = body_point_array[16] - body_point_array[14] 
 
-            print(f"Right arm angle: {round(180*angle(left_arm,left_forearm,True)/np.pi,2)} \
-            Left arm angle: {round(180*angle(right_arm,right_forearm,True)/np.pi,2)}", end="\r")
+            dist_from_pt1 = ((body_point_array[15][0] - point1_x)**2 + (body_point_array[15][1] - point1_y)**2)**0.5
+            dist_from_pt2 = ((body_point_array[16][0] - point2_x)**2 + (body_point_array[16][1] - point2_y)**2)**0.5
+            if dist_from_pt1 < 0.1:
+                point1_x = random.uniform(-0.7,0.7)
+                point1_y = random.uniform(0.0,-0.8)
+            if dist_from_pt2 < 0.2:
+                point2_x = random.uniform(-0.7,0.7)
+                point2_y = random.uniform(0.0,-0.8)
+
+            #print(f"Right arm angle: {round(180*angle(left_arm,left_forearm,True)/np.pi,2)} \
+            #Left arm angle: {round(180*angle(right_arm,right_forearm,True)/np.pi,2)}", end="\r")
 
         cv2.imshow('MediaPipe Pose', image)
         if cv2.waitKey(5) & 0xFF == 27:
