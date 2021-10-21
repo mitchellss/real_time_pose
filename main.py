@@ -4,9 +4,12 @@ import numpy as np
 import random
 
 from pyqtgraph.Qt import QtCore, QtGui
+from PyQt5.QtGui import * 
 import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import numpy as np
+import socket
+import time
 
 _PRESENCE_THRESHOLD = 0.5
 _VISIBILITY_THRESHOLD = 0.5
@@ -18,6 +21,18 @@ GREEN_COLOR = (0, 128, 0)
 BLUE_COLOR = (255, 0, 0)
 NUM_LANDMARKS = 33
 NUM_CONNECTIONS = 35
+
+RED_LANDMARK = 15
+BLUE_LANDMARK = 16
+
+TCP_IP = "172.16.1.2"
+TCP_PORT = 8888
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#s.connect((TCP_IP, TCP_PORT))
+
+msg = ('/beep/100' + '\n').encode('ascii')
+msg2 = ('/lite/500' + '\n').encode('ascii')
 
 win = pg.GraphicsLayoutWidget(show=True)
 win.setWindowTitle('Python Step Counter')
@@ -43,9 +58,20 @@ scatter = pg.ScatterPlotItem(size=10, brush=pg.mkBrush(255, 255, 255, 120))
 point1 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255, 0, 0, 120)) 
 point2 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 0, 255, 120)) 
 
+score = 0
+score_text = pg.TextItem(text=f"Score: {score}")
+score_text.setPos(0,-1)
+score_text.setFont(QFont('Arial', 30))
+
+countdown = 10
+countdown_text = pg.TextItem(text=f"Time: {countdown}s")
+countdown_text.setPos(0,-1.5)
+countdown_text.setFont(QFont('Arial', 30))
+
 scatter1 = plot1.addItem(scatter)
 point11 = plot1.addItem(point1)
 point22 = plot1.addItem(point2)
+score_label = plot1.addItem(score_text)
 #curve1 = plot1.plot([1,2,3,4], [1,2,3,4])
 
 scatter.setData(pos=body_point_array)
@@ -62,6 +88,7 @@ def update():
     scatter.setData(pos=body_point_array)
     point1.setData(pos=[[point1_x,point1_y]])
     point2.setData(pos=[[point2_x,point2_y]])
+    score_text.setText(text=f"Score: {score}")
 
 
 t = QtCore.QTimer()
@@ -218,14 +245,18 @@ with mp_pose.Pose(
             right_arm = body_point_array[12] - body_point_array[14] # technically the model's left arm but image is flipped
             right_forearm = body_point_array[16] - body_point_array[14] 
 
-            dist_from_pt1 = ((body_point_array[15][0] - point1_x)**2 + (body_point_array[15][1] - point1_y)**2)**0.5
-            dist_from_pt2 = ((body_point_array[16][0] - point2_x)**2 + (body_point_array[16][1] - point2_y)**2)**0.5
+            dist_from_pt1 = ((body_point_array[RED_LANDMARK][0] - point1_x)**2 + (body_point_array[RED_LANDMARK][1] - point1_y)**2)**0.5
+            dist_from_pt2 = ((body_point_array[BLUE_LANDMARK][0] - point2_x)**2 + (body_point_array[BLUE_LANDMARK][1] - point2_y)**2)**0.5
             if dist_from_pt1 < 0.1:
                 point1_x = random.uniform(-0.7,0.7)
                 point1_y = random.uniform(0.0,-0.8)
+                #s.send(msg)
+                score += 1
             if dist_from_pt2 < 0.2:
                 point2_x = random.uniform(-0.7,0.7)
                 point2_y = random.uniform(0.0,-0.8)
+                #s.send(msg2)
+                score += 1
 
             #print(f"Right arm angle: {round(180*angle(left_arm,left_forearm,True)/np.pi,2)} \
             #Left arm angle: {round(180*angle(right_arm,right_forearm,True)/np.pi,2)}", end="\r")
@@ -241,3 +272,4 @@ if __name__ == '__main__':
 
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()
+        s.close()
