@@ -7,6 +7,7 @@ import random
 import numpy as np
 import argparse, sys
 import cv2
+from pyqtgraph.functions import mkBrush, mkColor
 
 class TwoDimensionGame():
 
@@ -15,15 +16,19 @@ class TwoDimensionGame():
     RED_LANDMARK = 15
     BLUE_LANDMARK = 16
 
-    # Dictionary of where to connect limbs. Refer to here 
+    # Where to connect limbs. Refer to here 
     # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
-    CONNECTION_DICT = {
-        16:[14, 18, 20, 22], 18:[20], 14:[12],
-        12:[11, 24], 11:[23, 13], 15:[13, 17, 19, 21],
-        17:[19], 24:[23], 26:[24,28], 25:[23,27],
-        10:[9], 8:[6], 5:[6,4], 0:[4,1], 2:[1,3],
-        3:[7], 28:[32,30], 27:[29, 31], 32:[30], 29:[31]
-    }
+    CONNECTIONS = np.array([
+        [16,14], [16,18], [16,20], [16,22],
+        [18,20], [14,12], [12,11], [12,24],
+        [11,23], [11,13], [15,13], [15,17],
+        [15,19], [15,21], [17,19], [24,23],
+        [26,24], [26,28], [25,23], [25,27],
+        [10,9], [8,6], [5,6], [5,4], [0,4],
+        [0,1], [2,1], [2,3], [3,7], [28,32],
+        [28,30], [27,29], [27,31], [32,30],
+        [29,31]
+    ])
 
     LETTER_SELECT = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
                         'O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -59,9 +64,6 @@ class TwoDimensionGame():
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
-
-        # Array of the 35 connections (2 points for each connection)
-        self.limb_array = np.ndarray((self.NUM_CONNECTIONS*2 + 4, 2))
 
         # Coordinates for the targets for the user to pop
         self.target_1_x = 0
@@ -111,25 +113,26 @@ class TwoDimensionGame():
         # Create plot and set range
         self.plot = self.win.addPlot()
         self.plot.setXRange(-1, 1)
-        self.plot.setYRange(-1, 1)
+        self.plot.setYRange(-1.2, 0.8)
         self.plot.getViewBox().invertY(True)
 
         # Create scatter and targets
-        self.scatter = pg.ScatterPlotItem(size=10, brush=pg.mkBrush(255, 255, 255, 120)) 
+        self.scatter = pg.GraphItem()
         self.target_1 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255, 0, 0, 120)) 
         self.target_2 = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 0, 255, 120)) 
         self.start_target = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 255, 0, 120))
         self.name_input = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255, 255, 255, 120))
         self.name_submit_scatter = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 255, 0, 120))
 
+
         # Score label
         self.score_text = pg.TextItem(text=f"Score: {self.score}")
-        self.score_text.setPos(0,-1)
+        self.score_text.setPos(0.4,-1)
         self.score_text.setFont(QFont('Arial', 30))
 
         # Time label
         self.countdown_text = pg.TextItem(text=f"Time: {self.countdown_time}s")
-        self.countdown_text.setPos(0,-1.2)
+        self.countdown_text.setPos(0.4,-1.2)
         self.countdown_text.setFont(QFont('Arial', 30))
 
         # Submit name label
@@ -144,34 +147,37 @@ class TwoDimensionGame():
         self.name_input_1.setPos(self.name_input_label_1_x, self.name_input_label_1_y)
         self.name_input_2.setPos(self.name_input_label_2_x, self.name_input_label_2_y)
         self.name_input_3.setPos(self.name_input_label_3_x, self.name_input_label_3_y)
-        self.name_input_1.setFont(QFont('Arial', 20))
-        self.name_input_2.setFont(QFont('Arial', 20))
-        self.name_input_3.setFont(QFont('Arial', 20))
-
+        self.name_input_1.setFont(QFont('Arial', 30))
+        self.name_input_2.setFont(QFont('Arial', 30))
+        self.name_input_3.setFont(QFont('Arial', 30))
 
         # Set data for scatter and targets
+        self.scatter.setData(pos=self.body_point_array, 
+                            adj=self.CONNECTIONS, 
+                            pen=pg.mkPen(mkColor(255,255,255,120),width=2),
+                            symbolBrush=mkBrush(255,255,255,120),
+                            symbolPen=None)
         self.target_1.setData(pos=[[self.target_1_x, self.target_1_y]])
         self.target_2.setData(pos=[[self.target_2_x, self.target_2_y]])
         self.start_target.setData(pos=[[self.start_target_x, self.start_target_y]])
-        self.scatter.setData(pos=self.body_point_array)
         self.name_input.setData(pos=[[self.name_input_1_x,self.name_input_1_y], 
                                         [self.name_input_2_x,self.name_input_2_y], 
                                         [self.name_input_3_x,self.name_input_3_y]])
         self.name_submit_scatter.setData(pos=[[self.submit_name_x,self.submit_name_y]])
 
         # Add items to the plot
-        self.scatter_plot = self.plot.addItem(self.scatter)
-        self.score_label = self.plot.addItem(self.score_text)
-        self.time_label = self.plot.addItem(self.countdown_text)
-        self.target_1_point = self.plot.addItem(self.target_1)
-        self.target_2_point = self.plot.addItem(self.target_2)
-        self.start_target_point = self.plot.addItem(self.start_target)
-        self.name_input_points = self.plot.addItem(self.name_input)
-        self.name_input_label_1 = self.plot.addItem(self.name_input_1)
-        self.name_input_label_2 = self.plot.addItem(self.name_input_2)
-        self.name_input_label_3 = self.plot.addItem(self.name_input_3)
-        self.name_submit_label = self.plot.addItem(self.name_submit)
-        self.name_submit_target = self.plot.addItem(self.name_submit_scatter)
+        self.plot.addItem(self.scatter)
+        self.plot.addItem(self.score_text)
+        self.plot.addItem(self.countdown_text)
+        self.plot.addItem(self.target_1)
+        self.plot.addItem(self.target_2)
+        self.plot.addItem(self.start_target)
+        self.plot.addItem(self.name_input)
+        self.plot.addItem(self.name_input_1)
+        self.plot.addItem(self.name_input_2)
+        self.plot.addItem(self.name_input_3)
+        self.plot.addItem(self.name_submit)
+        self.plot.addItem(self.name_submit_scatter)
 
         # Hide targets
         self.target_1.hide()
@@ -265,7 +271,7 @@ class TwoDimensionGame():
                 # Get realsense color image
                 if self.args.camera_type == "realsense":
                     color_image = self.get_realsense_image()
-                    if color_image == None:
+                    if color_image is None:
                         continue
 
                 # Get webcam color image
@@ -435,10 +441,10 @@ class TwoDimensionGame():
             self.print_scoreboard(lines)
     
     def print_scoreboard(self, lines):
-        print("\n" * 10)
+        print("\n" * 50)
         for i in range(0,10):
             try:
-                print(f"{i}. {lines[i][0]} - {lines[i][1]}")
+                print(f"{i+1}. {lines[i][0]} - {lines[i][1]}")
             except:
                 continue
 
@@ -447,20 +453,6 @@ class TwoDimensionGame():
         for landmark in range(0,len(landmarks)):
             self.body_point_array[landmark][0] = landmarks[landmark].x
             self.body_point_array[landmark][1] = landmarks[landmark].y
-            #body_point_array[landmark][2] = landmarks[landmark].z
-
-                    # Add limb coordinates to limb numpy array
-        index = 0
-        for connection_index in range(0, 35):
-            if connection_index in self.CONNECTION_DICT:
-                for connection in range(0, len(self.CONNECTION_DICT[connection_index])):
-                    self.limb_array[index][0] = blaze_pose_coords.landmark[connection_index].x
-                    self.limb_array[index][1] = blaze_pose_coords.landmark[connection_index].y
-
-                    self.limb_array[index + 1][0] = blaze_pose_coords.landmark[self.CONNECTION_DICT[connection_index][connection]].x
-                    self.limb_array[index + 1][1] = blaze_pose_coords.landmark[self.CONNECTION_DICT[connection_index][connection]].y
-
-                    index += 2
 
     def get_realsense_image(self):
         # Wait for a coherent pair of frames: depth and color
