@@ -123,7 +123,8 @@ class TwoDimensionGame():
         self.start_target = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 255, 0, 120))
         self.name_input = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255, 255, 255, 120))
         self.name_submit_scatter = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0, 255, 0, 120))
-
+        self.left_hand_color_scatter = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(255,0,0,120))
+        self.right_hand_color_scatter = pg.ScatterPlotItem(size=50, brush=pg.mkBrush(0,0,255,120))
 
         # Score label
         self.score_text = pg.TextItem(text=f"Score: {self.score}")
@@ -164,6 +165,8 @@ class TwoDimensionGame():
                                         [self.name_input_2_x,self.name_input_2_y], 
                                         [self.name_input_3_x,self.name_input_3_y]])
         self.name_submit_scatter.setData(pos=[[self.submit_name_x,self.submit_name_y]])
+        self.left_hand_color_scatter.setData(pos=[[0,0]])
+        self.right_hand_color_scatter.setData(pos=[[0,0]])
 
         # Add items to the plot
         self.plot.addItem(self.scatter)
@@ -178,6 +181,8 @@ class TwoDimensionGame():
         self.plot.addItem(self.name_input_3)
         self.plot.addItem(self.name_submit)
         self.plot.addItem(self.name_submit_scatter)
+        self.plot.addItem(self.left_hand_color_scatter)
+        self.plot.addItem(self.right_hand_color_scatter)
 
         # Hide targets
         self.target_1.hide()
@@ -212,6 +217,8 @@ class TwoDimensionGame():
 
         self.score_text.setText(text=f"Score: {self.score}")
         self.countdown_text.setText(text=f"Time: {round(self.countdown_time,1)}")
+        self.left_hand_color_scatter.setData(pos=[self.body_point_array[15]])
+        self.right_hand_color_scatter.setData(pos=[self.body_point_array[16]])
 
     def init_mp(self):
         self.mp_drawing_styles = mp.solutions.drawing_styles
