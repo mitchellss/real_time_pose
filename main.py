@@ -3,6 +3,8 @@ from pyqtgraph.Qt import QtCore, QtGui
 from PyQt5.QtGui import QFont
 import mediapipe as mp
 import random
+from time import time 
+import os
 
 import numpy as np
 import argparse, sys
@@ -56,6 +58,8 @@ class TwoDimensionGame():
     def arg_parse(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("camera_type", choices=["webcam", "realsense"], help="The camera type to be used")
+        parser.add_argument("--record_points", action="store_true", help="Record point data")
+        parser.add_argument("--record_video", action="store_true", help="Record video data")
         self.args = parser.parse_args()
 
     def init_values(self):
@@ -106,7 +110,7 @@ class TwoDimensionGame():
 
         self.time_btw_letter_change = 0
 
-    def init_ui(self):        
+    def init_ui(self):
         self.win = pg.GraphicsLayoutWidget(show=True)
         self.win.setWindowTitle('2D Game')
 
@@ -207,6 +211,7 @@ class TwoDimensionGame():
         self.scatter.setData(pos=self.body_point_array)
         self.target_1.setData(pos=[[self.target_1_x,self.target_1_y]])
         self.target_2.setData(pos=[[self.target_2_x,self.target_2_y]])
+
         if (self.game_state == 1 and self.countdown_time > 0):
             self.countdown_time -= 0.05
         else:
@@ -230,6 +235,8 @@ class TwoDimensionGame():
             self.pipeline = self.config_realsense()
         elif self.args.camera_type == "webcam":
             self.cap = cv2.VideoCapture(0)
+            self.vid_width= int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            self.vid_height= int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     def config_realsense(self):
         # Configure depth and color streams 
@@ -285,9 +292,14 @@ class TwoDimensionGame():
                 elif self.args.camera_type == "webcam":
                     success, color_image = self.cap.read()
 
+
                 # Flip the image horizontally for a later selfie-view display, and convert
                 # the BGR image to RGB.
                 image = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
+
+                if self.args.record_video:
+                    if self.game_state == 1:
+                        self.vid_writer.write(color_image)
 
                 # To improve performance, optionally mark the image as not writeable to
                 # pass by reference.
@@ -313,11 +325,17 @@ class TwoDimensionGame():
                     landmarks = blaze_pose_coords.landmark
                     self.update_point_and_connection_data(blaze_pose_coords, landmarks)
                     self.handle_scoring()
+                    if self.args.record_points:
+                        self.log_data()
 
                 cv2.imshow('MediaPipe Pose', image)
                 if cv2.waitKey(5) & 0xFF == 27:
                     break
 
+    def log_data(self):
+        if self.countdown_time > 0:
+            self.point_data_file.write(str(time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
+            
     def handle_scoring(self):
 
         dist_from_pt1 = self.get_distance_between_pts(self.body_point_array[self.RED_LANDMARK][0],
@@ -342,6 +360,7 @@ class TwoDimensionGame():
                 self.score += 1
         else:
             if self.game_state == 1:
+                # Active game
                 self.target_1.hide()
                 self.target_2.hide()
                 self.name_input_1.show()
@@ -352,9 +371,14 @@ class TwoDimensionGame():
                 self.countdown_text.hide()
                 self.name_submit_scatter.show()
                 self.name_submit.show()
+                if self.args.record_points:
+                    self.point_data_file.close()
+                if self.args.record_video:
+                    self.vid_writer.release()
                 self.game_state = 2
 
             elif self.game_state == 0:
+                # Start screen
                 self.start_target.show()
                 self.target_1.hide()
                 self.target_2.hide()
@@ -372,8 +396,21 @@ class TwoDimensionGame():
                     self.start_target.hide()
                     self.game_state = 1
                     self.score = 0
+                    current_time = int(time())
+
+                    if self.args.record_points or self.args.record_video:
+                        os.mkdir(f"./data/{current_time}")
+
+                    if self.args.record_points:
+                        self.point_data_file = open(f"./data/{current_time}/{current_time}_point_data.csv", "a")
+                        self.point_data_file.write("timestamp,x00,y00,x01,y01,x02,y02,x03,y03,x04,y04,x05,y05,x06,y06,x07,y07,x08,y08,x09,y09,x10,y10,x11,y11,x12,y12,x13,y13,x14,y14,x15,y15,x16,y16,x17,y17,x18,y18,x19,y19,x20,y20,x21,y21,x22,y22,x23,y23,x24,y24,x25,y25,x26,y26,x27,y27,x28,y28,x29,y29,x30,y30,x31,y31,x32,y32\n")
+                    
+                    if self.args.record_video:
+                        self.vid_writer = cv2.VideoWriter(f'./data/{current_time}/{current_time}.mp4', cv2.VideoWriter_fourcc(*'DIVX'), 20, (self.vid_width,self.vid_height))
 
             elif self.game_state == 2:
+
+                # Check if name input 1 clicked
                 if self.time_btw_letter_change > 0.2 and (self.get_distance_between_pts(self.body_point_array[15][0],
                                 self.body_point_array[15][1],
                                 self.name_input_1_x, self.name_input_1_y) < 0.2 \
@@ -385,6 +422,7 @@ class TwoDimensionGame():
                     self.name_input_1.setText(f"{self.LETTER_SELECT[self.name_input_1_index % len(self.LETTER_SELECT)]}")
                     self.time_btw_letter_change = 0
 
+                # Check if name input 2 clicked
                 if self.time_btw_letter_change > 0.2 and (self.get_distance_between_pts(self.body_point_array[15][0],
                                 self.body_point_array[15][1],
                                 self.name_input_2_x, self.name_input_2_y) < 0.2 \
@@ -396,6 +434,7 @@ class TwoDimensionGame():
                     self.name_input_2.setText(f"{self.LETTER_SELECT[self.name_input_2_index % len(self.LETTER_SELECT)]}")
                     self.time_btw_letter_change = 0
 
+                # Check if name input 3 clicked
                 if self.time_btw_letter_change > 0.2 and (self.get_distance_between_pts(self.body_point_array[15][0],
                                 self.body_point_array[15][1],
                                 self.name_input_3_x, self.name_input_3_y) < 0.2 \
@@ -407,7 +446,7 @@ class TwoDimensionGame():
                     self.name_input_3.setText(f"{self.LETTER_SELECT[self.name_input_3_index % len(self.LETTER_SELECT)]}")
                     self.time_btw_letter_change = 0
 
-
+                # Check if submit button clicked
                 if self.get_distance_between_pts(self.body_point_array[15][0],
                                 self.body_point_array[15][1],
                                 self.submit_name_x, self.submit_name_y) < 0.2 \
@@ -425,7 +464,6 @@ class TwoDimensionGame():
                     self.start_target.show()
                     self.game_state = 0
                     self.submit_score()
-
 
     def get_distance_between_pts(self, x1, y1, x2, y2):
         return abs((x1 - x2)**2 + (y1 - y2)**2)**0.5
