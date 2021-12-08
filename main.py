@@ -8,6 +8,7 @@ import argparse
 import cv2
 from pyqtgraph.functions import mkBrush, mkColor
 from PyQt5.QtGui import QFont
+from activities.game.game import Game
 
 from frame_input.realsense import Realsense
 
@@ -60,38 +61,10 @@ class TwoDimensionGame():
         self.args = parser.parse_args()
 
     def init_values(self):
-        self.score = 0
-        self.countdown_time = 0
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
 
-        # Coordinates for the targets for the user to pop
-        self.target_1_x = 0
-        self.target_1_y = 0
-        self.target_2_x = 0
-        self.target_2_y = 0
-
-        # Coordinates for start target
-        self.start_target_x = 0
-        self.start_target_y = -1
-
-        # Game State:
-        # 0 - Start screen
-        # 1 - Active game
-        # 2 - Name input
-        self.game_state = 0
-
-        self.name_input_1_index = 0
-        self.name_input_2_index = 0
-        self.name_input_3_index = 0
-
-        self.submit_name_x = 0.7
-        self.submit_name_y = 0
-
-        self.time_btw_letter_change = 0
-
-        self.vid_playing = False
 
     def init_ui(self):
 
@@ -99,39 +72,48 @@ class TwoDimensionGame():
         self.gui = PyQtGraph()
         self.gui.new_gui()
 
-        # Parses activity yaml file and adds components to the ui
-        self.components = self.parse_activity_ui_yaml()
+        self.activity = Game(self.body_point_array, self.change_stage)
 
-        # Adds components to the gui
-        for component in self.components:
-            self.gui.add_component(self.components[component])
+        # Parses activity yaml file and adds components to the ui
+        self.stages = self.activity.get_stages()
+        self.persistant = self.activity.get_persist()
+
+        # Adds all components
+        for stage in self.stages:
+            for component in stage:
+                self.gui.add_component(stage[component])
+                stage[component].hide() # hides all components
+
+        for component in self.persistant:
+            self.gui.add_component(self.persistant[component])
+
+        self.components = self.stages[self.activity.get_current_stage()]
+        self.change_stage()
 
         # Set the function to call on update
         self.timer = pg.QtCore.QTimer()
         self.timer.timeout.connect(self.update)
         self.timer.start(50)
 
-    def parse_activity_ui_yaml(self):
-        components = {}
-        
-        # TODO: Parse through activity yaml to create these components
-
-        components["start_button"] = ButtonComponent(50, pg.mkBrush(0, 255, 0, 120), self.start_target_x, self.start_target_y, func=self.start_button_func)
-        components["target_1"] = ButtonComponent(50, pg.mkBrush(255, 0, 0, 120), self.target_1_x, self.target_1_y, func=self.target_1_func)
-        components["target_2"] = ButtonComponent(50, pg.mkBrush(0, 0, 255, 120), self.target_2_x, self.target_2_y, func=self.target_2_func)
-        components["skeleton"] = SkeletonComponent(self.body_point_array)
-        components["timer"] = TimerComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=10)
-
-        return components
-
     def update(self):
-        self.components["skeleton"].set_pos(self.body_point_array)
-        self.components["timer"].tick()
+        self.persistant["skeleton"].set_pos(self.body_point_array)
+        self.persistant["timer"].tick()
         
-
     def init_mp(self):
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_drawing = mp.solutions.drawing_utils
+
+    def change_stage(self):
+        # Hides old components
+        for component in self.components:
+            self.components[component].hide()
+
+        # Switches out new components
+        self.components = self.stages[self.activity.get_current_stage()]
+
+        # Shows new components
+        for component in self.components:
+            self.components[component].show()
 
     def start_image_processing(self):
         while True:
@@ -177,26 +159,14 @@ class TwoDimensionGame():
             self.point_data_file.write(str(time.time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
             
     def handle_activity(self):
-        self.components["start_button"].is_clicked(self.components["skeleton"].skeleton_array[self.components["skeleton"].LEFT_HAND][0], 
-            self.components["skeleton"].skeleton_array[self.components["skeleton"].LEFT_HAND][1], 0.1)
-        
-        if self.components["timer"].get_time() > 0:
-            self.components["target_1"].is_clicked(self.components["skeleton"].skeleton_array[self.components["skeleton"].RIGHT_HAND][0], 
-                self.components["skeleton"].skeleton_array[self.components["skeleton"].RIGHT_HAND][1], 0.1)
-            self.components["target_2"].is_clicked(self.components["skeleton"].skeleton_array[self.components["skeleton"].LEFT_HAND][0], 
-                self.components["skeleton"].skeleton_array[self.components["skeleton"].LEFT_HAND][1], 0.1)
-
-    def target_1_func(self):
-        self.components["target_1"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
-        self.score += 1
-
-    def target_2_func(self):
-        self.components["target_2"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
-        self.score += 1
-
-    def start_button_func(self):
-        self.countdown_time = 10
-        self.components["start_button"].hide()
+        for component in self.components: # For each component in the dict of active components
+            if isinstance(self.components[component], ButtonComponent): # If it is a button
+                for target in self.components[component].target_pts: # Check to see if each of the target points on the skeleton have touched the button
+                    x = self.persistant["skeleton"].skeleton_array[target][0]
+                    y = self.persistant["skeleton"].skeleton_array[target][1]
+                    
+                    if self.components[component].is_clicked(x, y, 0.1):
+                        break # Stops rest of for loop from running (caused errors)
 
     def update_point_and_connection_data(self, blaze_pose_coords, landmarks):
         # Loop through results and add them to the body point numpy array

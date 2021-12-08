@@ -19,13 +19,15 @@ class TimerComponent(Component):
         if "starting_time" in kwargs:
             self.time = kwargs["starting_time"]
 
+        if "func" in kwargs:
+            self.func = kwargs["func"]
+        else:
+            self.func = lambda : True
+
     def set_pos(self, x_pos, y_pos):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.timer.SetPos(x_pos, y_pos)
-
-    def hide(self):
-        self.timer.hide()
 
     def get_item(self):
         return self.timer
@@ -39,6 +41,10 @@ class TimerComponent(Component):
             self.timer.setText(text=f"Time: {round(self.time, 1)}")
         else:
             self.time = 0
+            self.time_expire()
 
     def get_time(self):
         return self.time
+
+    def time_expire(self):
+        self.func()
