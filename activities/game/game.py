@@ -6,11 +6,12 @@ from ui.pyqtgraph.skeleton_component import SkeletonComponent
 from ui.pyqtgraph.timer_component import TimerComponent
 import pyqtgraph as pg
 import random
+import traceback
 
 
 class Game(Activity):
 
-    def __init__(self, body_point_array, change_stage_func) -> None:
+    def __init__(self, body_point_array) -> None:
 
         # Coordinates for the targets for the user to pop
         self.target_1_x = random.uniform(-0.7,0.7)
@@ -21,8 +22,6 @@ class Game(Activity):
         # Coordinates for start target
         self.start_target_x = 0
         self.start_target_y = -0.6
-
-        self.change_stage_func = change_stage_func
 
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
@@ -38,6 +37,8 @@ class Game(Activity):
         self.stages = [stage_0, stage_1]
         self.stage = 0
 
+        self.components = self.stages[0]
+
     def get_stages(self) -> list:
         return self.stages
 
@@ -50,9 +51,15 @@ class Game(Activity):
     def set_current_stage(self, stage) -> None:
         self.stage = stage
 
+    def get_components(self):
+        return self.components
+
+    def set_components(self, components):
+        self.components = components
+
     def time_expire_func(self):
         self.stage = 0
-        self.change_stage_func()
+        self.change_stage()
     
     def target_1_func(self):
         self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
@@ -61,6 +68,19 @@ class Game(Activity):
         self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
 
     def start_button_func(self):
-        self.persist["timer"].set_timer(10)
-        self.stage = self.stage + 1
-        self.change_stage_func()
+        if self.stage == 0:
+            self.persist["timer"].set_timer(10)
+            self.stage = self.stage + 1
+            self.change_stage()
+
+    def change_stage(self):
+        # Hides old components
+        for component in self.components:
+            self.components[component].hide()
+
+        # Switches out new components
+        self.components = self.stages[self.stage]
+
+        # Shows new components
+        for component in self.components:
+            self.components[component].show()

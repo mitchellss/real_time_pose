@@ -72,7 +72,7 @@ class TwoDimensionGame():
         self.gui = PyQtGraph()
         self.gui.new_gui()
 
-        self.activity = Game(self.body_point_array, self.change_stage)
+        self.activity = Game(self.body_point_array)
 
         # Parses activity yaml file and adds components to the ui
         self.stages = self.activity.get_stages()
@@ -87,8 +87,8 @@ class TwoDimensionGame():
         for component in self.persistant:
             self.gui.add_component(self.persistant[component])
 
-        self.components = self.stages[self.activity.get_current_stage()]
-        self.change_stage()
+        # Call change activity initially to render components
+        self.activity.change_stage()
 
         # Set the function to call on update
         self.timer = pg.QtCore.QTimer()
@@ -102,18 +102,6 @@ class TwoDimensionGame():
     def init_mp(self):
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_drawing = mp.solutions.drawing_utils
-
-    def change_stage(self):
-        # Hides old components
-        for component in self.components:
-            self.components[component].hide()
-
-        # Switches out new components
-        self.components = self.stages[self.activity.get_current_stage()]
-
-        # Shows new components
-        for component in self.components:
-            self.components[component].show()
 
     def start_image_processing(self):
         while True:
@@ -155,17 +143,17 @@ class TwoDimensionGame():
                 break
 
     def log_data(self):
-        if self.components["timer"].get_time() > 0:
+        if self.activity.get_components()["timer"].get_time() > 0:
             self.point_data_file.write(str(time.time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
             
     def handle_activity(self):
-        for component in self.components: # For each component in the dict of active components
-            if isinstance(self.components[component], ButtonComponent): # If it is a button
-                for target in self.components[component].target_pts: # Check to see if each of the target points on the skeleton have touched the button
+        for component in self.activity.get_components(): # For each component in the dict of active components
+            if isinstance(self.activity.get_components()[component], ButtonComponent): # If it is a button
+                for target in self.activity.get_components()[component].target_pts: # Check to see if each of the target points on the skeleton have touched the button
                     x = self.persistant["skeleton"].skeleton_array[target][0]
                     y = self.persistant["skeleton"].skeleton_array[target][1]
                     
-                    if self.components[component].is_clicked(x, y, 0.1):
+                    if self.activity.get_components()[component].is_clicked(x, y, 0.1):
                         break # Stops rest of for loop from running (caused errors)
 
     def update_point_and_connection_data(self, blaze_pose_coords, landmarks):
