@@ -74,12 +74,10 @@ class TwoDimensionGame():
 
         self.activity = Game(self.body_point_array)
 
-        # Parses activity yaml file and adds components to the ui
-        self.stages = self.activity.get_stages()
         self.persistant = self.activity.get_persist()
 
         # Adds all components
-        for stage in self.stages:
+        for stage in self.activity.get_stages():
             for component in stage:
                 self.gui.add_component(stage[component])
                 stage[component].hide() # hides all components
