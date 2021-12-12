@@ -29,14 +29,11 @@ class TwoDimensionGame():
         # Ensure correct arguments are passed
         self.arg_parse()
 
-        # Initialize starting values for points and labels
-        self.init_values()
+        # Array of the 33 mapped points
+        self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
 
         # Initialize graphs and labels for the user interface
         self.init_ui()
-
-        # Initialize mediapose stuff
-        self.init_mp()
 
         self.pose_detector = Blazepose()
 
@@ -45,9 +42,6 @@ class TwoDimensionGame():
             self.frame_input = Webcam()
         elif self.args.camera_type == "realsense":
             self.frame_input = Realsense()
-
-        # Plays video tutorial for activity selected
-        # self.play_tutorial()
 
         # Start processing images
         self.start_image_processing()
@@ -60,14 +54,7 @@ class TwoDimensionGame():
         parser.add_argument("--activity", nargs="?", const="game", default="game", help="Activity to be recorded, default is game")
         self.args = parser.parse_args()
 
-    def init_values(self):
-
-        # Array of the 33 mapped points
-        self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
-
-
     def init_ui(self):
-
         # Creates the gui
         self.gui = PyQtGraph()
         self.gui.new_gui()
@@ -96,10 +83,6 @@ class TwoDimensionGame():
     def update(self):
         self.persistant["skeleton"].set_pos(self.body_point_array)
         self.persistant["timer"].tick()
-        
-    def init_mp(self):
-        self.mp_drawing_styles = mp.solutions.drawing_styles
-        self.mp_drawing = mp.solutions.drawing_utils
 
     def start_image_processing(self):
         while True:
@@ -140,10 +123,12 @@ class TwoDimensionGame():
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
-    def log_data(self):
-        if self.activity.get_components()["timer"].get_time() > 0:
-            self.point_data_file.write(str(time.time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
-            
+    def update_point_and_connection_data(self, blaze_pose_coords, landmarks):
+        # Loop through results and add them to the body point numpy array
+        for landmark in range(0,len(landmarks)):
+            self.body_point_array[landmark][0] = landmarks[landmark].x
+            self.body_point_array[landmark][1] = landmarks[landmark].y
+
     def handle_activity(self):
         for component in self.activity.get_components(): # For each component in the dict of active components
             if isinstance(self.activity.get_components()[component], ButtonComponent): # If it is a button
@@ -154,11 +139,10 @@ class TwoDimensionGame():
                     if self.activity.get_components()[component].is_clicked(x, y, 0.1):
                         break # Stops rest of for loop from running (caused errors)
 
-    def update_point_and_connection_data(self, blaze_pose_coords, landmarks):
-        # Loop through results and add them to the body point numpy array
-        for landmark in range(0,len(landmarks)):
-            self.body_point_array[landmark][0] = landmarks[landmark].x
-            self.body_point_array[landmark][1] = landmarks[landmark].y
+    def log_data(self):
+        if self.activity.get_components()["timer"].get_time() > 0:
+            self.point_data_file.write(str(time.time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
+            
 
 if __name__ == "__main__":
     td = TwoDimensionGame()
