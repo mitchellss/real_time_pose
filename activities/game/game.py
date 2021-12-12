@@ -6,7 +6,6 @@ from ui.pyqtgraph.skeleton_component import SkeletonComponent
 from ui.pyqtgraph.timer_component import TimerComponent
 import pyqtgraph as pg
 import random
-import traceback
 
 
 class Game(Activity):

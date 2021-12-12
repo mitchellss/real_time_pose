@@ -9,6 +9,7 @@ import cv2
 from pyqtgraph.functions import mkBrush, mkColor
 from PyQt5.QtGui import QFont
 from activities.game.game import Game
+from activities.jumping_jacks.jumping_jacks import JumpingJacks
 
 from frame_input.realsense import Realsense
 
@@ -59,7 +60,10 @@ class TwoDimensionGame():
         self.gui = PyQtGraph()
         self.gui.new_gui()
 
-        self.activity = Game(self.body_point_array)
+        if self.args.activity == "game":
+            self.activity = Game(self.body_point_array)
+        elif self.args.activity == "jumping_jacks":
+            self.activity = JumpingJacks(self.body_point_array)
 
         self.persistant = self.activity.get_persist()
 

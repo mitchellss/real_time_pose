@@ -1,6 +1,9 @@
 
 class Activity():
 
+    def __init__(self, body_point_array) -> None:
+        pass
+
     def get_stages(self) -> list:
         return self.stages
 
