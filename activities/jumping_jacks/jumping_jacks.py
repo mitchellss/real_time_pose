@@ -1,15 +1,13 @@
 
 from PyQt5.QtGui import QFont
 from activities.activity import Activity
+from constants.constants import PATH
 from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.skeleton_component import SkeletonComponent
 from ui.pyqtgraph.timer_component import TimerComponent
 import pyqtgraph as pg
-import pathlib
 
 class JumpingJacks(Activity):
-
-    PWD = pathlib.Path(__file__).parent.resolve()
 
     def __init__(self, body_point_array) -> None:
         self.persist = {}
@@ -19,8 +17,8 @@ class JumpingJacks(Activity):
         stage_0 = {}
         stage_0["start_button"] = ButtonComponent(50, pg.mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
 
-        self.lh_points_file = open(self.PWD / "lh_points.csv")
-        self.rh_points_file = open(self.PWD / "rh_points.csv")
+        self.lh_points_file = open(PATH / "activities" / "jumping_jacks" / "lh_points.csv")
+        self.rh_points_file = open(PATH / "activities" / "jumping_jacks" / "rh_points.csv")
         lh_line = self.lh_points_file.readline().split(",")
         rh_line = self.rh_points_file.readline().split(",")
 
@@ -55,8 +53,8 @@ class JumpingJacks(Activity):
 
     def start_button_func(self):
         if self.stage == 0:
-            self.lh_points_file = open(self.PWD / "lh_points.csv")
-            self.rh_points_file = open(self.PWD / "rh_points.csv")
+            self.lh_points_file = open(PATH / "activities" / "jumping_jacks" / "lh_points.csv")
+            self.rh_points_file = open(PATH / "activities" / "jumping_jacks" / "rh_points.csv")
             lh_line = self.lh_points_file.readline().split(",")
             rh_line = self.rh_points_file.readline().split(",")
             self.stages[1]["target_1"].set_pos(float(lh_line[0]), float(lh_line[1]))

@@ -10,6 +10,8 @@ from pyqtgraph.functions import mkBrush, mkColor
 from PyQt5.QtGui import QFont
 from activities.game.game import Game
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
+from data_logging.skeleton_points.point_logger import PointLogger
+from data_logging.video.video_logger import VideoLogger
 
 from frame_input.realsense import Realsense
 
@@ -43,6 +45,16 @@ class TwoDimensionGame():
             self.frame_input = Webcam()
         elif self.args.camera_type == "realsense":
             self.frame_input = Realsense()
+
+        # Init loggers
+        self.loggers = []
+        current_time = int(time.time())
+        if self.args.record_points:
+            self.loggers.append(PointLogger(f"{current_time}_{self.args.activity}"))
+        if self.args.record_video:
+            self.loggers.append(VideoLogger(f"{current_time}_{self.args.activity}",
+                frame_width=self.frame_input.get_frame_width(), 
+                frame_height=self.frame_input.get_frame_height()))
 
         # Start processing images
         self.start_image_processing()
@@ -97,11 +109,6 @@ class TwoDimensionGame():
             # the BGR image to RGB.
             image = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
 
-            # Record video if flag is set
-            if self.args.record_video:
-                if self.game_state == 1:
-                    self.vid_writer.write(color_image)
-
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.
             image.flags.writeable = False
@@ -109,7 +116,7 @@ class TwoDimensionGame():
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            self.image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             # If global coords were successfully found
             if blaze_pose_coords is not None:
@@ -120,10 +127,9 @@ class TwoDimensionGame():
                 self.handle_activity()
 
                 # Record data points if flag is set
-                if self.args.record_points:
-                    self.log_data()
+                self.log_data()
                 
-            cv2.imshow('MediaPipe Pose', image)
+            cv2.imshow('MediaPipe Pose', self.image)
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
@@ -141,12 +147,14 @@ class TwoDimensionGame():
                     y = self.persistant["skeleton"].skeleton_array[target][1]
                     
                     if self.activity.get_components()[component].is_clicked(x, y, 0.1):
-                        break # Stops rest of for loop from running (caused errors)
+                        break # Stops rest of for loop from running (caused errors)            
 
     def log_data(self):
-        if self.activity.get_components()["timer"].get_time() > 0:
-            self.point_data_file.write(str(time.time()) + "," + ','.join([f"{num[0]},{num[1]}" for num in self.body_point_array]) + "\n")
-            
+        for logger in self.loggers:
+            if isinstance(logger, PointLogger):
+                logger.log(self.body_point_array)
+            if isinstance(logger, VideoLogger):
+                logger.log(self.image)
 
 if __name__ == "__main__":
     td = TwoDimensionGame()
