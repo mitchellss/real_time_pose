@@ -1,7 +1,7 @@
 
-from ui.component import Component
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
+from ui.pyqtgraph.component import Component
 
 class ButtonComponent(Component):
 
@@ -14,12 +14,14 @@ class ButtonComponent(Component):
         self.func = lambda : True
         if "func" in kwargs:
             self.func = kwargs["func"]
+        
+        if "target_pts" in kwargs:
+            self.target_pts = kwargs["target_pts"]
+        else:
+            self.target_pts = [0]
 
     def get_item(self):
         return self.button
-
-    def hide(self):
-        self.button.hide()
 
     def set_pos(self, x_pos, y_pos):
         self.x_pos = x_pos

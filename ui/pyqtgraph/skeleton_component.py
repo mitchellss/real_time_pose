@@ -1,5 +1,5 @@
 
-from ui.component import Component
+from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from pyqtgraph.functions import mkBrush, mkColor
@@ -21,8 +21,8 @@ class SkeletonComponent(Component):
         [29,31]
     ])
 
-    RIGHT_HAND = 16
-    LEFT_HAND = 15
+    RIGHT_HAND = 15
+    LEFT_HAND = 16
 
     def __init__(self, skeleton_array) -> None:
         self.skeleton = pg.GraphItem()
@@ -35,9 +35,6 @@ class SkeletonComponent(Component):
 
     def get_item(self):
         return self.skeleton
-
-    def hide(self):
-        self.skeleton.hide()
 
     def set_pos(self, skeleton_array):
         self.skeleton.setData(pos=skeleton_array)
