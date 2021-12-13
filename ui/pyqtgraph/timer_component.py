@@ -1,5 +1,5 @@
 
-from ui.component import Component
+from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
 
 

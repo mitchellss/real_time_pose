@@ -1,7 +1,7 @@
 
-from ui.component import Component
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
+from ui.pyqtgraph.component import Component
 
 class ButtonComponent(Component):
 

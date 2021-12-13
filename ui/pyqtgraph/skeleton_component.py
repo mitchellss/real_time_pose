@@ -1,5 +1,5 @@
 
-from ui.component import Component
+from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from pyqtgraph.functions import mkBrush, mkColor

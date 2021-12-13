@@ -1,27 +1,20 @@
-import pyqtgraph as pg
-import mediapipe as mp
-import random
+import subprocess
 import time
 
 import numpy as np
 import argparse
 import cv2
-from pyqtgraph.functions import mkBrush, mkColor
-from PyQt5.QtGui import QFont
 from activities.game.game import Game
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
 from data_logging.skeleton_points.point_logger import PointLogger
 from data_logging.video.video_logger import VideoLogger
-
+from pyqtgraph import QtCore
 from frame_input.realsense import Realsense
 
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
 from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.pyqtgraph import PyQtGraph
-from ui.pyqtgraph.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.timer_component import TimerComponent
-
 
 class TwoDimensionGame():
 
@@ -35,9 +28,6 @@ class TwoDimensionGame():
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
 
-        # Initialize graphs and labels for the user interface
-        self.init_ui()
-
         self.pose_detector = Blazepose()
 
         # Initialize realsense or webcam
@@ -45,6 +35,10 @@ class TwoDimensionGame():
             self.frame_input = Webcam()
         elif self.args.camera_type == "realsense":
             self.frame_input = Realsense()
+
+        subprocess.Popen(['python', 'play_demo.py', self.args.activity])
+        #self.d = Demo("jumping_jacks")
+        # d.play()
 
         # Init loggers
         self.loggers = []
@@ -55,6 +49,11 @@ class TwoDimensionGame():
             self.loggers.append(VideoLogger(f"{current_time}_{self.args.activity}",
                 frame_width=self.frame_input.get_frame_width(), 
                 frame_height=self.frame_input.get_frame_height()))
+
+
+    def start(self):
+        # Initialize graphs and labels for the user interface
+        self.init_ui()
 
         # Start processing images
         self.start_image_processing()
@@ -92,7 +91,7 @@ class TwoDimensionGame():
         self.activity.change_stage()
 
         # Set the function to call on update
-        self.timer = pg.QtCore.QTimer()
+        self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update)
         self.timer.start(50)
 
@@ -130,6 +129,7 @@ class TwoDimensionGame():
                 self.log_data()
                 
             cv2.imshow('MediaPipe Pose', self.image)
+            #cv2.imshow('Demo', self.d.get_image())
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
@@ -158,3 +158,4 @@ class TwoDimensionGame():
 
 if __name__ == "__main__":
     td = TwoDimensionGame()
+    td.start()
