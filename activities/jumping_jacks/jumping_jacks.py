@@ -9,7 +9,7 @@ import pyqtgraph as pg
 
 class JumpingJacks(Activity):
 
-    def __init__(self, body_point_array) -> None:
+    def __init__(self, body_point_array, **kwargs) -> None:
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
         self.persist["timer"] = TimerComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)

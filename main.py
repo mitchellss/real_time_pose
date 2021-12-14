@@ -1,11 +1,13 @@
 import subprocess
-import time
-
+import sys
 import numpy as np
 import argparse
 import cv2
+from activities.custom_activity.custom_activity import CustomActivity
 from activities.game.game import Game
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
+from activities.squat.squat import Squat
+from data_logging.logger import Logger
 from data_logging.skeleton_points.point_logger import PointLogger
 from data_logging.video.video_logger import VideoLogger
 from pyqtgraph import QtCore
@@ -14,6 +16,7 @@ from frame_input.realsense import Realsense
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
 from ui.pyqtgraph.button_component import ButtonComponent
+from ui.pyqtgraph.component import Component
 from ui.pyqtgraph.pyqtgraph import PyQtGraph
 
 class TwoDimensionGame():
@@ -41,12 +44,11 @@ class TwoDimensionGame():
         # d.play()
 
         # Init loggers
-        self.loggers = []
-        current_time = int(time.time())
+        self.loggers: list[Logger] = []
         if self.args.record_points:
-            self.loggers.append(PointLogger(f"{current_time}_{self.args.activity}"))
+            self.loggers.append(PointLogger(self.args.activity))
         if self.args.record_video:
-            self.loggers.append(VideoLogger(f"{current_time}_{self.args.activity}",
+            self.loggers.append(VideoLogger(self.args.activity,
                 frame_width=self.frame_input.get_frame_width(), 
                 frame_height=self.frame_input.get_frame_height()))
 
@@ -71,21 +73,36 @@ class TwoDimensionGame():
         self.gui = PyQtGraph()
         self.gui.new_gui()
 
+        funcs = {
+            "start_logging":    [logger.start_logging   for logger in self.loggers],
+            "stop_logging":     [logger.stop_logging    for logger in self.loggers],
+            "new_log":          [logger.new_log         for logger in self.loggers]
+        }
+
         if self.args.activity == "game":
-            self.activity = Game(self.body_point_array)
+            self.activity = Game(self.body_point_array, funcs=funcs)
         elif self.args.activity == "jumping_jacks":
-            self.activity = JumpingJacks(self.body_point_array)
+            self.activity = JumpingJacks(self.body_point_array, funcs=funcs)
+        elif self.args.activity == "squat":
+            self.activity = Squat(self.body_point_array, funcs=funcs)
+        elif self.args.activity == "custom":
+            self.activity = CustomActivity(self.body_point_array, funcs=funcs)
+        else:
+            print(f"Cannot find activity: {self.args.activity}")
+            sys.exit(1)
 
         self.persistant = self.activity.get_persist()
 
         # Adds all components
         for stage in self.activity.get_stages():
             for component in stage:
-                self.gui.add_component(stage[component])
-                stage[component].hide() # hides all components
+                if isinstance(stage[component], Component):
+                    self.gui.add_component(stage[component])
+                    stage[component].hide() # hides all components
 
         for component in self.persistant:
-            self.gui.add_component(self.persistant[component])
+            if isinstance(self.persistant[component], Component):
+                self.gui.add_component(self.persistant[component])
 
         # Call change activity initially to render components
         self.activity.change_stage()
@@ -125,7 +142,7 @@ class TwoDimensionGame():
                 # Choose to play the default game or a specified activity based on args
                 self.handle_activity()
 
-                # Record data points if flag is set
+                # log data
                 self.log_data()
                 
             cv2.imshow('MediaPipe Pose', self.image)

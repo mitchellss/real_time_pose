@@ -1,28 +1,32 @@
 
+from typing import Dict
+from ui.pyqtgraph.component import Component
+
+
 class Activity():
 
-    def __init__(self, body_point_array) -> None:
+    def __init__(self, body_point_array, **kwargs) -> None:
         pass
 
-    def get_stages(self) -> list:
+    def get_stages(self) -> list[Dict[str, Component]]:
         return self.stages
 
-    def get_persist(self) -> dict:
+    def get_persist(self) -> Dict[str, Component]:
         return self.persist
 
     def get_current_stage(self) -> int:
         return self.stage
 
-    def set_current_stage(self, stage) -> None:
+    def set_current_stage(self, stage: int) -> None:
         self.stage = stage
 
-    def get_components(self):
+    def get_components(self) -> Dict[str, Component]:
         return self.components
 
-    def set_components(self, components):
+    def set_components(self, components: Dict[str, Component]) -> None:
         self.components = components
 
-    def change_stage(self):
+    def change_stage(self) -> None:
         # Hides old components
         for component in self.components:
             self.components[component].hide()
