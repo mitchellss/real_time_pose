@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 
 class Webcam(FrameInput):
+    """FrameInput implementation representing a video capture 0 webcam"""
 
     def __init__(self) -> None:
         self.cap = cv2.VideoCapture(0)

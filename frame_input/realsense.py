@@ -3,6 +3,7 @@ import pyrealsense2 as rs
 import numpy as np
 
 class Realsense(FrameInput):
+    """FrameInput implementation representing an intel realsense camera"""
 
     def __init__(self) -> None:
         # Configure depth and color streams 
