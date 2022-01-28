@@ -1,5 +1,8 @@
 
 class Component():
+    """
+    Abstract representation of a PyQtGraph component, exposing only necessary methods
+    """
 
     def set_pos(self, x_pos, y_pos):
         pass

@@ -195,8 +195,8 @@ class TwoDimensionGame():
         for component in self.activity.get_components(): # For each component in the dict of active components
             if isinstance(self.activity.get_components()[component], ButtonComponent): # If it is a button
                 for target in self.activity.get_components()[component].target_pts: # Check to see if each of the target points on the skeleton have touched the button
-                    x = self.persistant["skeleton"].skeleton_array[target][0]
-                    y = self.persistant["skeleton"].skeleton_array[target][1]
+                    x: float = self.persistant["skeleton"].skeleton_array[target][0]
+                    y: float = self.persistant["skeleton"].skeleton_array[target][1]
                     
                     if self.activity.get_components()[component].is_clicked(x, y, self.activity.get_components()[component].precision):
                         break # Stops rest of for loop from running (caused errors)    
