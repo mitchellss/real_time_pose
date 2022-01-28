@@ -10,7 +10,8 @@ import random
 
 class Game(Activity):
 
-    def __init__(self, body_point_array) -> None:
+    def __init__(self, body_point_array, **kwargs) -> None:
+        super().__init__(body_point_array, **kwargs)
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
         self.persist["timer"] = TimerComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
@@ -25,20 +26,29 @@ class Game(Activity):
         self.stages = [stage_0, stage_1]
         self.stage = 0
 
-        self.components = self.stages[0]
+        self.components = self.stages[self.stage]
 
-    def time_expire_func(self):
+    def time_expire_func(self) -> None:
         self.stage = 0
         self.change_stage()
+        if "stop_logging" in self.funcs:
+            for func in self.funcs["stop_logging"]:
+                func()
     
-    def target_1_func(self):
+    def target_1_func(self) -> None:
         self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
 
-    def target_2_func(self):
+    def target_2_func(self) -> None:
         self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
 
-    def start_button_func(self):
+    def start_button_func(self) -> None:
         if self.stage == 0:
             self.persist["timer"].set_timer(10)
             self.stage = self.stage + 1
+            if "new_log" in self.funcs:
+                for func in self.funcs["new_log"]:
+                    func()
+            if "start_logging" in self.funcs:
+                for func in self.funcs["start_logging"]:
+                    func()
             self.change_stage()

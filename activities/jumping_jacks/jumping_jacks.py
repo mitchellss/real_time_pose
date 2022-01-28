@@ -9,7 +9,8 @@ import pyqtgraph as pg
 
 class JumpingJacks(Activity):
 
-    def __init__(self, body_point_array) -> None:
+    def __init__(self, body_point_array, **kwargs) -> None:
+        super().__init__(body_point_array, **kwargs)
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
         self.persist["timer"] = TimerComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
@@ -34,6 +35,11 @@ class JumpingJacks(Activity):
     def time_expire_func(self):
         self.stage = 0
         self.change_stage()
+
+        if "stop_logging" in self.funcs:
+            for func in self.funcs["stop_logging"]:
+                func()
+
         self.lh_points_file.close()
         self.rh_points_file.close()
     
@@ -62,4 +68,12 @@ class JumpingJacks(Activity):
 
             self.persist["timer"].set_timer(10)
             self.stage = self.stage + 1
+
+            if "new_log" in self.funcs:
+                for func in self.funcs["new_log"]:
+                    func()
+            if "start_logging" in self.funcs:
+                for func in self.funcs["start_logging"]:
+                    func()
+
             self.change_stage()

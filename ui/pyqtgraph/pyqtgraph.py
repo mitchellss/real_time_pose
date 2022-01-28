@@ -3,6 +3,10 @@ from ui.gui import GUI
 
 
 class PyQtGraph(GUI):
+    """
+    PyQtGraph implementation of the abstract GUI interface.
+    Takes custom pyqtgraph elements as components.
+    """
 
     def new_gui(self) -> None:
         self.win = pg.GraphicsLayoutWidget(show=True)
