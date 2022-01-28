@@ -198,7 +198,7 @@ class TwoDimensionGame():
                     x = self.persistant["skeleton"].skeleton_array[target][0]
                     y = self.persistant["skeleton"].skeleton_array[target][1]
                     
-                    if self.activity.get_components()[component].is_clicked(x, y, 0.2):
+                    if self.activity.get_components()[component].is_clicked(x, y, self.activity.get_components()[component].precision):
                         break # Stops rest of for loop from running (caused errors)    
 
         self.activity.end_frame_reset()        

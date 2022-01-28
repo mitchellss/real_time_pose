@@ -29,25 +29,34 @@ class CustomActivity(Activity):
 
         self.lh_x_data = points_data["x15"]
         self.lh_y_data = points_data["y15"]
-        self.lh_index = 0
 
         self.rh_x_data = points_data["x16"]
         self.rh_y_data = points_data["y16"]
-        self.rh_index = 0
 
         self.ll_x_data = points_data["x27"]
         self.ll_y_data = points_data["y27"]
-        self.ll_index = 0
 
         self.rl_x_data = points_data["x28"]
         self.rl_y_data = points_data["y28"]
-        self.rl_index = 0
+        
+        self.index = 0
 
         stage_1 = {}
-        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120), float(self.lh_x_data[self.lh_index]), float(self.lh_y_data[self.lh_index]), func=self.target_1_func, target_pts=[15])
-        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120), float(self.rh_x_data[self.rh_index]), float(self.rh_y_data[self.rh_index]), func=self.target_2_func, target_pts=[16])
-        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120), float(self.ll_x_data[self.ll_index]), float(self.ll_y_data[self.ll_index]), func=self.target_3_func, target_pts=[27])
-        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120), float(self.rl_x_data[self.rl_index]), float(self.rl_y_data[self.rl_index]), func=self.target_4_func, target_pts=[28])
+        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120), 
+            float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]), 
+            func=self.target_1_func, target_pts=[15], precision=0.3)
+
+        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120), 
+            float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]), 
+            func=self.target_2_func, target_pts=[16], precision=0.3)
+
+        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120), 
+            float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]), 
+            func=self.target_3_func, target_pts=[27], precision=0.3)
+
+        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120), 
+            float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]), 
+            func=self.target_4_func, target_pts=[28], precision=0.3)
 
         if "funcs" in kwargs:
             self.funcs = kwargs["funcs"]
@@ -59,67 +68,50 @@ class CustomActivity(Activity):
         self.stage = 0
 
         self.components = self.stages[self.stage]
-        self.target_1_clicked = False
-        self.target_2_clicked = False
-        self.target_3_clicked = False
-        self.target_4_clicked = False
 
     def time_expire_func(self) -> None:
         self.stage = 0
-        self.lh_index = 0
-        self.rh_index = 0
+        self.index = 0
         self.change_stage()
         if "stop_logging" in self.funcs:
             for func in self.funcs["stop_logging"]:
                 func()
     
     def target_1_func(self) -> None:
-        self.target_1_clicked = True
-        if self.target_2_clicked and self.target_3_clicked and self.target_4_clicked:
-            self.lh_index += 1
-            self.rh_index += 1
-            self.ll_index += 1
-            self.rl_index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.lh_index]), float(self.lh_y_data[self.lh_index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.rh_index]), float(self.rh_y_data[self.rh_index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.ll_index]), float(self.ll_y_data[self.ll_index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.rl_index]), float(self.rl_y_data[self.rl_index]))
+        self.stages[1]["target_1"].clicked = True
+        if self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
+            self.index += 1
+            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
+            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
+            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
+            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
 
     def target_2_func(self) -> None:
-        self.target_2_clicked = True
-        if self.target_1_clicked and self.target_3_clicked and self.target_4_clicked:
-            self.lh_index += 1
-            self.rh_index += 1
-            self.ll_index += 1
-            self.rl_index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.lh_index]), float(self.lh_y_data[self.lh_index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.rh_index]), float(self.rh_y_data[self.rh_index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.ll_index]), float(self.ll_y_data[self.ll_index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.rl_index]), float(self.rl_y_data[self.rl_index]))
+        self.stages[1]["target_2"].clicked = True
+        if self.stages[1]["target_1"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
+            self.index += 1
+            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
+            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
+            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
+            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
 
     def target_3_func(self) -> None:
-        self.target_3_clicked = True
-        if self.target_1_clicked and self.target_2_clicked and self.target_4_clicked:
-            self.lh_index += 1
-            self.rh_index += 1
-            self.ll_index += 1
-            self.rl_index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.lh_index]), float(self.lh_y_data[self.lh_index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.rh_index]), float(self.rh_y_data[self.rh_index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.ll_index]), float(self.ll_y_data[self.ll_index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.rl_index]), float(self.rl_y_data[self.rl_index]))
+        self.stages[1]["target_3"].clicked = True
+        if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_4"].clicked:
+            self.index += 1
+            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
+            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
+            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
+            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
 
     def target_4_func(self) -> None:
-        self.target_4_clicked = True
-        if self.target_1_clicked and self.target_2_clicked and self.target_3_clicked:
-            self.lh_index += 1
-            self.rh_index += 1
-            self.ll_index += 1
-            self.rl_index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.lh_index]), float(self.lh_y_data[self.lh_index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.rh_index]), float(self.rh_y_data[self.rh_index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.ll_index]), float(self.ll_y_data[self.ll_index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.rl_index]), float(self.rl_y_data[self.rl_index]))
+        self.stages[1]["target_4"].clicked = True
+        if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked:
+            self.index += 1
+            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
+            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
+            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
+            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
 
     def start_button_func(self) -> None:
         if self.stage == 0:
@@ -134,7 +126,7 @@ class CustomActivity(Activity):
             self.change_stage()
 
     def end_frame_reset(self) -> None:
-        self.target_1_clicked = False
-        self.target_2_clicked = False
-        self.target_3_clicked = False
-        self.target_4_clicked = False
+        self.stages[1]["target_1"].clicked = False
+        self.stages[1]["target_2"].clicked = False
+        self.stages[1]["target_3"].clicked = False
+        self.stages[1]["target_4"].clicked = False

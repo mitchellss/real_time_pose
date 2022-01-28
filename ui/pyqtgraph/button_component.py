@@ -5,11 +5,13 @@ from ui.pyqtgraph.component import Component
 
 class ButtonComponent(Component):
 
-    def __init__(self, size: int, brush: QtGui.QBrush, x_pos: float, y_pos: float, **kwargs) -> None:
+    def __init__(self, size: int, brush: QtGui.QBrush, x_pos: float, y_pos: float, precision: float = 0.2, **kwargs) -> None:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.button = pg.ScatterPlotItem(size=size, brush=brush)
         self.button.setData(pos=[[x_pos,y_pos]])
+        self.precision: float = precision
+        self.clicked: bool = False
 
         self.func = lambda : True
         if "func" in kwargs:
