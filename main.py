@@ -103,7 +103,7 @@ class TwoDimensionGame():
             self.activity = JumpingJacks(self.body_point_array, funcs=funcs)
         elif self.args.activity == "squat":
             self.activity = Squat(self.body_point_array, funcs=funcs)
-        elif self.args.activity == "custom":
+        elif self.args.activity == "custom_activity":
             self.activity = CustomActivity(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
@@ -198,8 +198,10 @@ class TwoDimensionGame():
                     x = self.persistant["skeleton"].skeleton_array[target][0]
                     y = self.persistant["skeleton"].skeleton_array[target][1]
                     
-                    if self.activity.get_components()[component].is_clicked(x, y, 0.1):
-                        break # Stops rest of for loop from running (caused errors)            
+                    if self.activity.get_components()[component].is_clicked(x, y, 0.2):
+                        break # Stops rest of for loop from running (caused errors)    
+
+        self.activity.end_frame_reset()        
 
     def log_data(self):
         """Calls the log method on any instantiated loggers"""

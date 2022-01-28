@@ -6,7 +6,10 @@ from ui.pyqtgraph.component import Component
 class Activity():
 
     def __init__(self, body_point_array, **kwargs) -> None:
-        pass
+        if "funcs" in kwargs:
+            self.funcs = kwargs["funcs"]
+        else:
+            self.funcs = {}
 
     def get_stages(self) -> list[Dict[str, Component]]:
         return self.stages
@@ -37,3 +40,6 @@ class Activity():
         # Shows new components
         for component in self.components:
             self.components[component].show()
+
+    def end_frame_reset(self) -> None:
+        pass
