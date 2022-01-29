@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 import cv2
 from activities.custom_activity.custom_activity import CustomActivity
+from activities.custom_activity_dynamic.custom_activity_dynamic import CustomActivityDynamic
 from activities.game.game import Game
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
 from activities.squat.squat import Squat
@@ -12,6 +13,7 @@ from data_logging.skeleton_points.point_logger import PointLogger
 from data_logging.video.video_logger import VideoLogger
 from pyqtgraph import QtCore
 from frame_input.realsense import Realsense
+from frame_input.video_file_input import VideoFileInput
 
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
@@ -42,8 +44,11 @@ class TwoDimensionGame():
             self.frame_input = Webcam()
         elif self.args.camera_type == "realsense":
             self.frame_input = Realsense()
+        elif self.args.camera_type == "video":
+            self.frame_input = VideoFileInput(self.args.video_file)
 
-        subprocess.Popen(['python', 'play_demo.py', self.args.activity])
+        if not self.args.hide_demo:
+            subprocess.Popen(['python', 'play_demo.py', self.args.activity])
 
         # Init loggers
         self.loggers: list[Logger] = []
@@ -65,11 +70,14 @@ class TwoDimensionGame():
     def arg_parse(self):
         """Parses the arguments given to the program"""
         parser = argparse.ArgumentParser()
-        parser.add_argument("camera_type", choices=["webcam", "realsense"], help="The camera type to be used")
+        parser.add_argument("camera_type", choices=["webcam", "realsense", "video"], help="The input type to be used")
         parser.add_argument("--record_points", action="store_true", help="Record point data")
         parser.add_argument("--record_video", action="store_true", help="Record video data")
         parser.add_argument("--activity", nargs="?", const="game", default="game", help="Activity to be recorded, default is game")
         parser.add_argument("--file", nargs="?", const=".", default=".", help="Path to the file to be used as the activity")
+        parser.add_argument("--video_file", nargs="?", const=".", default=".", help="Path to video to use as input")
+        parser.add_argument("--hide_video", action="store_true", help="Set to hide real-time video playback")
+        parser.add_argument("--hide_demo", action="store_true", help="Set to hide demo video")
         self.args = parser.parse_args()
 
     def init_ui(self):
@@ -105,6 +113,8 @@ class TwoDimensionGame():
             self.activity = Squat(self.body_point_array, funcs=funcs)
         elif self.args.activity == "custom_activity":
             self.activity = CustomActivity(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "custom_activity_dynamic":
+            self.activity = CustomActivityDynamic(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
@@ -174,8 +184,10 @@ class TwoDimensionGame():
 
                 # log data
                 self.log_data()
-                
-            cv2.imshow('MediaPipe Pose', self.image)
+
+            if not self.args.hide_video:
+                cv2.imshow('MediaPipe Pose', self.image)
+            
             #cv2.imshow('Demo', self.d.get_image())
             if cv2.waitKey(5) & 0xFF == 27:
                 break
@@ -193,8 +205,10 @@ class TwoDimensionGame():
         of the specified conditions have been met.
         """
         for component in self.activity.get_components(): # For each component in the dict of active components
-            if isinstance(self.activity.get_components()[component], ButtonComponent): # If it is a button
-                for target in self.activity.get_components()[component].target_pts: # Check to see if each of the target points on the skeleton have touched the button
+            # Handles the logic for buttons
+            if isinstance(self.activity.get_components()[component], ButtonComponent):
+                # Check to see if each of the target points on the skeleton are touching the button
+                for target in self.activity.get_components()[component].target_pts:
                     x: float = self.persistant["skeleton"].skeleton_array[target][0]
                     y: float = self.persistant["skeleton"].skeleton_array[target][1]
                     

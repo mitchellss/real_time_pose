@@ -69,3 +69,6 @@ class ButtonComponent(Component):
             return True
         else:
             return False
+
+    def change_color(self, brush: QtGui.QBrush) -> None:
+        self.button.setBrush(brush)

@@ -8,7 +8,7 @@ from constants.constants import PATH
 import sys
 import pandas as pd
 
-class CustomActivity(Activity):
+class CustomActivityDynamic(Activity):
     """Activity that takes a custom file as the input and replays it for the user to replicate.
 
     Args:
@@ -82,57 +82,32 @@ class CustomActivity(Activity):
         self.stages = [stage_0, stage_1]
         self.stage = 0
 
-        # # Use this to start at stage 1
-        # self.stage = 1
-        # self.persist["timer"].set_timer(100)
-
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
 
     def time_expire_func(self) -> None:
-        if self.stage != 0:
-            self.stage = 0
-            self.index = 0
-            self.change_stage()
-            if "stop_logging" in self.funcs:
-                for func in self.funcs["stop_logging"]:
-                    func()
+        self.stage = 0
+        self.index = 0
+        self.change_stage()
+        if "stop_logging" in self.funcs:
+            for func in self.funcs["stop_logging"]:
+                func()
     
     def target_1_func(self) -> None:
         self.stages[1]["target_1"].clicked = True
-        if self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
-            self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+        self.stages[1]["target_1"].change_color(mkBrush(0, 255, 0, 120))
 
     def target_2_func(self) -> None:
         self.stages[1]["target_2"].clicked = True
-        if self.stages[1]["target_1"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
-            self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+        self.stages[1]["target_2"].change_color(mkBrush(0, 255, 0, 120))
 
     def target_3_func(self) -> None:
         self.stages[1]["target_3"].clicked = True
-        if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_4"].clicked:
-            self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+        self.stages[1]["target_3"].change_color(mkBrush(0, 255, 0, 120))
 
     def target_4_func(self) -> None:
         self.stages[1]["target_4"].clicked = True
-        if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked:
-            self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+        self.stages[1]["target_4"].change_color(mkBrush(0, 255, 0, 120))
 
     def start_button_func(self) -> None:
         """
@@ -156,7 +131,25 @@ class CustomActivity(Activity):
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.
         """
+        if not self.stages[1]["target_1"].clicked:
+            self.stages[1]["target_1"].change_color(mkBrush(255, 0, 0, 120))
+        if not self.stages[1]["target_2"].clicked:
+            self.stages[1]["target_2"].change_color(mkBrush(255, 0, 0, 120))
+        if not self.stages[1]["target_3"].clicked:
+            self.stages[1]["target_3"].change_color(mkBrush(255, 0, 0, 120))
+        if not self.stages[1]["target_4"].clicked:
+            self.stages[1]["target_4"].change_color(mkBrush(255, 0, 0, 120))
+        
         self.stages[1]["target_1"].clicked = False
         self.stages[1]["target_2"].clicked = False
         self.stages[1]["target_3"].clicked = False
         self.stages[1]["target_4"].clicked = False
+
+        self.index += 1
+        self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
+        self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
+        self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
+        self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+
+
+
