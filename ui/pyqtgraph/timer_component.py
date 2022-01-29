@@ -24,18 +24,18 @@ class TimerComponent(Component):
         else:
             self.func = lambda : True
 
-    def set_pos(self, x_pos, y_pos):
+    def set_pos(self, x_pos: float, y_pos: float) -> None:
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.timer.SetPos(x_pos, y_pos)
 
-    def get_item(self):
+    def get_item(self) -> pg.TextItem:
         return self.timer
 
-    def set_timer(self, time: float):
+    def set_timer(self, time: float) -> None:
         self.time = time
 
-    def tick(self):
+    def tick(self) -> None:
         if self.time > 0:
             self.time -= 0.05
             self.timer.setText(text=f"Time: {round(self.time, 1)}")
@@ -43,8 +43,8 @@ class TimerComponent(Component):
             self.time = 0
             self.time_expire()
 
-    def get_time(self):
+    def get_time(self) -> float:
         return self.time
 
-    def time_expire(self):
+    def time_expire(self) -> None:
         self.func()
