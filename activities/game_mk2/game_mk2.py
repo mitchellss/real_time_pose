@@ -149,7 +149,7 @@ class GameMkII(Activity):
     def change_letter(self, letter_num, amount):
         self.letter_index[letter_num] = (self.letter_index[letter_num] + amount) % len(LETTER_SELECT)
         for i in range(0,4): 
-            self.stages[self.NAME_STAGE][f"name_label_{i}"].set_text(self.LETTER_SELECT[self.letter_index[i]])
+            self.stages[self.NAME_STAGE][f"name_label_{i}"].set_text(LETTER_SELECT[self.letter_index[i]])
 
     def submit_score_func(self):
         self.stage = 0
