@@ -136,7 +136,7 @@ class CustomActivityDynamic(Activity):
                     func()
             self.change_stage()
 
-    def end_frame_reset(self) -> None:
+    def handle_frame(self) -> None:
         """
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.

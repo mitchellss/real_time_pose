@@ -183,8 +183,8 @@ class TwoDimensionGame():
                 landmarks = blaze_pose_coords.landmark
                 self.update_point_and_connection_data(landmarks)
 
-                # Choose to play the default game or a specified activity based on args
-                self.handle_activity()
+                # Handles the activity's logic at the end of a frame
+                self.activity.handle_frame()
 
                 # log data
                 self.log_data()
@@ -202,24 +202,6 @@ class TwoDimensionGame():
         for landmark in range(0,len(landmarks)):
             self.body_point_array[landmark][0] = landmarks[landmark].x
             self.body_point_array[landmark][1] = landmarks[landmark].y
-
-    def handle_activity(self):
-        """
-        Loops over all the components in the current stage and checks to see if any
-        of the specified conditions have been met.
-        """
-        for component in self.activity.get_components(): # For each component in the dict of active components
-            # Handles the logic for buttons
-            if isinstance(self.activity.get_components()[component], ButtonComponent):
-                # Check to see if each of the target points on the skeleton are touching the button
-                for target in self.activity.get_components()[component].target_pts:
-                    x: float = self.persistant[SKELETON].skeleton_array[target][0]
-                    y: float = self.persistant[SKELETON].skeleton_array[target][1]
-                    
-                    if self.activity.get_components()[component].is_clicked(x, y, self.activity.get_components()[component].precision):
-                        break # Stops rest of for loop from running (caused errors)    
-
-        self.activity.end_frame_reset()        
 
     def log_data(self):
         """Calls the log method on any instantiated loggers"""

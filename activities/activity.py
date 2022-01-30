@@ -1,7 +1,8 @@
 
 from typing import Dict
+from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.component import Component
-
+from constants.constants import *
 
 class Activity():
 
@@ -41,5 +42,19 @@ class Activity():
         for component in self.components:
             self.components[component].show()
 
-    def end_frame_reset(self) -> None:
-        pass
+    def handle_frame(self) -> None:
+        """
+        Defines the generic functionality of commonly used components. Override
+        this method for complete custom functionality or call it and add to it in 
+        the child class's method
+        """
+        for component in self.components: # For each component in the dict of active components
+            # Handles the logic for buttons
+            if isinstance(self.components[component], ButtonComponent):
+                # Check to see if each of the target points on the skeleton are touching the button
+                for target in self.components[component].target_pts:
+                    x: float = self.persist[SKELETON].skeleton_array[target][0]
+                    y: float = self.persist[SKELETON].skeleton_array[target][1]
+                    
+                    if self.components[component].is_clicked(x, y, self.components[component].precision):
+                        break # Stops rest of for loop from running (caused errors)    
