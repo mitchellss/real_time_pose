@@ -20,6 +20,7 @@ from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
 from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.pyqtgraph import PyQtGraph
+from constants.constants import *
 
 class TwoDimensionGame():
     """
@@ -101,9 +102,9 @@ class TwoDimensionGame():
         # very specific activity classes (as intended) but very general logging
         # classes.
         funcs = {
-            "start_logging":    [logger.start_logging   for logger in self.loggers],
-            "stop_logging":     [logger.stop_logging    for logger in self.loggers],
-            "new_log":          [logger.new_log         for logger in self.loggers]
+            START_LOGGING:    [logger.start_logging   for logger in self.loggers],
+            STOP_LOGGING:     [logger.stop_logging    for logger in self.loggers],
+            NEW_LOG:          [logger.new_log         for logger in self.loggers]
         }
 
         if self.args.activity == "game":
@@ -148,8 +149,8 @@ class TwoDimensionGame():
         Updates the position of the skeleton component and
         the time on the timer
         """
-        self.persistant["skeleton"].set_pos(self.body_point_array)
-        self.persistant["timer"].tick()
+        self.persistant[SKELETON].set_pos(self.body_point_array)
+        self.persistant[TIMER].tick()
 
     def start_image_processing(self):
         """
@@ -212,8 +213,8 @@ class TwoDimensionGame():
             if isinstance(self.activity.get_components()[component], ButtonComponent):
                 # Check to see if each of the target points on the skeleton are touching the button
                 for target in self.activity.get_components()[component].target_pts:
-                    x: float = self.persistant["skeleton"].skeleton_array[target][0]
-                    y: float = self.persistant["skeleton"].skeleton_array[target][1]
+                    x: float = self.persistant[SKELETON].skeleton_array[target][0]
+                    y: float = self.persistant[SKELETON].skeleton_array[target][1]
                     
                     if self.activity.get_components()[component].is_clicked(x, y, self.activity.get_components()[component].precision):
                         break # Stops rest of for loop from running (caused errors)    
