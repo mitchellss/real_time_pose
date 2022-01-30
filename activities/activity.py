@@ -3,6 +3,7 @@ from typing import Dict
 from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.component import Component
 from constants.constants import *
+from ui.pyqtgraph.hand_bubble_component import HandBubbleComponent
 
 class Activity():
 
@@ -57,4 +58,10 @@ class Activity():
                     y: float = self.persist[SKELETON].skeleton_array[target][1]
                     
                     if self.components[component].is_clicked(x, y, self.components[component].precision):
-                        break # Stops rest of for loop from running (caused errors)    
+                        break # Stops rest of for loop from running (caused errors) 
+
+            if isinstance(self.components[component], HandBubbleComponent):
+                target = self.components[component].target
+                x: float = self.persist[SKELETON].skeleton_array[target][0]
+                y: float = self.persist[SKELETON].skeleton_array[target][1]
+                self.components[component].set_pos(x,y)

@@ -1,6 +1,7 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
 from ui.pyqtgraph.button_component import ButtonComponent
+from ui.pyqtgraph.hand_bubble_component import HandBubbleComponent
 from ui.pyqtgraph.live_score_component import LiveScoreComponent
 from ui.pyqtgraph.skeleton_component import SkeletonComponent
 from ui.pyqtgraph.text_component import TextComponent
@@ -9,7 +10,6 @@ from PyQt5.QtGui import QFont
 from constants.constants import *
 import sys
 import pandas as pd
-import pathlib
 
 class GameMkII(Activity):
     """Second version of the original game. Buttons move around and players have
@@ -73,21 +73,30 @@ class GameMkII(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1[TARGET_0] = ButtonComponent(50, mkBrush(255, 0, 0, 120), 
+        stage_1[TARGET_0] = ButtonComponent(50, mkBrush(255, 0, 0, 60), 
             float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]), 
             func=self.target_1_func, target_pts=[15], precision=0.1)
 
-        stage_1[TARGET_1] = ButtonComponent(50, mkBrush(0, 0, 255, 120), 
+        stage_1[TARGET_1] = ButtonComponent(50, mkBrush(0, 0, 255, 60), 
             float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]), 
             func=self.target_2_func, target_pts=[16], precision=0.1)
 
-        stage_1[TARGET_2] = ButtonComponent(50, mkBrush(100, 100, 0, 120), 
+        stage_1[TARGET_2] = ButtonComponent(50, mkBrush(255, 255, 0, 60), 
             float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]), 
             func=self.target_3_func, target_pts=[27], precision=0.1)
 
-        stage_1[TARGET_3] = ButtonComponent(50, mkBrush(0, 100, 100, 120), 
+        stage_1[TARGET_3] = ButtonComponent(50, mkBrush(0, 255, 255, 60), 
             float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]), 
             func=self.target_4_func, target_pts=[28], precision=0.1)
+
+        stage_1["bubble_1"] = HandBubbleComponent(40, mkBrush(255, 0, 0, 120),
+            0,0,15)
+        stage_1["bubble_2"] = HandBubbleComponent(40, mkBrush(0, 0, 255, 120),
+            0,0,16)
+        stage_1["bubble_3"] = HandBubbleComponent(40, mkBrush(255, 255, 0, 120),
+            0,0,27)
+        stage_1["bubble_4"] = HandBubbleComponent(40, mkBrush(0, 255, 255, 120),
+            0,0,28)
 
         horz_starting_pt = -0.4
         spacing = 0.25
@@ -161,22 +170,22 @@ class GameMkII(Activity):
     
     def target_1_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(0, 255, 0, 120))
+        self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 120))
         self.persist[LIVE_SCORE].add_score(1)
 
     def target_2_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(0, 255, 0, 120))
+        self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(0, 0, 255, 120))
         self.persist[LIVE_SCORE].add_score(1)
 
     def target_3_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_2].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(0, 255, 0, 120))
+        self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(255, 255, 0, 120))
         self.persist[LIVE_SCORE].add_score(1)
 
     def target_4_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(0, 255, 0, 120))
+        self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(0, 255, 255, 120))
         self.persist[LIVE_SCORE].add_score(1)
 
     def start_button_func(self) -> None:
@@ -203,13 +212,13 @@ class GameMkII(Activity):
         super().handle_frame()
 
         if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 120))
+            self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_1].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(255, 0, 0, 120))
+            self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(0, 0, 255, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_2].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(255, 0, 0, 120))
+            self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(255, 255, 0, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_3].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(255, 0, 0, 120))
+            self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(0, 255, 255, 60))
         
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = False
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = False

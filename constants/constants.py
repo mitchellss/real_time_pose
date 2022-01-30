@@ -1,5 +1,4 @@
 import pathlib
-from threading import Timer
 
 PATH = pathlib.Path(__file__).parent.parent.resolve()
 TARGET_0 = "target_0"
