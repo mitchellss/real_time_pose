@@ -1,9 +1,11 @@
 
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtCore, QtGui
-from ui.pyqtgraph.component import Component
+from pyqtgraph.functions import mkBrush
 
-class ButtonComponent(Component):
+from ui.components.button_component import ButtonComponent
+
+
+class PyQtGraphButton(ButtonComponent):
     """
     PyQtGraph implementation of a button. Can be programmed to do abstract tasks
     when clicked.
@@ -12,24 +14,23 @@ class ButtonComponent(Component):
         Component ([type]): Abstract component
     """
 
-    def __init__(self, size: int, brush: QtGui.QBrush, x_pos: float, y_pos: float, precision: float = 0.2, **kwargs) -> None:
+    def __init__(self, size: int, color: tuple[int, int, int, int], x_pos: float, y_pos: float, precision: float = 0.2, **kwargs) -> None:
         """Initializes a button
 
         Args:
             size (int): Size of the button to be created
             brush (QtGui.QBrush): Brush used to draw the button
             x_pos (float): Starting X position of the button
-            y_pos (float): Starting Y postiion of the button
+            y_pos (float): Starting Y position of the button
             precision (float, optional): How close the user needs to get to the button to actuate. Defaults to 0.2.
         """
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        super().__init__(size, color, x_pos, y_pos, precision, **kwargs)
+        brush = mkBrush(color[0], color[1], color[2], color[3])
         self.button = pg.ScatterPlotItem(size=size, brush=brush)
         self.button.setData(pos=[[x_pos,y_pos]])
-        self.precision: float = precision
         self.clicked: bool = False
 
-        self.func = lambda : True
+        self.func = lambda: True
         if "func" in kwargs:
             self.func = kwargs["func"]
         
@@ -40,6 +41,12 @@ class ButtonComponent(Component):
 
     def get_item(self):
         return self.button
+
+    def hide(self) -> None:
+        self.get_item().hide()
+
+    def show(self) -> None:
+        self.get_item().show()
 
     def set_pos(self, x_pos: float, y_pos: float):
         """Sets the position of the button on the canvas
@@ -70,5 +77,5 @@ class ButtonComponent(Component):
         else:
             return False
 
-    def change_color(self, brush: QtGui.QBrush) -> None:
-        self.button.setBrush(brush)
+    def change_color(self, color: tuple[int, int, int, int]) -> None:
+        self.button.setBrush(mkBrush(color[0], color[1], color[2], color[3]))

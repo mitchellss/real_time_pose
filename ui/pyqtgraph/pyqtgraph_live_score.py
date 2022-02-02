@@ -1,7 +1,8 @@
-from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
+from ui.ui_component import UIComponent
 
-class LiveScoreComponent(Component):
+
+class LiveScoreUIComponent(UIComponent):
     """Component used to create a text score counter that can
     be updated in real-time
 
@@ -38,3 +39,9 @@ class LiveScoreComponent(Component):
 
     def get_score(self) -> int:
         return self.score
+
+    def hide(self) -> None:
+        self.get_item().hide()
+
+    def show(self) -> None:
+        self.get_item().show()

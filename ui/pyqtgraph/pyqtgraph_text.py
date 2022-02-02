@@ -1,8 +1,8 @@
-
-from ui.pyqtgraph.component import Component
+from ui.ui_component import UIComponent
 import pyqtgraph as pg
 
-class TextComponent(Component):
+
+class TextUIComponent(UIComponent):
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
         self.x_pos = x_pos

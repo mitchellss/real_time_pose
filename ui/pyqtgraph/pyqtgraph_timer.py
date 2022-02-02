@@ -1,9 +1,9 @@
 
-from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
+from ui.ui_component import UIComponent
 
 
-class TimerComponent(Component):
+class TimerUIComponent(UIComponent):
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
         self.x_pos = x_pos

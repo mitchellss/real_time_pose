@@ -1,10 +1,9 @@
-
-from ui.pyqtgraph.component import Component
+from ui.ui_component import UIComponent
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 
 
-class HandBubbleComponent(Component):
+class HandBubbleUIComponent(UIComponent):
 
     def __init__(self, size: int, brush: QtGui.QBrush, x_pos: float, y_pos: float, target: int, **kwargs) -> None:
         self.bubble = pg.ScatterPlotItem(size=size, brush=brush)
@@ -24,4 +23,10 @@ class HandBubbleComponent(Component):
     
     def get_item(self):
         return self.bubble
+
+    def hide(self) -> None:
+        self.get_item().hide()
+
+    def show(self) -> None:
+        self.get_item().show()
     

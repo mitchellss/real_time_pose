@@ -1,11 +1,13 @@
 
-from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from pyqtgraph.functions import mkBrush, mkColor
 import numpy as np
 
-class SkeletonComponent(Component):
+from ui.ui_component import UIComponent
+
+
+class SkeletonComponent(UIComponent):
 
     # Where to connect limbs. Refer to here 
     # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
@@ -38,3 +40,9 @@ class SkeletonComponent(Component):
 
     def set_pos(self, skeleton_array):
         self.skeleton.setData(pos=skeleton_array)
+
+    def hide(self) -> None:
+        self.get_item().hide()
+
+    def show(self) -> None:
+        self.get_item().show()

@@ -1,15 +1,16 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
-from ui.pyqtgraph.button_component import ButtonComponent
-from ui.pyqtgraph.hand_bubble_component import HandBubbleComponent
-from ui.pyqtgraph.live_score_component import LiveScoreComponent
-from ui.pyqtgraph.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.text_component import TextComponent
-from ui.pyqtgraph.timer_component import TimerComponent
+from ui.components.button_component import ButtonComponent
+from ui.pyqtgraph.pyqtgraph_hand_bubble import HandBubbleUIComponent
+from ui.pyqtgraph.pyqtgraph_live_score import LiveScoreUIComponent
+from ui.components.skeleton_component import SkeletonComponent
+from ui.pyqtgraph.pyqtgraph_text import TextUIComponent
+from ui.pyqtgraph.pyqtgraph_timer import TimerUIComponent
 from PyQt5.QtGui import QFont
 from constants.constants import *
 import sys
 import pandas as pd
+
 
 class GameMkII(Activity):
     """Second version of the original game. Buttons move around and players have
@@ -28,8 +29,8 @@ class GameMkII(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist[SKELETON] = SkeletonComponent(body_point_array)
-        self.persist[TIMER] = TimerComponent(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = LiveScoreComponent(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[TIMER] = TimerUIComponent(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = LiveScoreUIComponent(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
@@ -73,30 +74,30 @@ class GameMkII(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1[TARGET_0] = ButtonComponent(50, mkBrush(255, 0, 0, 60), 
-            float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]), 
-            func=self.target_1_func, target_pts=[15], precision=0.1)
+        stage_1[TARGET_0] = ButtonComponent(50, mkBrush(255, 0, 0, 60),
+                                              float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]),
+                                              func=self.target_1_func, target_pts=[15], precision=0.1)
 
-        stage_1[TARGET_1] = ButtonComponent(50, mkBrush(0, 0, 255, 60), 
-            float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]), 
-            func=self.target_2_func, target_pts=[16], precision=0.1)
+        stage_1[TARGET_1] = ButtonComponent(50, mkBrush(0, 0, 255, 60),
+                                              float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]),
+                                              func=self.target_2_func, target_pts=[16], precision=0.1)
 
-        stage_1[TARGET_2] = ButtonComponent(50, mkBrush(255, 255, 0, 60), 
-            float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]), 
-            func=self.target_3_func, target_pts=[27], precision=0.1)
+        stage_1[TARGET_2] = ButtonComponent(50, mkBrush(255, 255, 0, 60),
+                                              float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]),
+                                              func=self.target_3_func, target_pts=[27], precision=0.1)
 
-        stage_1[TARGET_3] = ButtonComponent(50, mkBrush(0, 255, 255, 60), 
-            float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]), 
-            func=self.target_4_func, target_pts=[28], precision=0.1)
+        stage_1[TARGET_3] = ButtonComponent(50, mkBrush(0, 255, 255, 60),
+                                              float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]),
+                                              func=self.target_4_func, target_pts=[28], precision=0.1)
 
-        stage_1["bubble_1"] = HandBubbleComponent(40, mkBrush(255, 0, 0, 120),
-            0,0,15)
-        stage_1["bubble_2"] = HandBubbleComponent(40, mkBrush(0, 0, 255, 120),
-            0,0,16)
-        stage_1["bubble_3"] = HandBubbleComponent(40, mkBrush(255, 255, 0, 120),
-            0,0,27)
-        stage_1["bubble_4"] = HandBubbleComponent(40, mkBrush(0, 255, 255, 120),
-            0,0,28)
+        stage_1["bubble_1"] = HandBubbleUIComponent(40, mkBrush(255, 0, 0, 120),
+                                                    0, 0, 15)
+        stage_1["bubble_2"] = HandBubbleUIComponent(40, mkBrush(0, 0, 255, 120),
+                                                    0, 0, 16)
+        stage_1["bubble_3"] = HandBubbleUIComponent(40, mkBrush(255, 255, 0, 120),
+                                                    0, 0, 27)
+        stage_1["bubble_4"] = HandBubbleUIComponent(40, mkBrush(0, 255, 255, 120),
+                                                    0, 0, 28)
 
         horz_starting_pt = -0.4
         spacing = 0.25
@@ -106,33 +107,33 @@ class GameMkII(Activity):
         letter_centering_vert = -0.36
 
         stage_2 = {}
-        stage_2[NAME_TARGET_0 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt, height, func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_0 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt, height, func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_1 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing, height, func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_1 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing, height, func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_2 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing*2, height, func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_2 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing*2, height, func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_3 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing*3, height, func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_3 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60), 
-            horz_starting_pt+spacing*3, height, func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
-        stage_2["name_label_0"] = TextComponent(
+        stage_2[NAME_TARGET_0 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                        horz_starting_pt, height, func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_0 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                          horz_starting_pt, height, func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_1 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                        horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_1 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                          horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_2 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                        horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_2 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                          horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_3 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                        horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
+        stage_2[NAME_TARGET_3 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+                                                          horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
+        stage_2["name_label_0"] = TextUIComponent(
             horz_starting_pt+letter_centering_horz,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_1"] = TextComponent(
+        stage_2["name_label_1"] = TextUIComponent(
             horz_starting_pt+letter_centering_horz+spacing,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_2"] = TextComponent(
+        stage_2["name_label_2"] = TextUIComponent(
             horz_starting_pt+letter_centering_horz+spacing*2,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_3"] = TextComponent(
+        stage_2["name_label_3"] = TextUIComponent(
             horz_starting_pt+letter_centering_horz+spacing*3,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["submit_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 
-            0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
-        stage_2["submit_label"] = TextComponent(
+        stage_2["submit_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120),
+                                                     0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
+        stage_2["submit_label"] = TextUIComponent(
             0.4, -0.85,font=QFont("Arial", 30), text="Submit:")
 
         # List of stages to swap between and what stage to start at
