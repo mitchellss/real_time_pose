@@ -1,9 +1,9 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
 from ui.components.button_component import ButtonComponent
-from ui.pyqtgraph.pyqtgraph_live_score import LiveScoreUIComponent
+from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
 from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_timer import TimerUIComponent
+from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 from PyQt5.QtGui import QFont
 from constants.constants import PATH
 import sys
@@ -21,8 +21,8 @@ class CustomActivityDynamic(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = TimerUIComponent(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist["live_score"] = LiveScoreUIComponent(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist["timer"] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist["live_score"] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}

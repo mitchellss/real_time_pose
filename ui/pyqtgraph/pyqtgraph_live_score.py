@@ -2,7 +2,7 @@ import pyqtgraph as pg
 from ui.ui_component import UIComponent
 
 
-class LiveScoreUIComponent(UIComponent):
+class PyQtGraphLiveScore(UIComponent):
     """Component used to create a text score counter that can
     be updated in real-time
 

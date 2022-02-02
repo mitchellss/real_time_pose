@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 
 
-class HandBubbleUIComponent(UIComponent):
+class PyQtGraphHandBubble(UIComponent):
 
     def __init__(self, size: int, brush: QtGui.QBrush, x_pos: float, y_pos: float, target: int, **kwargs) -> None:
         self.bubble = pg.ScatterPlotItem(size=size, brush=brush)

@@ -1,11 +1,11 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
 from ui.components.button_component import ButtonComponent
-from ui.pyqtgraph.pyqtgraph_hand_bubble import HandBubbleUIComponent
-from ui.pyqtgraph.pyqtgraph_live_score import LiveScoreUIComponent
+from ui.pyqtgraph.pyqtgraph_hand_bubble import PyQtGraphHandBubble
+from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
 from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_text import TextUIComponent
-from ui.pyqtgraph.pyqtgraph_timer import TimerUIComponent
+from ui.pyqtgraph.pyqtgraph_text import PyQtGraphText
+from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 from PyQt5.QtGui import QFont
 from constants.constants import *
 import sys
@@ -29,8 +29,8 @@ class GameMkII(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist[SKELETON] = SkeletonComponent(body_point_array)
-        self.persist[TIMER] = TimerUIComponent(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = LiveScoreUIComponent(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[TIMER] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
@@ -90,14 +90,14 @@ class GameMkII(Activity):
                                               float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]),
                                               func=self.target_4_func, target_pts=[28], precision=0.1)
 
-        stage_1["bubble_1"] = HandBubbleUIComponent(40, mkBrush(255, 0, 0, 120),
-                                                    0, 0, 15)
-        stage_1["bubble_2"] = HandBubbleUIComponent(40, mkBrush(0, 0, 255, 120),
-                                                    0, 0, 16)
-        stage_1["bubble_3"] = HandBubbleUIComponent(40, mkBrush(255, 255, 0, 120),
-                                                    0, 0, 27)
-        stage_1["bubble_4"] = HandBubbleUIComponent(40, mkBrush(0, 255, 255, 120),
-                                                    0, 0, 28)
+        stage_1["bubble_1"] = PyQtGraphHandBubble(40, mkBrush(255, 0, 0, 120),
+                                                  0, 0, 15)
+        stage_1["bubble_2"] = PyQtGraphHandBubble(40, mkBrush(0, 0, 255, 120),
+                                                  0, 0, 16)
+        stage_1["bubble_3"] = PyQtGraphHandBubble(40, mkBrush(255, 255, 0, 120),
+                                                  0, 0, 27)
+        stage_1["bubble_4"] = PyQtGraphHandBubble(40, mkBrush(0, 255, 255, 120),
+                                                  0, 0, 28)
 
         horz_starting_pt = -0.4
         spacing = 0.25
@@ -123,17 +123,17 @@ class GameMkII(Activity):
                                                         horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_3 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
                                                           horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
-        stage_2["name_label_0"] = TextUIComponent(
+        stage_2["name_label_0"] = PyQtGraphText(
             horz_starting_pt+letter_centering_horz,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_1"] = TextUIComponent(
+        stage_2["name_label_1"] = PyQtGraphText(
             horz_starting_pt+letter_centering_horz+spacing,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_2"] = TextUIComponent(
+        stage_2["name_label_2"] = PyQtGraphText(
             horz_starting_pt+letter_centering_horz+spacing*2,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_3"] = TextUIComponent(
+        stage_2["name_label_3"] = PyQtGraphText(
             horz_starting_pt+letter_centering_horz+spacing*3,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
         stage_2["submit_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120),
                                                      0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
-        stage_2["submit_label"] = TextUIComponent(
+        stage_2["submit_label"] = PyQtGraphText(
             0.4, -0.85,font=QFont("Arial", 30), text="Submit:")
 
         # List of stages to swap between and what stage to start at

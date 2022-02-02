@@ -10,7 +10,10 @@ from ui.ui_component import UIComponent
 class PyGameUI(GUI):
 
     FPS = 60
-    BACKGROUND = (255, 255, 255)
+    BACKGROUND = (0, 0, 0)
+
+    def __init__(self) -> None:
+        self.window = None
 
     def new_gui(self) -> None:
         pygame.init()
@@ -27,7 +30,8 @@ class PyGameUI(GUI):
 
 
     def add_component(self, component: UIComponent) -> None:
-        component.draw(self.window)
+        pass
+        # component.draw(self.window)
 
     def update(self):
         for event in pygame.event.get():
@@ -39,7 +43,10 @@ class PyGameUI(GUI):
             # This section will be built out later
         
             # Render elements of the game
-            self.window.fill(self.BACKGROUND)
-            pygame.draw.rect(self.window, (255,0,0), [100,100,400,100], 0)
-            pygame.display.update()
-            self.fpsClock.tick(self.FPS)
+            #pygame.draw.rect(self.window, (255,0,0), [100,100,400,100], 0)
+        pygame.display.update()
+        self.fpsClock.tick(self.FPS)
+
+    def clear(self):
+        self.window.fill(self.BACKGROUND)
+

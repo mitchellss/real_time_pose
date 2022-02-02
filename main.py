@@ -19,7 +19,7 @@ from frame_input.video_file_input import VideoFileInput
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
 from ui.pygame.pygame_ui import PyGameUI
-from ui.pyqtgraph.pyqtgraph import PyQtGraph
+from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
 
 class TwoDimensionGame():
@@ -67,7 +67,7 @@ class TwoDimensionGame():
         self.init_ui()
 
         # Start processing images
-        #self.start_image_processing()
+        self.start_image_processing()
 
     def arg_parse(self):
         """Parses the arguments given to the program"""
@@ -83,25 +83,25 @@ class TwoDimensionGame():
         self.args = parser.parse_args()
 
     def init_ui(self):
-        # """Starts the ui and chooses the correct activity
-        # to play based on the command line arguments given.
-        # Registers functional arguments and passes those to
-        # the relevant activity."""
-        #
-        # # Creates the gui
-        # #self.gui = PyQtGraph()
+        """Starts the ui and chooses the correct activity
+        to play based on the command line arguments given.
+        Registers functional arguments and passes those to
+        the relevant activity."""
+
+        # Creates the gui
+        #self.gui = PyQtGraph()
         self.gui = PyGameUI()
         self.gui.new_gui()
-        #
-        # # Dict of functions to be given to the activity. This is done this way
-        # # in order to allow for control of things like logging to be handled by
-        # # the activity being played rather than by this main file. Moreso, this
-        # # reduces the amount of coupling between the logger and the activity.
-        # # Instead of having the activity import the logger and therefore have
-        # # it be dependant on it, the activity just runs whatever functions are
-        # # given to it at the times specified in the activity. This allows for
-        # # very specific activity classes (as intended) but very general logging
-        # # classes.
+
+        # Dict of functions to be given to the activity. This is done this way
+        # in order to allow for control of things like logging to be handled by
+        # the activity being played rather than by this main file. Moreso, this
+        # reduces the amount of coupling between the logger and the activity.
+        # Instead of having the activity import the logger and therefore have
+        # it be dependant on it, the activity just runs whatever functions are
+        # given to it at the times specified in the activity. This allows for
+        # very specific activity classes (as intended) but very general logging
+        # classes.
         funcs = {
             START_LOGGING:    [logger.start_logging   for logger in self.loggers],
             STOP_LOGGING:     [logger.stop_logging    for logger in self.loggers],
@@ -124,29 +124,26 @@ class TwoDimensionGame():
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
 
-        # # Dict of components persistant in the ui (don't change between stages)
-        # # i.e. the clock and the point skeleton components
-        # self.persistant = self.activity.get_persist()
-        #
-        # # Adds all components to the ui
-        # for stage in self.activity.get_stages():
-        #     for component in stage:
-        #         self.gui.add_component(stage[component])
-        #         stage[component].hide() # hides all components
-        #
-        # for component in self.persistant:
-        #     self.gui.add_component(self.persistant[component])
-        #
-        # # Call change activity initially to render components
-        # self.activity.change_stage()
+        # Dict of components persistant in the ui (don't change between stages)
+        # i.e. the clock and the point skeleton components
+        self.persistant = self.activity.get_persist()
+
+        # Adds all components to the ui
+        for stage in self.activity.get_stages():
+            for component in stage:
+                self.gui.add_component(stage[component])
+                stage[component].hide() # hides all components
+
+        for component in self.persistant:
+            self.gui.add_component(self.persistant[component])
+
+        # Call change activity initially to render components
+        self.activity.change_stage()
         #
         # # Set the function to call on update
         # #self.timer = QtCore.QTimer()
         # #self.timer.timeout.connect(self.update)
         # #self.timer.start(50)
-
-        while True:
-            self.gui.update()
 
     def update(self):
         """
@@ -188,7 +185,7 @@ class TwoDimensionGame():
                 self.update_point_and_connection_data(landmarks)
 
                 # Handles the activity's logic at the end of a frame
-                self.activity.handle_frame()
+                self.activity.handle_frame(surface=self.gui.window)
 
                 # log data
                 self.log_data()
@@ -200,12 +197,18 @@ class TwoDimensionGame():
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
+            self.gui.update()
+            self.gui.clear()
+
+
     def update_point_and_connection_data(self, landmarks):
         """Updates the numpy array with the most current coordinate data"""
         # Loop through results and add them to the body point numpy array
         for landmark in range(0,len(landmarks)):
             self.body_point_array[landmark][0] = landmarks[landmark].x
             self.body_point_array[landmark][1] = landmarks[landmark].y
+        self.persistant[SKELETON].set_pos(self.body_point_array)
+
 
     def log_data(self):
         """Calls the log method on any instantiated loggers"""

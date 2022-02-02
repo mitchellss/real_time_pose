@@ -4,7 +4,7 @@ from activities.activity import Activity
 from constants.constants import PATH
 from ui.components.button_component import ButtonComponent
 from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_timer import TimerUIComponent
+from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 import pyqtgraph as pg
 
 class JumpingJacks(Activity):
@@ -13,7 +13,7 @@ class JumpingJacks(Activity):
         super().__init__(body_point_array, **kwargs)
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = TimerUIComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist["timer"] = PyQtGraphTimer(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
 
         stage_0 = {}
         stage_0["start_button"] = ButtonComponent(50, pg.mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])

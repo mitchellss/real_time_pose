@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from ui.ui_component import UIComponent
 
 
-class TimerUIComponent(UIComponent):
+class PyQtGraphTimer(UIComponent):
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
         self.x_pos = x_pos

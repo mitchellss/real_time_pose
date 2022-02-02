@@ -2,7 +2,7 @@ from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
 from ui.components.skeleton_component import SkeletonComponent
 from ui.pygame.pygame_button import PyGameButton
-from ui.pyqtgraph.pyqtgraph_timer import TimerUIComponent
+from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 from PyQt5.QtGui import QFont
 from constants.constants import PATH
 import sys
@@ -20,7 +20,7 @@ class CustomActivity(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = TimerUIComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist["timer"] = PyQtGraphTimer(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
 
         # Initialize dict for stage 0 
         stage_0 = {}

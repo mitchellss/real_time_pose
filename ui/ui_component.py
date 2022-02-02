@@ -10,5 +10,5 @@ class UIComponent:
     def show(self) -> None:
         pass
 
-    def draw(self, screen) -> None:
+    def draw(self, surface) -> None:
         pass
