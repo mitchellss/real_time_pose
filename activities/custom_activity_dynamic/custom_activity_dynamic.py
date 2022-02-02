@@ -84,20 +84,21 @@ class CustomActivityDynamic(Activity):
         self.stages = [stage_0, stage_1]
         self.stage = 0
 
-        # Use this to start at stage 1
-        self.stage = 1
-        self.persist["timer"].set_timer(100)
+        # # Use this to start at stage 1
+        # self.stage = 1
+        # self.persist["timer"].set_timer(100)
 
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
 
     def time_expire_func(self) -> None:
-        self.stage = 0
-        self.index = 0
-        self.change_stage()
-        if "stop_logging" in self.funcs:
-            for func in self.funcs["stop_logging"]:
-                func()
+        if self.stage == 1:
+            self.stage = 0
+            self.index = 0
+            self.change_stage()
+            if "stop_logging" in self.funcs:
+                for func in self.funcs["stop_logging"]:
+                    func()
     
     def target_1_func(self) -> None:
         self.stages[1]["target_1"].clicked = True

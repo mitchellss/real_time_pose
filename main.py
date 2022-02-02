@@ -18,7 +18,6 @@ from frame_input.video_file_input import VideoFileInput
 
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
-from ui.pyqtgraph.button_component import ButtonComponent
 from ui.pyqtgraph.pyqtgraph import PyQtGraph
 from constants.constants import *
 
