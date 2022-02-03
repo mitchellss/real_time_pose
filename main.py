@@ -199,6 +199,7 @@ class TwoDimensionGame():
 
             self.gui.update()
             self.gui.clear()
+            self.persistant[TIMER].tick()
 
 
     def update_point_and_connection_data(self, landmarks):

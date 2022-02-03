@@ -55,6 +55,13 @@ class Activity:
         this method for complete custom functionality or call it and add to it in 
         the child class's method
         """
+        for component in self.components:
+            self.components[component].draw(kwargs["surface"])
+
+        for component in self.persist:
+            if "surface" in kwargs:
+                self.persist[component].draw(kwargs["surface"])
+
         for component in self.components: # For each component in the dict of active components
             # Handles the logic for buttons
             if isinstance(self.components[component], ButtonComponent):
@@ -71,11 +78,4 @@ class Activity:
             #     x: float = self.persist[SKELETON].skeleton_array[target][0]
             #     y: float = self.persist[SKELETON].skeleton_array[target][1]
             #     self.components[component].set_pos(x,y)
-
-                    if "surface" in kwargs:
-                        self.components[component].draw(kwargs["surface"])
-
-        for component in self.persist:
-            if "surface" in kwargs:
-                self.persist[component].draw(kwargs["surface"])
 

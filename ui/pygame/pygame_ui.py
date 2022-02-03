@@ -17,6 +17,7 @@ class PyGameUI(GUI):
 
     def new_gui(self) -> None:
         pygame.init()
+        pygame.font.init()
         # Colours
 
         # Game Setup
