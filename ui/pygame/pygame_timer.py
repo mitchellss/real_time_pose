@@ -21,5 +21,5 @@ class PyGameTimer(TimerComponent):
 
     def draw(self, surface: pygame.Surface) -> None:
         img = self.font.render(f"Time: {round(self.time,1)}", True, (255,255,255))
-        surface.blit(img, (200,200))
+        surface.blit(img, (self.x_pos, self.y_pos))
 

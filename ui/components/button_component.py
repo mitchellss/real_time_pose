@@ -10,6 +10,8 @@ class ButtonComponent(UIComponent):
         self.x_pos: float = x_pos
         self.y_pos: float = y_pos
         self.precision: float = precision
+        self.clicked: bool = False
+
 
     def is_clicked(self, x: float, y: float, distance: float) -> bool:
         pass

@@ -28,7 +28,6 @@ class PyQtGraphButton(ButtonComponent):
         brush = mkBrush(color[0], color[1], color[2], color[3])
         self.button = pg.ScatterPlotItem(size=size, brush=brush)
         self.button.setData(pos=[[x_pos,y_pos]])
-        self.clicked: bool = False
 
         self.func = lambda: True
         if "func" in kwargs:

@@ -1,12 +1,8 @@
-from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
-from ui.components.button_component import ButtonComponent
-from ui.pyqtgraph.pyqtgraph_hand_bubble import PyQtGraphHandBubble
-from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
-from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_text import PyQtGraphText
-from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
-from PyQt5.QtGui import QFont
+from ui.pygame.pygame_button import PyGameButton
+from ui.pygame.pygame_skeleton import PyGameSkeleton
+from ui.pygame.pygame_text import PyGameText
+from ui.pygame.pygame_timer import PyGameTimer
 from constants.constants import *
 import sys
 import pandas as pd
@@ -28,13 +24,13 @@ class GameMkII(Activity):
 
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist[SKELETON] = SkeletonComponent(body_point_array)
-        self.persist[TIMER] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[SKELETON] = PyGameSkeleton(body_point_array)
+        self.persist[TIMER] = PyGameTimer(0.3, -1.2, func=self.time_expire_func)
+        # self.persist[LIVE_SCORE] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*300+300, -0.6*300+300, precision=50, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if PATH_ARG in kwargs:
@@ -74,30 +70,30 @@ class GameMkII(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1[TARGET_0] = ButtonComponent(50, mkBrush(255, 0, 0, 60),
-                                              float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]),
-                                              func=self.target_1_func, target_pts=[15], precision=0.1)
+        stage_1[TARGET_0] = PyGameButton(50, (255, 0, 0, 60),
+                                              float(self.lh_x_data[self.index])*300+300, float(self.lh_y_data[self.index])*300+300,
+                                              func=self.target_1_func, target_pts=[15], precision=50)
 
-        stage_1[TARGET_1] = ButtonComponent(50, mkBrush(0, 0, 255, 60),
-                                              float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]),
-                                              func=self.target_2_func, target_pts=[16], precision=0.1)
+        stage_1[TARGET_1] = PyGameButton(50, (0, 0, 255, 60),
+                                              float(self.rh_x_data[self.index])*300+300, float(self.rh_y_data[self.index])*300+300,
+                                              func=self.target_2_func, target_pts=[16], precision=50)
 
-        stage_1[TARGET_2] = ButtonComponent(50, mkBrush(255, 255, 0, 60),
-                                              float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]),
-                                              func=self.target_3_func, target_pts=[27], precision=0.1)
+        stage_1[TARGET_2] = PyGameButton(50, (255, 255, 0, 60),
+                                              float(self.ll_x_data[self.index])*300+300, float(self.ll_y_data[self.index])*300+300,
+                                              func=self.target_3_func, target_pts=[27], precision=50)
 
-        stage_1[TARGET_3] = ButtonComponent(50, mkBrush(0, 255, 255, 60),
-                                              float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]),
-                                              func=self.target_4_func, target_pts=[28], precision=0.1)
+        stage_1[TARGET_3] = PyGameButton(50, (0, 255, 255, 60),
+                                              float(self.rl_x_data[self.index])*300+300, float(self.rl_y_data[self.index])*300+300,
+                                              func=self.target_4_func, target_pts=[28], precision=50)
 
-        stage_1["bubble_1"] = PyQtGraphHandBubble(40, mkBrush(255, 0, 0, 120),
-                                                  0, 0, 15)
-        stage_1["bubble_2"] = PyQtGraphHandBubble(40, mkBrush(0, 0, 255, 120),
-                                                  0, 0, 16)
-        stage_1["bubble_3"] = PyQtGraphHandBubble(40, mkBrush(255, 255, 0, 120),
-                                                  0, 0, 27)
-        stage_1["bubble_4"] = PyQtGraphHandBubble(40, mkBrush(0, 255, 255, 120),
-                                                  0, 0, 28)
+        # stage_1["bubble_1"] = PyQtGraphHandBubble(40, (255, 0, 0, 120),
+        #                                           0, 0, 15)
+        # stage_1["bubble_2"] = PyQtGraphHandBubble(40, (0, 0, 255, 120),
+        #                                           0, 0, 16)
+        # stage_1["bubble_3"] = PyQtGraphHandBubble(40, (255, 255, 0, 120),
+        #                                           0, 0, 27)
+        # stage_1["bubble_4"] = PyQtGraphHandBubble(40, (0, 255, 255, 120),
+        #                                           0, 0, 28)
 
         horz_starting_pt = -0.4
         spacing = 0.25
@@ -107,42 +103,42 @@ class GameMkII(Activity):
         letter_centering_vert = -0.36
 
         stage_2 = {}
-        stage_2[NAME_TARGET_0 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_0 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         horz_starting_pt, height, func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_0 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_0 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                           horz_starting_pt, height, func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_1 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_1 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_1 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_1 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                           horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_2 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_2 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_2 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_2 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                           horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_3 + UP] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_3 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
-        stage_2[NAME_TARGET_3 + DOWN] = ButtonComponent(50, mkBrush(0, 255, 0, 60),
+        stage_2[NAME_TARGET_3 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                           horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
-        stage_2["name_label_0"] = PyQtGraphText(
-            horz_starting_pt+letter_centering_horz,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_1"] = PyQtGraphText(
-            horz_starting_pt+letter_centering_horz+spacing,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_2"] = PyQtGraphText(
-            horz_starting_pt+letter_centering_horz+spacing*2,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["name_label_3"] = PyQtGraphText(
-            horz_starting_pt+letter_centering_horz+spacing*3,height+letter_centering_vert,font=QFont("Arial", 30), text="A")
-        stage_2["submit_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120),
+        stage_2["name_label_0"] = PyGameText(
+            horz_starting_pt+letter_centering_horz,height+letter_centering_vert, text="A")
+        stage_2["name_label_1"] = PyGameText(
+            horz_starting_pt+letter_centering_horz+spacing,height+letter_centering_vert, text="A")
+        stage_2["name_label_2"] = PyGameText(
+            horz_starting_pt+letter_centering_horz+spacing*2,height+letter_centering_vert, text="A")
+        stage_2["name_label_3"] = PyGameText(
+            horz_starting_pt+letter_centering_horz+spacing*3,height+letter_centering_vert, text="A")
+        stage_2["submit_button"] = PyGameButton(50, (0, 255, 0, 120),
                                                      0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
-        stage_2["submit_label"] = PyQtGraphText(
-            0.4, -0.85,font=QFont("Arial", 30), text="Submit:")
+        stage_2["submit_label"] = PyGameText(
+            0.4, -0.85, text="Submit:")
 
         # List of stages to swap between and what stage to start at
         self.stages = [stage_0, stage_1, stage_2]
         self.stage = 0
 
-        # Use this to start at stage 1
-        self.stage = 1
-        self.persist[TIMER].set_timer(1)
+        # # Use this to start at stage 1
+        # self.stage = 1
+        # self.persist[TIMER].set_timer(1)
 
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
@@ -171,23 +167,23 @@ class GameMkII(Activity):
     
     def target_1_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.stages[self.PLAY_STAGE][TARGET_0].change_color((255, 0, 0, 120))
+        # self.persist[LIVE_SCORE].add_score(1)
 
     def target_2_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(0, 0, 255, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 255, 120))
+        # self.persist[LIVE_SCORE].add_score(1)
 
     def target_3_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_2].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(255, 255, 0, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.stages[self.PLAY_STAGE][TARGET_2].change_color((255, 255, 0, 120))
+        # self.persist[LIVE_SCORE].add_score(1)
 
     def target_4_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = True
-        self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(0, 255, 255, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 255, 255, 120))
+        # self.persist[LIVE_SCORE].add_score(1)
 
     def start_button_func(self) -> None:
         """
@@ -213,13 +209,13 @@ class GameMkII(Activity):
         super().handle_frame(**kwargs)
 
         if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 60))
+            self.stages[self.PLAY_STAGE][TARGET_0].change_color((120, 0, 0, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_1].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_1].change_color(mkBrush(0, 0, 255, 60))
+            self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 120, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_2].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_2].change_color(mkBrush(255, 255, 0, 60))
+            self.stages[self.PLAY_STAGE][TARGET_2].change_color((120, 120, 0, 60))
         if not self.stages[self.PLAY_STAGE][TARGET_3].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_3].change_color(mkBrush(0, 255, 255, 60))
+            self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 120, 120, 60))
         
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = False
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = False
@@ -227,9 +223,9 @@ class GameMkII(Activity):
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = False
 
         self.index += 1
-        self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-        self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-        self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-        self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+        self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*300+300, float(self.lh_y_data[self.index])*300+300)
+        self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*300+300, float(self.rh_y_data[self.index])*300+300)
+        self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*300+300, float(self.ll_y_data[self.index])*300+300)
+        self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*300+300, float(self.rl_y_data[self.index])*300+300)
 
         self.change_stage()

@@ -12,4 +12,4 @@ class PyGameText(TextComponent):
 
     def draw(self, surface: pygame.Surface) -> None:
         img = self.font.render(self.text, True, (255,255,255))
-        surface.blit(img, (20,20))
+        surface.blit(img, (self.x_pos, self.y_pos))

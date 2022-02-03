@@ -19,7 +19,7 @@ class Game(Activity):
         super().__init__(body_point_array, **kwargs)
         self.persist = {}
         self.persist["skeleton"] = PyGameSkeleton(body_point_array)
-        self.persist["timer"] = PyGameTimer(0.4, -1.2, func=self.time_expire_func)
+        self.persist["timer"] = PyGameTimer(300, 50, func=self.time_expire_func)
 
         stage_0 = {}
         stage_0["start_button"] = PyGameButton(50, (0, 255, 0, 120), 0*300+300, -0.6*300+300, precision=50, func=self.start_button_func, target_pts=[16, 15])
