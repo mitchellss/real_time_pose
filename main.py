@@ -38,6 +38,7 @@ class TwoDimensionGame():
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
+        self.body_point_array_raw = np.zeros((self.NUM_LANDMARKS, 2))
 
         self.pose_detector = Blazepose(model_complexity=1)
 
@@ -208,6 +209,8 @@ class TwoDimensionGame():
         for landmark in range(0,len(landmarks)):
             self.body_point_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
             self.body_point_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
+            self.body_point_array_raw[landmark][0] = landmarks[landmark].x
+            self.body_point_array_raw[landmark][1] = landmarks[landmark].y
         self.persistant[SKELETON].set_pos(self.body_point_array)
 
 
@@ -215,7 +218,7 @@ class TwoDimensionGame():
         """Calls the log method on any instantiated loggers"""
         for logger in self.loggers:
             if isinstance(logger, PointLogger):
-                logger.log(self.body_point_array)
+                logger.log(self.body_point_array_raw)
             if isinstance(logger, VideoLogger):
                 logger.log(self.image)
 
