@@ -19,11 +19,11 @@ class Game(Activity):
         #self.persist["timer"] = TimerUIComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
 
         stage_0 = {}
-        #stage_0["start_button"] = PyGameButton(50, (0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0["start_button"] = PyGameButton(50, (0, 255, 0, 120), 0*300+300, -0.6*300+300, precision=50, func=self.start_button_func, target_pts=[16, 15])
 
         stage_1 = {}
-        #stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7), random.uniform(0.0, -0.8), func=self.target_1_func, target_pts=[15])
-        #stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120), random.uniform(-0.7, 0.7), random.uniform(0.0, -0.8), func=self.target_2_func, target_pts=[16])
+        stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7)*300+300, random.uniform(0.0, -0.8)*300+300, precision=50, func=self.target_1_func, target_pts=[15])
+        stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120), random.uniform(-0.7, 0.7)*300+300, random.uniform(0.0, -0.8)*300+300, precision=50, func=self.target_2_func, target_pts=[16])
 
         self.stages = [stage_0, stage_1]
         self.stage = 0
@@ -38,11 +38,11 @@ class Game(Activity):
                 func()
     
     def target_1_func(self) -> None:
-        #self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
+        self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7)*300+300, random.uniform(0.0,-0.8)*300+300)
         pass
 
     def target_2_func(self) -> None:
-        #self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7), random.uniform(0.0,-0.8))
+        self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7)*300+300, random.uniform(0.0,-0.8)*300+300)
         pass
 
     def start_button_func(self) -> None:

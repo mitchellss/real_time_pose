@@ -205,12 +205,12 @@ class GameMkII(Activity):
                 for func in self.funcs[START_LOGGING]:
                     func()
 
-    def handle_frame(self) -> None:
+    def handle_frame(self, **kwargs) -> None:
         """
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.
         """
-        super().handle_frame()
+        super().handle_frame(**kwargs)
 
         if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
             self.stages[self.PLAY_STAGE][TARGET_0].change_color(mkBrush(255, 0, 0, 60))

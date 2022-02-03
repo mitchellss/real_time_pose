@@ -66,14 +66,14 @@ class Activity:
                     if self.components[component].is_clicked(x, y, self.components[component].precision):
                         break # Stops rest of for loop from running (caused errors) 
 
-            if isinstance(self.components[component], PyQtGraphHandBubble):
-                target = self.components[component].target
-                x: float = self.persist[SKELETON].skeleton_array[target][0]
-                y: float = self.persist[SKELETON].skeleton_array[target][1]
-                self.components[component].set_pos(x,y)
+            # if isinstance(self.components[component], PyQtGraphHandBubble):
+            #     target = self.components[component].target
+            #     x: float = self.persist[SKELETON].skeleton_array[target][0]
+            #     y: float = self.persist[SKELETON].skeleton_array[target][1]
+            #     self.components[component].set_pos(x,y)
 
-            if "surface" in kwargs:
-                self.components[component].draw(kwargs["surface"])
+                    if "surface" in kwargs:
+                        self.components[component].draw(kwargs["surface"])
 
         for component in self.persist:
             if "surface" in kwargs:

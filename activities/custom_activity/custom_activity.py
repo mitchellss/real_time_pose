@@ -151,11 +151,12 @@ class CustomActivity(Activity):
                     func()
             self.change_stage()
 
-    def handle_frame(self) -> None:
+    def handle_frame(self, **kwargs) -> None:
         """
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.
         """
+        super().handle_frame(**kwargs)
         self.stages[1]["target_1"].clicked = False
         self.stages[1]["target_2"].clicked = False
         self.stages[1]["target_3"].clicked = False
