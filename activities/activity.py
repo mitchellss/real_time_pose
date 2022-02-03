@@ -78,5 +78,5 @@ class Activity:
                 target = self.components[component].target
                 x: float = self.persist[SKELETON].skeleton_array[target][0]
                 y: float = self.persist[SKELETON].skeleton_array[target][1]
-                self.components[component].set_pos(x,y)
+                self.components[component].set_pos(x, y)
 

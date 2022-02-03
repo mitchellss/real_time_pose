@@ -206,8 +206,8 @@ class TwoDimensionGame():
         """Updates the numpy array with the most current coordinate data"""
         # Loop through results and add them to the body point numpy array
         for landmark in range(0,len(landmarks)):
-            self.body_point_array[landmark][0] = landmarks[landmark].x
-            self.body_point_array[landmark][1] = landmarks[landmark].y
+            self.body_point_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
+            self.body_point_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
         self.persistant[SKELETON].set_pos(self.body_point_array)
 
 

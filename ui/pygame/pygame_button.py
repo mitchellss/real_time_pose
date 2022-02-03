@@ -19,7 +19,7 @@ class PyGameButton(ButtonComponent):
             self.target_pts = [0]
 
     def is_clicked(self, x: float, y: float, distance: float) -> bool:
-        if abs(x*300+300 - self.x_pos) < distance and abs(y*300+300 - self.y_pos) < distance:
+        if abs(x - self.x_pos) < distance and abs(y - self.y_pos) < distance:
             self.func()
             return True
         else:

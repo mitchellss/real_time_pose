@@ -1,6 +1,7 @@
 
 from PyQt5.QtGui import QFont
 from activities.activity import Activity
+from constants.constants import PIXEL_SCALE, PIXEL_X_OFFSET, PIXEL_Y_OFFSET
 from ui.components.button_component import ButtonComponent
 from ui.components.skeleton_component import SkeletonComponent
 from ui.pygame.pygame_button import PyGameButton
@@ -22,12 +23,12 @@ class Game(Activity):
         self.persist["timer"] = PyGameTimer(300, 50, func=self.time_expire_func)
 
         stage_0 = {}
-        stage_0["start_button"] = PyGameButton(50, (0, 255, 0, 120), 0*300+300, -0.6*300+300, precision=50, func=self.start_button_func, target_pts=[16, 15])
+        stage_0["start_button"] = PyGameButton(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.start_button_func, target_pts=[16, 15])
         stage_0["label123"] = PyGameText(300,300,"test123")
 
         stage_1 = {}
-        stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7)*300+300, random.uniform(0.0, -0.8)*300+300, precision=50, func=self.target_1_func, target_pts=[15])
-        stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120), random.uniform(-0.7, 0.7)*300+300, random.uniform(0.0, -0.8)*300+300, precision=50, func=self.target_2_func, target_pts=[16])
+        stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0, -0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.target_1_func, target_pts=[15])
+        stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120), random.uniform(-0.7, 0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0, -0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.target_2_func, target_pts=[16])
 
         self.stages = [stage_0, stage_1]
         self.stage = 0
@@ -42,11 +43,11 @@ class Game(Activity):
                 func()
     
     def target_1_func(self) -> None:
-        self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7)*300+300, random.uniform(0.0,-0.8)*300+300)
+        self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0,-0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET)
         pass
 
     def target_2_func(self) -> None:
-        self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7)*300+300, random.uniform(0.0,-0.8)*300+300)
+        self.stages[1]["target_2"].set_pos(random.uniform(-0.7,0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0,-0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET)
         pass
 
     def start_button_func(self) -> None:

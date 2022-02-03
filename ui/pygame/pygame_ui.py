@@ -22,8 +22,8 @@ class PyGameUI(GUI):
 
         # Game Setup
         self.fpsClock = pygame.time.Clock()
-        WINDOW_WIDTH = 1000
-        WINDOW_HEIGHT = 600
+        WINDOW_WIDTH = 1920/2
+        WINDOW_HEIGHT = 1080
         
         self.window: pygame.Surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('My Game!')

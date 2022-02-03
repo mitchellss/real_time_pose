@@ -29,3 +29,7 @@ NEW_LOG = "new_log"
 
 PATH_ARG = "path"
 FUNCS = "funcs"
+
+PIXEL_SCALE = 500
+PIXEL_X_OFFSET = 450
+PIXEL_Y_OFFSET = 500

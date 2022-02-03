@@ -31,7 +31,7 @@ class GameMkII(Activity):
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*300+300, -0.6*300+300, precision=50, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if PATH_ARG in kwargs:
@@ -72,19 +72,19 @@ class GameMkII(Activity):
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
         stage_1[TARGET_0] = PyGameButton(50, (255, 0, 0, 60),
-                                              float(self.lh_x_data[self.index])*300+300, float(self.lh_y_data[self.index])*300+300,
+                                              float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_1_func, target_pts=[15], precision=50)
 
         stage_1[TARGET_1] = PyGameButton(50, (0, 0, 255, 60),
-                                              float(self.rh_x_data[self.index])*300+300, float(self.rh_y_data[self.index])*300+300,
+                                              float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_2_func, target_pts=[16], precision=50)
 
         stage_1[TARGET_2] = PyGameButton(50, (255, 255, 0, 60),
-                                              float(self.ll_x_data[self.index])*300+300, float(self.ll_y_data[self.index])*300+300,
+                                              float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_3_func, target_pts=[27], precision=50)
 
         stage_1[TARGET_3] = PyGameButton(50, (0, 255, 255, 60),
-                                              float(self.rl_x_data[self.index])*300+300, float(self.rl_y_data[self.index])*300+300,
+                                              float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
         stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, (255, 0, 0, 120))
@@ -220,9 +220,9 @@ class GameMkII(Activity):
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = False
 
         self.index += 1
-        self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*300+300, float(self.lh_y_data[self.index])*300+300)
-        self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*300+300, float(self.rh_y_data[self.index])*300+300)
-        self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*300+300, float(self.ll_y_data[self.index])*300+300)
-        self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*300+300, float(self.rl_y_data[self.index])*300+300)
+        self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+        self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+        self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+        self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
         self.change_stage()

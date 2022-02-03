@@ -25,11 +25,11 @@ class PyGameSkeleton(SkeletonComponent):
 
     def draw(self, surface: pygame.Surface) -> None:
         for i in self.CONNECTIONS:
-            pygame.draw.line(surface, (255,255,255), [self.skeleton_array[i[0]][0]*300+300, self.skeleton_array[i[0]][1]*300+300], 
-            [self.skeleton_array[i[1]][0]*300+300, self.skeleton_array[i[1]][1]*300+300], 2)
+            pygame.draw.line(surface, (255,255,255), [self.skeleton_array[i[0]][0], self.skeleton_array[i[0]][1]], 
+            [self.skeleton_array[i[1]][0], self.skeleton_array[i[1]][1]], 2)
             
         for i in range(0, len(self.skeleton_array)):
-            pygame.draw.circle(surface, (0, 255, 0), [self.skeleton_array[i][0]*300+300,self.skeleton_array[i][1]*300+300], 5, 0)
+            pygame.draw.circle(surface, (0, 255, 0), [self.skeleton_array[i][0],self.skeleton_array[i][1]], 5, 0)
             
 
     def set_pos(self, skeleton_array):
