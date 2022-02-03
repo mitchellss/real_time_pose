@@ -33,4 +33,4 @@ class PyGameButton(ButtonComponent):
         self.y_pos: float = y_pos
 
     def draw(self, surface: pygame.Surface):
-        pygame.draw.rect(surface, self.color, [self.x_pos, self.y_pos, self.size, self.size], 0)
+        pygame.draw.circle(surface, self.color, (self.x_pos, self.y_pos), self.size)

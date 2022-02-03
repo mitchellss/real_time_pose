@@ -9,5 +9,5 @@ class PyGameHandBubble(HandBubbleComponent):
         super().__init__(x_pos, y_pos, target, color)
 
     def draw(self, surface) -> None:
-        pygame.draw.circle(surface, self.color, (self.x_pos, self.y_pos), 20)
+        pygame.draw.circle(surface, self.color, (self.x_pos, self.y_pos), 30)
     
