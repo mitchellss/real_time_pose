@@ -1,5 +1,6 @@
 from activities.activity import Activity
 from ui.pygame.pygame_button import PyGameButton
+from ui.pygame.pygame_hand_bubble import PyGameHandBubble
 from ui.pygame.pygame_skeleton import PyGameSkeleton
 from ui.pygame.pygame_text import PyGameText
 from ui.pygame.pygame_timer import PyGameTimer
@@ -86,14 +87,10 @@ class GameMkII(Activity):
                                               float(self.rl_x_data[self.index])*300+300, float(self.rl_y_data[self.index])*300+300,
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
-        # stage_1["bubble_1"] = PyQtGraphHandBubble(40, (255, 0, 0, 120),
-        #                                           0, 0, 15)
-        # stage_1["bubble_2"] = PyQtGraphHandBubble(40, (0, 0, 255, 120),
-        #                                           0, 0, 16)
-        # stage_1["bubble_3"] = PyQtGraphHandBubble(40, (255, 255, 0, 120),
-        #                                           0, 0, 27)
-        # stage_1["bubble_4"] = PyQtGraphHandBubble(40, (0, 255, 255, 120),
-        #                                           0, 0, 28)
+        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, (255, 0, 0, 120))
+        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, (0, 0, 255, 120))
+        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, (255, 255, 0, 120))
+        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, (0, 255, 255, 120))
 
         horz_starting_pt = -0.4
         spacing = 0.25
