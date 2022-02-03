@@ -26,7 +26,7 @@ class PyGameUI(GUI):
         WINDOW_HEIGHT = 1080
         
         self.window: pygame.Surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption('My Game!')
+        pygame.display.set_caption('WCRG Video Feedback System')
         self.window.fill(self.BACKGROUND)
 
 
