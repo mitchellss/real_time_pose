@@ -7,6 +7,7 @@ from activities.custom_activity.custom_activity import CustomActivity
 from activities.custom_activity_dynamic.custom_activity_dynamic import CustomActivityDynamic
 from activities.game.game import Game
 from activities.game_mk2.game_mk2 import GameMkII
+from activities.haptic.haptic import Haptic
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
 from activities.squat.squat import Squat
 from data_logging.logger import Logger
@@ -121,6 +122,8 @@ class TwoDimensionGame():
             self.activity = CustomActivityDynamic(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "game_mk2":
             self.activity = GameMkII(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "haptic":
+            self.activity = Haptic(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
