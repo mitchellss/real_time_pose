@@ -87,10 +87,10 @@ class GameMkII(Activity):
                                               float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
-        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, (255, 0, 0, 120))
-        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, (0, 0, 255, 120))
-        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, (255, 255, 0, 120))
-        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, (0, 255, 255, 120))
+        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
+        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, 30, (255, 255, 0, 120))
+        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, 30, (0, 255, 255, 120))
 
         horz_starting_pt = -0.4
         spacing = 0.25

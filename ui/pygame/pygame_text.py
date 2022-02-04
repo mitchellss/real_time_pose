@@ -6,9 +6,9 @@ import pygame
 
 class PyGameText(TextComponent):
 
-    def __init__(self, x_pos: float, y_pos: float, text: str) -> None:
+    def __init__(self, x_pos: float, y_pos: float, text: str, **kwargs) -> None:
         super().__init__(x_pos, y_pos, text)
-        self.font = pygame.font.SysFont("Sans", 30)
+        self.font = pygame.font.SysFont(self.font, self.size)
 
     def draw(self, surface: pygame.Surface) -> None:
         img = self.font.render(self.text, True, (255,255,255))

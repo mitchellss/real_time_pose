@@ -28,16 +28,7 @@ class PyQtGraphButton(ButtonComponent):
         brush = mkBrush(color[0], color[1], color[2], color[3])
         self.button = pg.ScatterPlotItem(size=size, brush=brush)
         self.button.setData(pos=[[x_pos,y_pos]])
-
-        self.func = lambda: True
-        if "func" in kwargs:
-            self.func = kwargs["func"]
         
-        if "target_pts" in kwargs:
-            self.target_pts = kwargs["target_pts"]
-        else:
-            self.target_pts = [0]
-
     def get_item(self):
         return self.button
 
@@ -54,9 +45,8 @@ class PyQtGraphButton(ButtonComponent):
             x_pos (float): X position to move the button to
             y_pos (float): Y position to move the button to
         """
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.button.setData(pos=[[x_pos,y_pos]])
+        super().set_pos(x_pos, y_pos)
+        self.button.setData(pos=[[self.x_pos, self.y_pos]])
 
     def is_clicked(self, x: float, y: float, distance: float) -> bool:
         """Checks to see if the button is clicked and returns True if so

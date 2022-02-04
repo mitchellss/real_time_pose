@@ -11,7 +11,15 @@ class ButtonComponent(UIComponent):
         self.y_pos: float = y_pos
         self.precision: float = precision
         self.clicked: bool = False
+        if "func" in kwargs:
+            self.func = kwargs["func"]
+        else:
+            self.func = lambda: True
 
+        if "target_pts" in kwargs:
+            self.target_pts = kwargs["target_pts"]
+        else:
+            self.target_pts = [0]
 
     def is_clicked(self, x: float, y: float, distance: float) -> bool:
         pass

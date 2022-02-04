@@ -5,9 +5,18 @@ from ui.ui_component import UIComponent
 
 class TextComponent(UIComponent):
 
-    def __init__(self, x_pos: float, y_pos: float, text: str) -> None:
+    def __init__(self, x_pos: float, y_pos: float, text: str, **kwargs) -> None:
         super().__init__(x_pos, y_pos)
         self.text = text
+        if "font" in kwargs:
+            self.font = kwargs["font"]
+        else:
+            self.font = "Arial"
+        
+        if "size" in kwargs:
+            self.size = kwargs["size"]
+        else:
+            self.size = 30
 
     def set_text(self, text: str) -> None:
         self.text = text

@@ -94,15 +94,15 @@ class TwoDimensionGame():
         self.gui = PyGameUI()
         self.gui.new_gui()
 
-        # Dict of functions to be given to the activity. This is done this way
-        # in order to allow for control of things like logging to be handled by
-        # the activity being played rather than by this main file. Moreso, this
-        # reduces the amount of coupling between the logger and the activity.
-        # Instead of having the activity import the logger and therefore have
-        # it be dependant on it, the activity just runs whatever functions are
-        # given to it at the times specified in the activity. This allows for
-        # very specific activity classes (as intended) but very general logging
-        # classes.
+        '''Dict of functions to be given to the activity. This is done this way
+        in order to allow for control of things like logging to be handled by
+        the activity being played rather than by this main file. Moreso, this
+        reduces the amount of coupling between the logger and the activity.
+        Instead of having the activity import the logger and therefore have
+        it be dependant on it, the activity just runs whatever functions are
+        given to it at the times specified in the activity. This allows for
+        very specific activity classes (as intended) but very general logging
+        classes.'''
         funcs = {
             START_LOGGING:    [logger.start_logging   for logger in self.loggers],
             STOP_LOGGING:     [logger.stop_logging    for logger in self.loggers],
@@ -140,19 +140,20 @@ class TwoDimensionGame():
 
         # Call change activity initially to render components
         self.activity.change_stage()
-        #
+
+        # if ui == pyqtgraph
         # # Set the function to call on update
         # #self.timer = QtCore.QTimer()
         # #self.timer.timeout.connect(self.update)
         # #self.timer.start(50)
 
-    def update(self):
-        """
-        Updates the position of the skeleton component and
-        the time on the timer
-        """
-        self.persistant[SKELETON].set_pos(self.body_point_array)
-        self.persistant[TIMER].tick()
+    # def update(self):
+    #     """
+    #     Updates the position of the skeleton component and
+    #     the time on the timer
+    #     """
+    #     self.persistant[SKELETON].set_pos(self.body_point_array)
+    #     self.persistant[TIMER].tick()
 
     def start_image_processing(self):
         """
@@ -207,8 +208,11 @@ class TwoDimensionGame():
         """Updates the numpy array with the most current coordinate data"""
         # Loop through results and add them to the body point numpy array
         for landmark in range(0,len(landmarks)):
+            # Scale up data to fit to a bigger pixel grid
             self.body_point_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
             self.body_point_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
+            
+            # Save raw data for logging purposes
             self.body_point_array_raw[landmark][0] = landmarks[landmark].x
             self.body_point_array_raw[landmark][1] = landmarks[landmark].y
         self.persistant[SKELETON].set_pos(self.body_point_array)
