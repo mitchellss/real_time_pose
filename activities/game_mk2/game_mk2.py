@@ -10,6 +10,8 @@ from constants.constants import *
 import sys
 import pandas as pd
 
+from utils.utils import *
+
 
 class GameMkII(Activity):
     """Second version of the original game. Buttons move around and players have
@@ -28,8 +30,8 @@ class GameMkII(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 0, size=50, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 100, size=50)
+        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 10, size=50, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 70, size=50)
 
         # Initialize dict for stage 0 
         stage_0 = {}
@@ -77,23 +79,23 @@ class GameMkII(Activity):
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
         stage_1[TARGET_0] = PyGameButton(50, (255, 0, 0, 60),
-                                              float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
-                                              float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              bp2p_x(float(self.lh_x_data[self.index])), 
+                                              bp2p_y(float(self.lh_y_data[self.index])),
                                               func=self.target_1_func, target_pts=[15], precision=50)
 
         stage_1[TARGET_1] = PyGameButton(50, (0, 0, 255, 60),
-                                              float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
-                                              float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              bp2p_x(float(self.rh_x_data[self.index])), 
+                                              bp2p_y(float(self.rh_y_data[self.index])),
                                               func=self.target_2_func, target_pts=[16], precision=50)
 
         stage_1[TARGET_2] = PyGameButton(50, (255, 255, 0, 60),
-                                              float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
-                                              float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              bp2p_x(float(self.ll_x_data[self.index])), 
+                                              bp2p_y(float(self.ll_y_data[self.index])),
                                               func=self.target_3_func, target_pts=[27], precision=50)
 
         stage_1[TARGET_3] = PyGameButton(50, (0, 255, 255, 60),
-                                              float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
-                                              float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              bp2p_x(float(self.rl_x_data[self.index])), 
+                                              bp2p_y(float(self.rl_y_data[self.index])),
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
         stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
@@ -103,36 +105,56 @@ class GameMkII(Activity):
 
         horz_starting_pt = -0.4
         spacing = 0.25
-        height = -1.0
+        height = 125
+        initial_offset = 25
+        first_offset = 50
+        second_offset = 150
+        spacing = 10
 
         letter_centering_horz = -0.07
         letter_centering_vert = -0.36
 
         stage_2 = {}
         stage_2[NAME_TARGET_0 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        horz_starting_pt, height, func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset - second_offset, 
+                                                        height, 
+                                                        func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_0 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                          horz_starting_pt, height, func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset - second_offset, 
+                                                          height, 
+                                                          func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_1 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset - first_offset, 
+                                                        height, 
+                                                        func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_1 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                          horz_starting_pt + spacing, height, func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset - first_offset, 
+                                                          height, 
+                                                          func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_2 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset + 50, 
+                                                        height, 
+                                                        func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_2 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                          horz_starting_pt + spacing * 2, height, func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset + 50, 
+                                                          height, 
+                                                          func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_3 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset + 150, 
+                                                        height, 
+                                                        func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
         stage_2[NAME_TARGET_3 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                          horz_starting_pt + spacing * 3, height, func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
+                                                        WINDOW_WIDTH/2 - initial_offset + 150, 
+                                                          height, 
+                                                          func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
         stage_2["name_label_0"] = PyGameText(
-            horz_starting_pt+letter_centering_horz,height+letter_centering_vert, text="A")
+            bp2p_x(horz_starting_pt)+letter_centering_horz,height+letter_centering_vert, text="A")
         stage_2["name_label_1"] = PyGameText(
-            horz_starting_pt+letter_centering_horz+spacing,height+letter_centering_vert, text="A")
+            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing,height+letter_centering_vert, text="A")
         stage_2["name_label_2"] = PyGameText(
-            horz_starting_pt+letter_centering_horz+spacing*2,height+letter_centering_vert, text="A")
+            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing*2,height+letter_centering_vert, text="A")
         stage_2["name_label_3"] = PyGameText(
-            horz_starting_pt+letter_centering_horz+spacing*3,height+letter_centering_vert, text="A")
+            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing*3,height+letter_centering_vert, text="A")
         stage_2["submit_button"] = PyGameButton(50, (0, 255, 0, 120),
                                                      0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
         stage_2["submit_label"] = PyGameText(
@@ -198,7 +220,7 @@ class GameMkII(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist[TIMER].set_timer(100)
+            self.persist[TIMER].set_timer(1)
             self.stage = self.stage + 1
             if NEW_LOG in self.funcs:
                 for func in self.funcs[NEW_LOG]:
