@@ -1,4 +1,5 @@
-
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 from ui.components.live_score_component import LiveScoreComponent
 import pygame
 

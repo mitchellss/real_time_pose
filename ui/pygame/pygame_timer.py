@@ -1,5 +1,6 @@
 
-
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 from ui.components.timer_component import TimerComponent
 import pygame
 

@@ -1,38 +1,38 @@
 import pathlib
 
 PATH = pathlib.Path(__file__).parent.parent.resolve()
-TARGET_0 = "target_0"
-TARGET_1 = "target_1"
-TARGET_2 = "target_2"
-TARGET_3 = "target_3"
+TARGET_0: str = "target_0"
+TARGET_1: str = "target_1"
+TARGET_2: str = "target_2"
+TARGET_3: str = "target_3"
 
-NAME_TARGET_0 = "name_target_0"
-NAME_TARGET_1 = "name_target_1"
-NAME_TARGET_2 = "name_target_2"
-NAME_TARGET_3 = "name_target_3"
+NAME_TARGET_0: str = "name_target_0"
+NAME_TARGET_1: str = "name_target_1"
+NAME_TARGET_2: str = "name_target_2"
+NAME_TARGET_3: str = "name_target_3"
 
-START_TARGET = "start_target"
+START_TARGET: str = "start_target"
 
-LETTER_SELECT = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
+LETTER_SELECT: list[str] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
                     'O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
-SKELETON = "skeleton"
-TIMER = "timer"
-LIVE_SCORE = "live_score"
+SKELETON: str = "skeleton"
+TIMER: str = "timer"
+LIVE_SCORE: str = "live_score"
 
-UP = "_up"
-DOWN = "_down"
+UP: str = "_up"
+DOWN: str = "_down"
 
-STOP_LOGGING = "stop_logging"
-START_LOGGING = "start_logging"
-NEW_LOG = "new_log"
+STOP_LOGGING: str = "stop_logging"
+START_LOGGING: str = "start_logging"
+NEW_LOG: str = "new_log"
 
-PATH_ARG = "path"
-FUNCS = "funcs"
+PATH_ARG: str = "path"
+FUNCS: str = "funcs"
 
-PIXEL_SCALE = 500
-PIXEL_X_OFFSET = 450
-PIXEL_Y_OFFSET = 500
+PIXEL_SCALE: int = 500
+PIXEL_X_OFFSET: int = 450
+PIXEL_Y_OFFSET: int = 500
 
-WINDOW_WIDTH = 1920/2
-WINDOW_HEIGHT = 1080
+WINDOW_WIDTH: int = 1920//2
+WINDOW_HEIGHT: int = 1000

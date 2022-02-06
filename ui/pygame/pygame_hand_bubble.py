@@ -1,4 +1,5 @@
-
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from ui.components.hand_bubble_component import HandBubbleComponent
 
