@@ -1,12 +1,12 @@
-from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
-from ui.pyqtgraph.button_component import ButtonComponent
-from ui.pyqtgraph.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.timer_component import TimerComponent
-from PyQt5.QtGui import QFont
-from constants.constants import PATH
+from ui.pygame.pygame_button import PyGameButton
+from ui.pygame.pygame_hand_bubble import PyGameHandBubble
+from ui.pygame.pygame_skeleton import PyGameSkeleton
+from ui.pygame.pygame_timer import PyGameTimer
+from constants.constants import *
 import sys
 import pandas as pd
+
 
 class CustomActivity(Activity):
     """Activity that takes a custom file as the input and replays it for the user to replicate.
@@ -16,19 +16,19 @@ class CustomActivity(Activity):
     """
 
     def __init__(self, body_point_array, **kwargs) -> None:
-
+        super().__init__(body_point_array, **kwargs)
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = TimerComponent(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist[SKELETON] = PyGameSkeleton(body_point_array)
+        self.persist[TIMER] = PyGameTimer(0.3, -1.2, func=self.time_expire_func)
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0["start_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
-        if "path" in kwargs:
-            self.file_path = kwargs["path"]
+        if PATH_ARG in kwargs:
+            self.file_path = kwargs[PATH_ARG]
 
         # Attempts to read point data from specified CSV, otherwise exits
         try:
@@ -55,26 +55,35 @@ class CustomActivity(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120), 
-            float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]), 
-            func=self.target_1_func, target_pts=[15], precision=0.3)
+        stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120),
+                                                float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                                float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                                func=self.target_1_func, target_pts=[15], precision=50)
 
-        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120), 
-            float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]), 
-            func=self.target_2_func, target_pts=[16], precision=0.3)
+        stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120),
+                                                float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                                float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                                func=self.target_2_func, target_pts=[16], precision=50)
 
-        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120), 
-            float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]), 
-            func=self.target_3_func, target_pts=[27], precision=0.3)
+        stage_1["target_3"] = PyGameButton(50, (100, 100, 0, 120),
+                                                float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                                float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                                func=self.target_3_func, target_pts=[27], precision=50)
 
-        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120), 
-            float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]), 
-            func=self.target_4_func, target_pts=[28], precision=0.3)
+        stage_1["target_4"] = PyGameButton(50, (0, 100, 100, 120),
+                                                float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                                float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                                func=self.target_4_func, target_pts=[28], precision=50)
+
+        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
+        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, 30, (255, 255, 0, 120))
+        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, 30, (0, 255, 255, 120))
 
         # Initializes a dict of functions where various capabilities can be passed
         # i.e (Start logging, stop logging, etc.)
-        if "funcs" in kwargs:
-            self.funcs = kwargs["funcs"]
+        if FUNCS in kwargs:
+            self.funcs = kwargs[FUNCS]
         else:
             self.funcs = {}
 
@@ -84,7 +93,7 @@ class CustomActivity(Activity):
 
         # # Use this to start at stage 1
         # self.stage = 1
-        # self.persist["timer"].set_timer(100)
+        # self.persist[TIMER].set_timer(100)
 
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
@@ -94,45 +103,77 @@ class CustomActivity(Activity):
             self.stage = 0
             self.index = 0
             self.change_stage()
-            if "stop_logging" in self.funcs:
-                for func in self.funcs["stop_logging"]:
+            if STOP_LOGGING in self.funcs:
+                for func in self.funcs[STOP_LOGGING]:
                     func()
     
     def target_1_func(self) -> None:
         self.stages[1]["target_1"].clicked = True
         if self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
             self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+            self.stages[1]["target_1"].set_pos(
+                float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_2"].set_pos(
+                float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_3"].set_pos(
+                float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_4"].set_pos(
+                float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
     def target_2_func(self) -> None:
         self.stages[1]["target_2"].clicked = True
         if self.stages[1]["target_1"].clicked and self.stages[1]["target_3"].clicked and self.stages[1]["target_4"].clicked:
             self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+            self.stages[1]["target_1"].set_pos(
+                float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_2"].set_pos(
+                float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_3"].set_pos(
+                float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_4"].set_pos(
+                float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
     def target_3_func(self) -> None:
         self.stages[1]["target_3"].clicked = True
         if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_4"].clicked:
             self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+            self.stages[1]["target_1"].set_pos(
+                float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_2"].set_pos(
+                float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_3"].set_pos(
+                float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_4"].set_pos(
+                float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
     def target_4_func(self) -> None:
         self.stages[1]["target_4"].clicked = True
         if self.stages[1]["target_1"].clicked and self.stages[1]["target_2"].clicked and self.stages[1]["target_3"].clicked:
             self.index += 1
-            self.stages[1]["target_1"].set_pos(float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]))
-            self.stages[1]["target_2"].set_pos(float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]))
-            self.stages[1]["target_3"].set_pos(float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]))
-            self.stages[1]["target_4"].set_pos(float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]))
+            self.stages[1]["target_1"].set_pos(
+                float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_2"].set_pos(
+                float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_3"].set_pos(
+                float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[1]["target_4"].set_pos(
+                float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+            float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
     def start_button_func(self) -> None:
         """
@@ -141,22 +182,23 @@ class CustomActivity(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist["timer"].set_timer(100)
+            self.persist[TIMER].set_timer(100)
             self.stage = self.stage + 1
-            if "new_log" in self.funcs:
-                for func in self.funcs["new_log"]:
+            if NEW_LOG in self.funcs:
+                for func in self.funcs[NEW_LOG]:
                     func()
-            if "start_logging" in self.funcs:
-                for func in self.funcs["start_logging"]:
+            if START_LOGGING in self.funcs:
+                for func in self.funcs[START_LOGGING]:
                     func()
-            self.change_stage()
 
-    def handle_frame(self) -> None:
+    def handle_frame(self, **kwargs) -> None:
         """
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.
         """
+        super().handle_frame(**kwargs)
         self.stages[1]["target_1"].clicked = False
         self.stages[1]["target_2"].clicked = False
         self.stages[1]["target_3"].clicked = False
         self.stages[1]["target_4"].clicked = False
+        self.change_stage()

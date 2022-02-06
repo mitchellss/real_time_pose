@@ -7,6 +7,7 @@ from activities.custom_activity.custom_activity import CustomActivity
 from activities.custom_activity_dynamic.custom_activity_dynamic import CustomActivityDynamic
 from activities.game.game import Game
 from activities.game_mk2.game_mk2 import GameMkII
+from activities.haptic.haptic import Haptic
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
 from activities.squat.squat import Squat
 from data_logging.logger import Logger
@@ -18,8 +19,8 @@ from frame_input.video_file_input import VideoFileInput
 
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
-from ui.pyqtgraph.button_component import ButtonComponent
-from ui.pyqtgraph.pyqtgraph import PyQtGraph
+from ui.pygame.pygame_ui import PyGameUI
+from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
 
 class TwoDimensionGame():
@@ -38,6 +39,7 @@ class TwoDimensionGame():
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 2))
+        self.body_point_array_raw = np.zeros((self.NUM_LANDMARKS, 2))
 
         self.pose_detector = Blazepose(model_complexity=1)
 
@@ -89,18 +91,19 @@ class TwoDimensionGame():
         the relevant activity."""
 
         # Creates the gui
-        self.gui = PyQtGraph()
+        #self.gui = PyQtGraph()
+        self.gui = PyGameUI()
         self.gui.new_gui()
 
-        # Dict of functions to be given to the activity. This is done this way
-        # in order to allow for control of things like logging to be handled by
-        # the activity being played rather than by this main file. Moreso, this
-        # reduces the amount of coupling between the logger and the activity.
-        # Instead of having the activity import the logger and therefore have
-        # it be dependant on it, the activity just runs whatever functions are
-        # given to it at the times specified in the activity. This allows for
-        # very specific activity classes (as intended) but very general logging
-        # classes.
+        '''Dict of functions to be given to the activity. This is done this way
+        in order to allow for control of things like logging to be handled by
+        the activity being played rather than by this main file. Moreso, this
+        reduces the amount of coupling between the logger and the activity.
+        Instead of having the activity import the logger and therefore have
+        it be dependant on it, the activity just runs whatever functions are
+        given to it at the times specified in the activity. This allows for
+        very specific activity classes (as intended) but very general logging
+        classes.'''
         funcs = {
             START_LOGGING:    [logger.start_logging   for logger in self.loggers],
             STOP_LOGGING:     [logger.stop_logging    for logger in self.loggers],
@@ -119,6 +122,8 @@ class TwoDimensionGame():
             self.activity = CustomActivityDynamic(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "game_mk2":
             self.activity = GameMkII(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "haptic":
+            self.activity = Haptic(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
@@ -139,18 +144,19 @@ class TwoDimensionGame():
         # Call change activity initially to render components
         self.activity.change_stage()
 
-        # Set the function to call on update
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update)
-        self.timer.start(50)
+        # if ui == pyqtgraph
+        # # Set the function to call on update
+        # #self.timer = QtCore.QTimer()
+        # #self.timer.timeout.connect(self.update)
+        # #self.timer.start(50)
 
-    def update(self):
-        """
-        Updates the position of the skeleton component and
-        the time on the timer
-        """
-        self.persistant[SKELETON].set_pos(self.body_point_array)
-        self.persistant[TIMER].tick()
+    # def update(self):
+    #     """
+    #     Updates the position of the skeleton component and
+    #     the time on the timer
+    #     """
+    #     self.persistant[SKELETON].set_pos(self.body_point_array)
+    #     self.persistant[TIMER].tick()
 
     def start_image_processing(self):
         """
@@ -184,7 +190,7 @@ class TwoDimensionGame():
                 self.update_point_and_connection_data(landmarks)
 
                 # Handles the activity's logic at the end of a frame
-                self.activity.handle_frame()
+                self.activity.handle_frame(surface=self.gui.window)
 
                 # log data
                 self.log_data()
@@ -196,18 +202,30 @@ class TwoDimensionGame():
             if cv2.waitKey(5) & 0xFF == 27:
                 break
 
+            self.gui.update()
+            self.gui.clear()
+            self.persistant[TIMER].tick()
+
+
     def update_point_and_connection_data(self, landmarks):
         """Updates the numpy array with the most current coordinate data"""
         # Loop through results and add them to the body point numpy array
         for landmark in range(0,len(landmarks)):
-            self.body_point_array[landmark][0] = landmarks[landmark].x
-            self.body_point_array[landmark][1] = landmarks[landmark].y
+            # Scale up data to fit to a bigger pixel grid
+            self.body_point_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
+            self.body_point_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
+            
+            # Save raw data for logging purposes
+            self.body_point_array_raw[landmark][0] = landmarks[landmark].x
+            self.body_point_array_raw[landmark][1] = landmarks[landmark].y
+        self.persistant[SKELETON].set_pos(self.body_point_array)
+
 
     def log_data(self):
         """Calls the log method on any instantiated loggers"""
         for logger in self.loggers:
             if isinstance(logger, PointLogger):
-                logger.log(self.body_point_array)
+                logger.log(self.body_point_array_raw)
             if isinstance(logger, VideoLogger):
                 logger.log(self.image)
 
