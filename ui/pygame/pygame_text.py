@@ -8,7 +8,7 @@ import pygame
 class PyGameText(TextComponent):
 
     def __init__(self, x_pos: float, y_pos: float, text: str, **kwargs) -> None:
-        super().__init__(x_pos, y_pos, text)
+        super().__init__(x_pos, y_pos, text, **kwargs)
         self.font = pygame.font.SysFont(self.font, self.size)
 
     def draw(self, surface: pygame.Surface) -> None:

@@ -1,4 +1,3 @@
-from tkinter.tix import WINDOW
 from activities.activity import Activity
 from ui.pygame.pygame_button import PyGameButton
 from ui.pygame.pygame_hand_bubble import PyGameHandBubble
@@ -9,6 +8,7 @@ from ui.pygame.pygame_timer import PyGameTimer
 from constants.constants import *
 import sys
 import pandas as pd
+from better_profanity import profanity
 
 from utils.utils import *
 
@@ -74,6 +74,8 @@ class GameMkII(Activity):
         # Index tracks point in the file for a specific group of buttons/points
         self.index = 0
 
+        self.letter_change_delay = 0
+
         self.letter_index = [0,0,0,0]
 
         # Initialize stage 1 dict. This contains all the buttons
@@ -107,58 +109,57 @@ class GameMkII(Activity):
         spacing = 0.25
         height = 125
         initial_offset = 25
-        first_offset = 50
-        second_offset = 150
+        first_offset = 55
+        second_offset = 165
         spacing = 10
 
-        letter_centering_horz = -0.07
-        letter_centering_vert = -0.36
+        letter_centering_vert = -70
 
         stage_2 = {}
         stage_2[NAME_TARGET_0 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - second_offset, 
                                                         height, 
-                                                        func=lambda:self.change_letter(0,1), target_pts=[15], precision=0.1)
+                                                        func=lambda:self.change_letter(0,1), target_pts=[15], precision=50)
         stage_2[NAME_TARGET_0 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - second_offset, 
                                                           height, 
-                                                          func=lambda:self.change_letter(0,-1), target_pts=[15], precision=0.1)
+                                                          func=lambda:self.change_letter(0,-1), target_pts=[16], precision=50)
         stage_2[NAME_TARGET_1 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - first_offset, 
                                                         height, 
-                                                        func=lambda:self.change_letter(1,1), target_pts=[15], precision=0.1)
+                                                        func=lambda:self.change_letter(1,1), target_pts=[15], precision=50)
         stage_2[NAME_TARGET_1 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - first_offset, 
                                                           height, 
-                                                          func=lambda:self.change_letter(1,-1), target_pts=[15], precision=0.1)
+                                                          func=lambda:self.change_letter(1,-1), target_pts=[16], precision=50)
         stage_2[NAME_TARGET_2 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        WINDOW_WIDTH/2 - initial_offset + 50, 
+                                                        WINDOW_WIDTH/2 - initial_offset + first_offset, 
                                                         height, 
-                                                        func=lambda:self.change_letter(2,1), target_pts=[15], precision=0.1)
+                                                        func=lambda:self.change_letter(2,1), target_pts=[15], precision=50)
         stage_2[NAME_TARGET_2 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                        WINDOW_WIDTH/2 - initial_offset + 50, 
+                                                        WINDOW_WIDTH/2 - initial_offset + first_offset, 
                                                           height, 
-                                                          func=lambda:self.change_letter(2,-1), target_pts=[15], precision=0.1)
+                                                          func=lambda:self.change_letter(2,-1), target_pts=[16], precision=50)
         stage_2[NAME_TARGET_3 + UP] = PyGameButton(50, (0, 255, 0, 60),
-                                                        WINDOW_WIDTH/2 - initial_offset + 150, 
+                                                        WINDOW_WIDTH/2 - initial_offset + second_offset, 
                                                         height, 
-                                                        func=lambda:self.change_letter(3,1), target_pts=[15], precision=0.1)
+                                                        func=lambda:self.change_letter(3,1), target_pts=[15], precision=50)
         stage_2[NAME_TARGET_3 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
-                                                        WINDOW_WIDTH/2 - initial_offset + 150, 
+                                                        WINDOW_WIDTH/2 - initial_offset + second_offset, 
                                                           height, 
-                                                          func=lambda:self.change_letter(3,-1), target_pts=[15], precision=0.1)
+                                                          func=lambda:self.change_letter(3,-1), target_pts=[16], precision=50)
         stage_2["name_label_0"] = PyGameText(
-            bp2p_x(horz_starting_pt)+letter_centering_horz,height+letter_centering_vert, text="A")
+            WINDOW_WIDTH/2 - initial_offset - second_offset, height+letter_centering_vert, text="A", size=50)
         stage_2["name_label_1"] = PyGameText(
-            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing,height+letter_centering_vert, text="A")
+            WINDOW_WIDTH/2 - initial_offset - first_offset, height+letter_centering_vert, text="A", size=50)
         stage_2["name_label_2"] = PyGameText(
-            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing*2,height+letter_centering_vert, text="A")
+            WINDOW_WIDTH/2 - initial_offset + first_offset, height+letter_centering_vert, text="A", size=50)
         stage_2["name_label_3"] = PyGameText(
-            bp2p_x(horz_starting_pt)+letter_centering_horz+spacing*3,height+letter_centering_vert, text="A")
+            WINDOW_WIDTH/2 - initial_offset + second_offset, height+letter_centering_vert, text="A", size=50)
         stage_2["submit_button"] = PyGameButton(50, (0, 255, 0, 120),
-                                                     0.4, -0.5, func=self.submit_score_func, target_pts=[15], precision=0.1)
+                                                     WINDOW_WIDTH-250, WINDOW_HEIGHT/2, func=self.submit_score_func, target_pts=[15], precision=50)
         stage_2["submit_label"] = PyGameText(
-            0.4, -0.85, text="Submit:")
+            WINDOW_WIDTH-250, WINDOW_HEIGHT/2, text="Submit:")
 
         # List of stages to swap between and what stage to start at
         self.stages = [stage_0, stage_1, stage_2]
@@ -172,15 +173,16 @@ class GameMkII(Activity):
         self.components = self.stages[self.stage]
 
     def change_letter(self, letter_num, amount):
-        self.letter_index[letter_num] = (self.letter_index[letter_num] + amount) % len(LETTER_SELECT)
-        for i in range(0,4): 
-            self.stages[self.NAME_STAGE][f"name_label_{i}"].set_text(LETTER_SELECT[self.letter_index[i]])
+        self.letter_change_delay += 1
+        if self.letter_change_delay % 5 == 0:
+            self.letter_index[letter_num] = (self.letter_index[letter_num] + amount) % len(LETTER_SELECT)
+            for i in range(0,4): 
+                self.stages[self.NAME_STAGE][f"name_label_{i}"].set_text(LETTER_SELECT[self.letter_index[i]])
 
     def submit_score_func(self):
         self.stage = 0
         name = f"{LETTER_SELECT[self.letter_index[0]]}{LETTER_SELECT[self.letter_index[1]]}{LETTER_SELECT[self.letter_index[2]]}{LETTER_SELECT[self.letter_index[3]]}"
-        banned_names = {"AAAA"}
-        if name not in banned_names:
+        if not profanity.contains_profanity(name):
             file = open(PATH / "leaderboard.txt", "a")
             file.write(f"{name},{self.persist[LIVE_SCORE].get_score()}\n")
             file.close()
