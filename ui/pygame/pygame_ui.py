@@ -19,6 +19,9 @@ class PyGameUI(GUI):
     def new_gui(self) -> None:
         pygame.init()
         pygame.font.init()
+
+        pygame_icon = pygame.image.load('ui/pygame/forsyth-jason.jpg')
+        pygame.display.set_icon(pygame_icon)
         # Colours
 
         # Game Setup
