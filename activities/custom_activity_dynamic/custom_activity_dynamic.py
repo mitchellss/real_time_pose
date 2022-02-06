@@ -5,7 +5,7 @@ from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
 from ui.components.skeleton_component import SkeletonComponent
 from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 from PyQt5.QtGui import QFont
-from constants.constants import PATH
+from constants.constants import *
 import sys
 import pandas as pd
 
@@ -20,13 +20,13 @@ class CustomActivityDynamic(Activity):
 
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist[SKELETON] = SkeletonComponent(body_point_array)
+        self.persist[TIMER] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
         self.persist["live_score"] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0["start_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if "path" in kwargs:
@@ -75,8 +75,8 @@ class CustomActivityDynamic(Activity):
 
         # Initializes a dict of functions where various capabilities can be passed
         # i.e (Start logging, stop logging, etc.)
-        if "funcs" in kwargs:
-            self.funcs = kwargs["funcs"]
+        if FUNCS in kwargs:
+            self.funcs = kwargs[FUNCS]
         else:
             self.funcs = {}
 
@@ -86,7 +86,7 @@ class CustomActivityDynamic(Activity):
 
         # # Use this to start at stage 1
         # self.stage = 1
-        # self.persist["timer"].set_timer(100)
+        # self.persist[TIMER].set_timer(100)
 
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
@@ -96,8 +96,8 @@ class CustomActivityDynamic(Activity):
             self.stage = 0
             self.index = 0
             self.change_stage()
-            if "stop_logging" in self.funcs:
-                for func in self.funcs["stop_logging"]:
+            if STOP_LOGGING in self.funcs:
+                for func in self.funcs[STOP_LOGGING]:
                     func()
     
     def target_1_func(self) -> None:
@@ -127,13 +127,13 @@ class CustomActivityDynamic(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist["timer"].set_timer(100)
+            self.persist[TIMER].set_timer(100)
             self.stage = self.stage + 1
-            if "new_log" in self.funcs:
-                for func in self.funcs["new_log"]:
+            if NEW_LOG in self.funcs:
+                for func in self.funcs[NEW_LOG]:
                     func()
-            if "start_logging" in self.funcs:
-                for func in self.funcs["start_logging"]:
+            if START_LOGGING in self.funcs:
+                for func in self.funcs[START_LOGGING]:
                     func()
             self.change_stage()
 

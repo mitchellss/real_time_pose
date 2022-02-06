@@ -6,7 +6,7 @@ from ui.components.button_component import ButtonComponent
 class PyGameButton(ButtonComponent):
 
     def __init__(self, size: int, color: tuple[int, int, int, int], x_pos: float,
-                 y_pos: float, precision: float = 0.2, **kwargs) -> None:
+                 y_pos: float, precision: float = 50, **kwargs) -> None:
         super().__init__(size, color, x_pos, y_pos, precision, **kwargs)
 
     def is_clicked(self, x: float, y: float, distance: float) -> bool:

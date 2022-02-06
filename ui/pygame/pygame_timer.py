@@ -8,8 +8,7 @@ class PyGameTimer(TimerComponent):
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
         super().__init__(x_pos, y_pos, **kwargs)
-        self.font = pygame.font.SysFont("Sans", 30)
-
+        self.font = pygame.font.SysFont(self.font, self.size)
     
     def tick(self) -> None:
         if self.time > 0:

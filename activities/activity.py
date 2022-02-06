@@ -5,7 +5,6 @@ from ui.components.button_component import ButtonComponent
 from ui.components.hand_bubble_component import HandBubbleComponent
 from ui.ui_component import UIComponent
 from constants.constants import *
-from ui.pyqtgraph.pyqtgraph_hand_bubble import PyQtGraphHandBubble
 
 
 class Activity:
@@ -15,8 +14,8 @@ class Activity:
         self.persist: Dict[str, UIComponent] = None
         self.stages: list[Dict[str, UIComponent]] = None
         self.stage: int = 0
-        if "funcs" in kwargs:
-            self.funcs = kwargs["funcs"]
+        if FUNCS in kwargs:
+            self.funcs = kwargs[FUNCS]
         else:
             self.funcs = {}
 

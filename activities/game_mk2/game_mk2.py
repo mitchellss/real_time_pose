@@ -1,6 +1,8 @@
+from tkinter.tix import WINDOW
 from activities.activity import Activity
 from ui.pygame.pygame_button import PyGameButton
 from ui.pygame.pygame_hand_bubble import PyGameHandBubble
+from ui.pygame.pygame_live_score import PyGameLiveScore
 from ui.pygame.pygame_skeleton import PyGameSkeleton
 from ui.pygame.pygame_text import PyGameText
 from ui.pygame.pygame_timer import PyGameTimer
@@ -26,12 +28,15 @@ class GameMkII(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(0.3, -1.2, func=self.time_expire_func)
-        # self.persist[LIVE_SCORE] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 0, size=50, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 100, size=50)
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 
+                                            0*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                            -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, 
+                                            precision=50, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if PATH_ARG in kwargs:
@@ -72,19 +77,23 @@ class GameMkII(Activity):
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
         stage_1[TARGET_0] = PyGameButton(50, (255, 0, 0, 60),
-                                              float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                              float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_1_func, target_pts=[15], precision=50)
 
         stage_1[TARGET_1] = PyGameButton(50, (0, 0, 255, 60),
-                                              float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                              float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_2_func, target_pts=[16], precision=50)
 
         stage_1[TARGET_2] = PyGameButton(50, (255, 255, 0, 60),
-                                              float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                              float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_3_func, target_pts=[27], precision=50)
 
         stage_1[TARGET_3] = PyGameButton(50, (0, 255, 255, 60),
-                                              float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
+                                              float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
+                                              float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
         stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
@@ -165,22 +174,22 @@ class GameMkII(Activity):
     def target_1_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_0].change_color((255, 0, 0, 120))
-        # self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(1)
 
     def target_2_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 255, 120))
-        # self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(1)
 
     def target_3_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_2].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_2].change_color((255, 255, 0, 120))
-        # self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(1)
 
     def target_4_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 255, 255, 120))
-        # self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(1)
 
     def start_button_func(self) -> None:
         """

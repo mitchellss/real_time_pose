@@ -2,6 +2,7 @@ from ui.components.text_component import TextComponent
 import pyqtgraph as pg
 from PyQt5.QtGui import QFont
 
+
 class PyQtGraphText(TextComponent):
 
     def __init__(self, x_pos: float, y_pos: float, text: str, **kwargs) -> None:

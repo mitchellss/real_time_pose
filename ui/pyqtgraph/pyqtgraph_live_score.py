@@ -1,5 +1,6 @@
 import pyqtgraph as pg
 from ui.components.live_score_component import LiveScoreComponent
+from PyQt5.QtGui import QFont
 
 
 class PyQtGraphLiveScore(LiveScoreComponent):
@@ -10,35 +11,26 @@ class PyQtGraphLiveScore(LiveScoreComponent):
         Component (): Abstract component type
     """
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
-        self.x_pos: float = x_pos
-        self.y_pos: float = y_pos
+        super().__init__(x_pos, y_pos, **kwargs)
         self.score_count = pg.TextItem(text="Score: ")
-        self.score_count.setPos(x_pos, y_pos)
-        self.score: int = 0
-
-        if "font" in kwargs:
-            self.score_count.setFont(kwargs["font"])
-        if "text" in kwargs:
-            self.score_count.setText(kwargs["text"])
+        self.score_count.setPos(self.x_pos, self.y_pos)
+        self.score_count.setFont(QFont(self.font, self.size))
+        self.score_count.setText(self.text)
     
     def set_pos(self, x_pos: float, y_pos: float):
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        super().set_pos(x_pos, y_pos)
         self.score_count.SetPos(x_pos, y_pos)
 
     def get_item(self) -> pg.TextItem:
         return self.score_count
 
     def set_score(self, score: int) -> None:
-        self.score = score
+        super().set_score(score)
         self.score_count.setText(f"Score: {self.score}")
 
     def add_score(self, score: int) -> None:
-        self.score += score
+        super().add_score(score)
         self.score_count.setText(f"Score: {self.score}")
-
-    def get_score(self) -> int:
-        return self.score
 
     def hide(self) -> None:
         self.get_item().hide()
