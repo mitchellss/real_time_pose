@@ -1,6 +1,6 @@
 
 from activities.activity import Activity
-from constants.constants import PIXEL_SCALE, PIXEL_X_OFFSET, PIXEL_Y_OFFSET, SKELETON, TIMER
+from constants.constants import *
 from ui.pygame.pygame_button import PyGameButton
 from ui.pygame.pygame_skeleton import PyGameSkeleton
 import random
@@ -93,8 +93,8 @@ class Haptic(Activity):
     def time_expire_func(self) -> None:
         self.stage = 0
         self.change_stage()
-        if "stop_logging" in self.funcs:
-            for func in self.funcs["stop_logging"]:
+        if STOP_LOGGING in self.funcs:
+            for func in self.funcs[STOP_LOGGING]:
                 func()
     
     def target_1_func(self) -> None:
