@@ -9,6 +9,11 @@ Real Time Pose is a tool created by the wearable computing research group. Heade
 
 > `python main.py video --video_file ./activities/jumping_jacks/demo.mp4 --activity game_mk2 --file ./data/looped/jumping_jacks.csv --hide_demo --hide_video`
 
+### Currently Working Activities:
+* **game** - Two floating buttons that move around randomly.
+* **game_mk2** - Actively moving buttons make user replicate dynamic motion. Complete with score tracking and name entering. (requires --file to define motion)
+* **bread_crumb** - Buttons that move from one spot to another to guide a user into a defined motion. (requires --file to define motion)
+* **haptic** - A single button moving around when clicked. Connects to the haptic golf glove to deliver feedback based on the button direction.
 
 ## Project Layout
 The project is laid out in seperate modules in an attempt to achieve the lowest amount of [coupling](https://en.wikipedia.org/wiki/Coupling_%28computer_programming%29) possible. Allowing frame inputs, pose detection algorithms, and frontends to be swapped seamlessly. This design choice was made in an effort to future-proof the tool in the event that new algorithms or approaches are released.

@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import argparse
 import cv2
-from activities.custom_activity.custom_activity import CustomActivity
+from activities.bread_crumb.bread_crumb import BreadCrumb
 from activities.custom_activity_dynamic.custom_activity_dynamic import CustomActivityDynamic
 from activities.game.game import Game
 from activities.game_mk2.game_mk2 import GameMkII
@@ -116,8 +116,8 @@ class TwoDimensionGame():
             self.activity = JumpingJacks(self.body_point_array, funcs=funcs)
         elif self.args.activity == "squat":
             self.activity = Squat(self.body_point_array, funcs=funcs)
-        elif self.args.activity == "custom_activity":
-            self.activity = CustomActivity(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "bread_crumb":
+            self.activity = BreadCrumb(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "custom_activity_dynamic":
             self.activity = CustomActivityDynamic(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "game_mk2":

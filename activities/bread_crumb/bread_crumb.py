@@ -8,7 +8,7 @@ import sys
 import pandas as pd
 
 
-class CustomActivity(Activity):
+class BreadCrumb(Activity):
     """Activity that takes a custom file as the input and replays it for the user to replicate.
 
     Args:
