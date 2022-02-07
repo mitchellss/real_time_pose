@@ -12,5 +12,5 @@ class PyGameText(TextComponent):
         self.font = pygame.font.SysFont(self.font, self.size)
 
     def draw(self, surface: pygame.Surface) -> None:
-        img = self.font.render(self.text, True, (255,255,255))
+        img = self.font.render(self.text, True, self.color)
         surface.blit(img, (self.x_pos, self.y_pos))

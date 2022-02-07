@@ -20,6 +20,7 @@ class PyGameTimer(TimerComponent):
             self.stop_timer()
 
     def draw(self, surface: pygame.Surface) -> None:
-        img = self.font.render(f"Time: {round(self.time,1)}", True, (255,255,255))
-        surface.blit(img, (self.x_pos, self.y_pos))
+        if self.visible:
+            img = self.font.render(f"Time: {round(self.time,1)}", True, (255,255,255))
+            surface.blit(img, (self.x_pos, self.y_pos))
 

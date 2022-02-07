@@ -30,8 +30,8 @@ class GameMkII(Activity):
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
         self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 10, size=50, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 70, size=50)
+        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 60, size=50, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 110, size=50)
 
         # Initialize dict for stage 0 
         stage_0 = {}
@@ -107,7 +107,7 @@ class GameMkII(Activity):
 
         horz_starting_pt = -0.4
         spacing = 0.25
-        height = 125
+        height = 240
         initial_offset = 25
         first_offset = 55
         second_offset = 165
@@ -116,6 +116,8 @@ class GameMkII(Activity):
         letter_centering_vert = -70
 
         stage_2 = {}
+        stage_2["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_2["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
         stage_2[NAME_TARGET_0 + UP] = PyGameButton(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - second_offset, 
                                                         height, 
@@ -149,17 +151,24 @@ class GameMkII(Activity):
                                                           height, 
                                                           func=lambda:self.change_letter(3,-1), target_pts=[16], precision=50)
         stage_2["name_label_0"] = PyGameText(
-            WINDOW_WIDTH/2 - initial_offset - second_offset, height+letter_centering_vert, text="A", size=50)
+            WINDOW_WIDTH/2 - initial_offset - second_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
         stage_2["name_label_1"] = PyGameText(
-            WINDOW_WIDTH/2 - initial_offset - first_offset, height+letter_centering_vert, text="A", size=50)
+            WINDOW_WIDTH/2 - initial_offset - first_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
         stage_2["name_label_2"] = PyGameText(
-            WINDOW_WIDTH/2 - initial_offset + first_offset, height+letter_centering_vert, text="A", size=50)
+            WINDOW_WIDTH/2 - initial_offset + first_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
         stage_2["name_label_3"] = PyGameText(
-            WINDOW_WIDTH/2 - initial_offset + second_offset, height+letter_centering_vert, text="A", size=50)
+            WINDOW_WIDTH/2 - initial_offset + second_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
         stage_2["submit_button"] = PyGameButton(50, (0, 255, 0, 120),
-                                                     WINDOW_WIDTH-250, WINDOW_HEIGHT/2, func=self.submit_score_func, target_pts=[15], precision=50)
+                                                     WINDOW_WIDTH-250, WINDOW_HEIGHT/2-100, func=self.submit_score_func, target_pts=[15], precision=50)
         stage_2["submit_label"] = PyGameText(
-            WINDOW_WIDTH-250, WINDOW_HEIGHT/2, text="Submit:")
+            WINDOW_WIDTH-250-45, WINDOW_HEIGHT/2-190, text="Submit")
+        stage_2["letter_instructions_1"] = PyGameText(
+            20, 0, text="Enter your name and submit your score!", size=50, font="Sans")
+        # stage_2["letter_instructions_2"] = PyGameText(
+        #     20, WINDOW_HEIGHT/2+30-300, text="Red goes forwards", color=(255,0,0))
+        # stage_2["letter_instructions_3"] = PyGameText(
+        #     20, WINDOW_HEIGHT/2+60-300, text="Blue goes back", color=(50,50,255))
+
 
         # List of stages to swap between and what stage to start at
         self.stages = [stage_0, stage_1, stage_2]
@@ -178,6 +187,8 @@ class GameMkII(Activity):
             self.letter_index[letter_num] = (self.letter_index[letter_num] + amount) % len(LETTER_SELECT)
             for i in range(0,4): 
                 self.stages[self.NAME_STAGE][f"name_label_{i}"].set_text(LETTER_SELECT[self.letter_index[i]])
+        self.persist[TIMER].set_timer(20)
+
 
     def submit_score_func(self):
         self.stage = 0
@@ -186,6 +197,7 @@ class GameMkII(Activity):
             file = open(PATH / "leaderboard.txt", "a")
             file.write(f"{name},{self.persist[LIVE_SCORE].get_score()}\n")
             file.close()
+            self.persist[LIVE_SCORE].set_score(0)
 
     def time_expire_func(self) -> None:
         if self.stage == 1:
@@ -194,6 +206,10 @@ class GameMkII(Activity):
             if STOP_LOGGING in self.funcs:
                 for func in self.funcs[STOP_LOGGING]:
                     func()
+            self.persist[TIMER].set_timer(20)
+            self.persist[TIMER].hide()
+        elif self.stage == 2:
+            self.submit_score_func()
     
     def target_1_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = True
@@ -222,7 +238,8 @@ class GameMkII(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist[TIMER].set_timer(1)
+            self.persist[TIMER].show()
+            self.persist[TIMER].set_timer(10)
             self.stage = self.stage + 1
             if NEW_LOG in self.funcs:
                 for func in self.funcs[NEW_LOG]:
@@ -238,24 +255,25 @@ class GameMkII(Activity):
         """
         super().handle_frame(**kwargs)
 
-        if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_0].change_color((120, 0, 0, 60))
-        if not self.stages[self.PLAY_STAGE][TARGET_1].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 120, 60))
-        if not self.stages[self.PLAY_STAGE][TARGET_2].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_2].change_color((120, 120, 0, 60))
-        if not self.stages[self.PLAY_STAGE][TARGET_3].clicked:
-            self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 120, 120, 60))
-        
-        self.stages[self.PLAY_STAGE][TARGET_0].clicked = False
-        self.stages[self.PLAY_STAGE][TARGET_1].clicked = False
-        self.stages[self.PLAY_STAGE][TARGET_2].clicked = False
-        self.stages[self.PLAY_STAGE][TARGET_3].clicked = False
+        if self.stage == self.PLAY_STAGE:
+            if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
+                self.stages[self.PLAY_STAGE][TARGET_0].change_color((120, 0, 0, 60))
+            if not self.stages[self.PLAY_STAGE][TARGET_1].clicked:
+                self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 120, 60))
+            if not self.stages[self.PLAY_STAGE][TARGET_2].clicked:
+                self.stages[self.PLAY_STAGE][TARGET_2].change_color((120, 120, 0, 60))
+            if not self.stages[self.PLAY_STAGE][TARGET_3].clicked:
+                self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 120, 120, 60))
+            
+            self.stages[self.PLAY_STAGE][TARGET_0].clicked = False
+            self.stages[self.PLAY_STAGE][TARGET_1].clicked = False
+            self.stages[self.PLAY_STAGE][TARGET_2].clicked = False
+            self.stages[self.PLAY_STAGE][TARGET_3].clicked = False
 
-        self.index += 1
-        self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-        self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-        self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-        self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.index += 1
+            self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
 
         self.change_stage()

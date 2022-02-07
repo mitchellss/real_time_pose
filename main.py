@@ -189,11 +189,11 @@ class TwoDimensionGame():
                 landmarks = blaze_pose_coords.landmark
                 self.update_point_and_connection_data(landmarks)
 
-                # Handles the activity's logic at the end of a frame
-                self.activity.handle_frame(surface=self.gui.window)
 
                 # log data
                 self.log_data()
+            # Handles the activity's logic at the end of a frame
+            self.activity.handle_frame(surface=self.gui.window)
 
             if not self.args.hide_video:
                 cv2.imshow('MediaPipe Pose', self.image)

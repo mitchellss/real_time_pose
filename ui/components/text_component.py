@@ -18,6 +18,11 @@ class TextComponent(UIComponent):
         else:
             self.size = 30
 
+        if "color" in kwargs:
+            self.color = kwargs["color"]
+        else:
+            self.color = (255, 255, 255)
+
     def set_text(self, text: str) -> None:
         self.text = text
 
