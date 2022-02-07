@@ -37,7 +37,7 @@ class GameMkII(Activity):
         stage_0 = {}
         stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 
                                             0*PIXEL_SCALE+PIXEL_X_OFFSET, 
-                                            -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, 
+                                            -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET-100, 
                                             precision=50, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
@@ -158,8 +158,8 @@ class GameMkII(Activity):
             WINDOW_WIDTH/2 - initial_offset + first_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
         stage_2["name_label_3"] = PyGameText(
             WINDOW_WIDTH/2 - initial_offset + second_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
-        stage_2["submit_button"] = PyGameButton(50, (0, 255, 0, 120),
-                                                     WINDOW_WIDTH-250, WINDOW_HEIGHT/2-100, func=self.submit_score_func, target_pts=[15], precision=50)
+        stage_2["submit_button"] = PyGameButton(50, (0, 0, 255, 120),
+                                                     WINDOW_WIDTH-250, WINDOW_HEIGHT/2-100, func=self.submit_score_func, target_pts=[16], precision=50)
         stage_2["submit_label"] = PyGameText(
             WINDOW_WIDTH-250-45, WINDOW_HEIGHT/2-190, text="Submit")
         stage_2["letter_instructions_1"] = PyGameText(
