@@ -205,7 +205,7 @@ class GameMkII(Activity):
                     lines[i] = lines[i].split(",")
 
                 def myFunc(e):
-                    return int(e[1])
+                    return float(e[1])
                 
                 lines.sort(key=myFunc, reverse=True)
 
@@ -215,7 +215,7 @@ class GameMkII(Activity):
         print("\n" * 50)
         for i in range(0,10):
             try:
-                print(f"{i+1}. {lines[i][0]} - {lines[i][1]}")
+                print(f"{i+1}. {lines[i][0]} - {lines[i][1][0:5]}")
             except:
                 continue
 
