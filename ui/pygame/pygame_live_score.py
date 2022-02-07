@@ -16,8 +16,8 @@ class PyGameLiveScore(LiveScoreComponent):
 
     def set_score(self, score: int) -> None:
         super().set_score(score)
-        self.text = f"Score: {self.score}"
+        self.text = f"Score: {round(self.score,1)}"
     
     def add_score(self, score: int) -> None:
         super().add_score(score)
-        self.text = f"Score: {self.score}"
+        self.text = f"Score: {round(self.score,1)}"

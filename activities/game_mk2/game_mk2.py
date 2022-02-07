@@ -214,22 +214,22 @@ class GameMkII(Activity):
     def target_1_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_0].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_0].change_color((255, 0, 0, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(0.1)
 
     def target_2_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_1].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 255, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(0.1)
 
     def target_3_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_2].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_2].change_color((255, 255, 0, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(0.1)
 
     def target_4_func(self) -> None:
         self.stages[self.PLAY_STAGE][TARGET_3].clicked = True
         self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 255, 255, 120))
-        self.persist[LIVE_SCORE].add_score(1)
+        self.persist[LIVE_SCORE].add_score(0.1)
 
     def start_button_func(self) -> None:
         """
