@@ -198,6 +198,27 @@ class GameMkII(Activity):
             file.write(f"{name},{self.persist[LIVE_SCORE].get_score()}\n")
             file.close()
             self.persist[LIVE_SCORE].set_score(0)
+            
+            with open('leaderboard.txt') as f:
+                lines = f.read().splitlines()
+                for i in range(0,len(lines)):
+                    lines[i] = lines[i].split(",")
+
+                def myFunc(e):
+                    return int(e[1])
+                
+                lines.sort(key=myFunc, reverse=True)
+
+                self.print_scoreboard(lines)
+    
+    def print_scoreboard(self, lines):
+        print("\n" * 50)
+        for i in range(0,10):
+            try:
+                print(f"{i+1}. {lines[i][0]} - {lines[i][1]}")
+            except:
+                continue
+
 
     def time_expire_func(self) -> None:
         if self.stage == 1:
