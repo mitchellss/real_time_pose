@@ -1,11 +1,11 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
-from ui.pyqtgraph.button_component import ButtonComponent
-from ui.pyqtgraph.live_score_component import LiveScoreComponent
-from ui.pyqtgraph.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.timer_component import TimerComponent
+from ui.components.button_component import ButtonComponent
+from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
+from ui.components.skeleton_component import SkeletonComponent
+from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
 from PyQt5.QtGui import QFont
-from constants.constants import PATH
+from constants.constants import *
 import sys
 import pandas as pd
 
@@ -20,13 +20,13 @@ class CustomActivityDynamic(Activity):
 
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist["skeleton"] = SkeletonComponent(body_point_array)
-        self.persist["timer"] = TimerComponent(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist["live_score"] = LiveScoreComponent(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[SKELETON] = SkeletonComponent(body_point_array)
+        self.persist[TIMER] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist["live_score"] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0["start_button"] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if "path" in kwargs:
@@ -57,26 +57,26 @@ class CustomActivityDynamic(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120), 
-            float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]), 
-            func=self.target_1_func, target_pts=[15], precision=0.1)
+        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120),
+                                                float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]),
+                                                func=self.target_1_func, target_pts=[15], precision=0.1)
 
-        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120), 
-            float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]), 
-            func=self.target_2_func, target_pts=[16], precision=0.1)
+        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120),
+                                                float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]),
+                                                func=self.target_2_func, target_pts=[16], precision=0.1)
 
-        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120), 
-            float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]), 
-            func=self.target_3_func, target_pts=[27], precision=0.1)
+        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120),
+                                                float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]),
+                                                func=self.target_3_func, target_pts=[27], precision=0.1)
 
-        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120), 
-            float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]), 
-            func=self.target_4_func, target_pts=[28], precision=0.1)
+        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120),
+                                                float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]),
+                                                func=self.target_4_func, target_pts=[28], precision=0.1)
 
         # Initializes a dict of functions where various capabilities can be passed
         # i.e (Start logging, stop logging, etc.)
-        if "funcs" in kwargs:
-            self.funcs = kwargs["funcs"]
+        if FUNCS in kwargs:
+            self.funcs = kwargs[FUNCS]
         else:
             self.funcs = {}
 
@@ -84,20 +84,21 @@ class CustomActivityDynamic(Activity):
         self.stages = [stage_0, stage_1]
         self.stage = 0
 
-        # Use this to start at stage 1
-        self.stage = 1
-        self.persist["timer"].set_timer(100)
+        # # Use this to start at stage 1
+        # self.stage = 1
+        # self.persist[TIMER].set_timer(100)
 
         # Set the active components to the dict of the initial stage
         self.components = self.stages[self.stage]
 
     def time_expire_func(self) -> None:
-        self.stage = 0
-        self.index = 0
-        self.change_stage()
-        if "stop_logging" in self.funcs:
-            for func in self.funcs["stop_logging"]:
-                func()
+        if self.stage == 1:
+            self.stage = 0
+            self.index = 0
+            self.change_stage()
+            if STOP_LOGGING in self.funcs:
+                for func in self.funcs[STOP_LOGGING]:
+                    func()
     
     def target_1_func(self) -> None:
         self.stages[1]["target_1"].clicked = True
@@ -126,21 +127,22 @@ class CustomActivityDynamic(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist["timer"].set_timer(100)
+            self.persist[TIMER].set_timer(100)
             self.stage = self.stage + 1
-            if "new_log" in self.funcs:
-                for func in self.funcs["new_log"]:
+            if NEW_LOG in self.funcs:
+                for func in self.funcs[NEW_LOG]:
                     func()
-            if "start_logging" in self.funcs:
-                for func in self.funcs["start_logging"]:
+            if START_LOGGING in self.funcs:
+                for func in self.funcs[START_LOGGING]:
                     func()
             self.change_stage()
 
-    def end_frame_reset(self) -> None:
+    def handle_frame(self, **kwargs) -> None:
         """
         Defines what should happen at the end of a frame. In this case, it
         resets all the buttons to no longer be clicked.
         """
+        super().handle_frame(**kwargs)
         if not self.stages[1]["target_1"].clicked:
             self.stages[1]["target_1"].change_color(mkBrush(255, 0, 0, 120))
         if not self.stages[1]["target_2"].clicked:

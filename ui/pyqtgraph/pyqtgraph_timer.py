@@ -1,13 +1,13 @@
 
-from ui.pyqtgraph.component import Component
 import pyqtgraph as pg
+from ui.components.timer_component import TimerComponent
 
 
-class TimerComponent(Component):
+class PyQtGraphTimer(TimerComponent):
+
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        super().__init__(x_pos, y_pos, **kwargs)
         self.timer = pg.TextItem(text="Test")
         self.timer.setPos(x_pos, y_pos)
         self.time = 0
@@ -19,14 +19,8 @@ class TimerComponent(Component):
         if "starting_time" in kwargs:
             self.time = kwargs["starting_time"]
 
-        if "func" in kwargs:
-            self.func = kwargs["func"]
-        else:
-            self.func = lambda : True
-
     def set_pos(self, x_pos: float, y_pos: float) -> None:
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        super().set_pos(x_pos, y_pos)
         self.timer.SetPos(x_pos, y_pos)
 
     def get_item(self) -> pg.TextItem:
