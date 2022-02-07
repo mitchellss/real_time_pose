@@ -58,22 +58,22 @@ class CustomActivity(Activity):
         stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120),
                                                 float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
-                                                func=self.target_1_func, target_pts=[15], precision=50)
+                                                func=self.target_1_func, target_pts=[15], precision=100)
 
         stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120),
                                                 float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
-                                                func=self.target_2_func, target_pts=[16], precision=50)
+                                                func=self.target_2_func, target_pts=[16], precision=100)
 
-        stage_1["target_3"] = PyGameButton(50, (100, 100, 0, 120),
+        stage_1["target_3"] = PyGameButton(50, (255, 255, 0, 0),
                                                 float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
-                                                func=self.target_3_func, target_pts=[27], precision=50)
+                                                func=self.target_3_func, target_pts=[27], precision=100)
 
-        stage_1["target_4"] = PyGameButton(50, (0, 100, 100, 120),
+        stage_1["target_4"] = PyGameButton(50, (0, 255, 255, 120),
                                                 float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
-                                                func=self.target_4_func, target_pts=[28], precision=50)
+                                                func=self.target_4_func, target_pts=[28], precision=100)
 
         stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
         stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
@@ -182,7 +182,7 @@ class CustomActivity(Activity):
         starts the logs, and activates the stage change.
         """
         if self.stage == 0:
-            self.persist[TIMER].set_timer(100)
+            self.persist[TIMER].set_timer(30)
             self.stage = self.stage + 1
             if NEW_LOG in self.funcs:
                 for func in self.funcs[NEW_LOG]:
