@@ -73,6 +73,8 @@ class GameMkII(Activity):
         
         # Index tracks point in the file for a specific group of buttons/points
         self.index = 0
+        self.speed = 0.75
+        self.hit_miss = 0
 
         self.letter_change_delay = 0
 
@@ -260,7 +262,7 @@ class GameMkII(Activity):
         """
         if self.stage == 0:
             self.persist[TIMER].show()
-            self.persist[TIMER].set_timer(10)
+            self.persist[TIMER].set_timer(20)
             self.stage = self.stage + 1
             if NEW_LOG in self.funcs:
                 for func in self.funcs[NEW_LOG]:
@@ -279,22 +281,62 @@ class GameMkII(Activity):
         if self.stage == self.PLAY_STAGE:
             if not self.stages[self.PLAY_STAGE][TARGET_0].clicked:
                 self.stages[self.PLAY_STAGE][TARGET_0].change_color((120, 0, 0, 60))
+                self.hit_miss -= 1
+            else:
+                self.hit_miss += 1
+
             if not self.stages[self.PLAY_STAGE][TARGET_1].clicked:
                 self.stages[self.PLAY_STAGE][TARGET_1].change_color((0, 0, 120, 60))
+                self.hit_miss -= 1
+            else:
+                self.hit_miss += 1
+
             if not self.stages[self.PLAY_STAGE][TARGET_2].clicked:
                 self.stages[self.PLAY_STAGE][TARGET_2].change_color((120, 120, 0, 60))
+                self.hit_miss -= 1
+            else:
+                self.hit_miss += 1
+
             if not self.stages[self.PLAY_STAGE][TARGET_3].clicked:
                 self.stages[self.PLAY_STAGE][TARGET_3].change_color((0, 120, 120, 60))
+                self.hit_miss -= 1
+            else:
+                self.hit_miss += 1
             
+            print(f"{self.hit_miss}")
+
+            if self.hit_miss < 0 and self.speed > 0.7:
+                self.speed -= 0.01
+                # self.stages[self.PLAY_STAGE][TARGET_0].precision += 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_1].precision += 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_2].precision += 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_3].precision += 0.1
+            
+            if self.hit_miss > 0 and self.speed < 1:
+                self.speed += 0.01
+                # self.stages[self.PLAY_STAGE][TARGET_0].precision -= 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_1].precision -= 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_2].precision -= 0.1
+                # self.stages[self.PLAY_STAGE][TARGET_3].precision -= 0.1
+
+            if self.hit_miss > 150:
+                self.hit_miss = 150
+
+            if self.hit_miss < -150:
+                self.hit_miss = -150
+
             self.stages[self.PLAY_STAGE][TARGET_0].clicked = False
             self.stages[self.PLAY_STAGE][TARGET_1].clicked = False
             self.stages[self.PLAY_STAGE][TARGET_2].clicked = False
             self.stages[self.PLAY_STAGE][TARGET_3].clicked = False
 
-            self.index += 1
-            self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-            self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-            self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
-            self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.index += self.speed
+
+            self.stages[self.PLAY_STAGE][TARGET_0].set_pos(float(self.lh_x_data[round(self.index)])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.lh_y_data[round(self.index)])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_1].set_pos(float(self.rh_x_data[round(self.index)])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rh_y_data[round(self.index)])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_2].set_pos(float(self.ll_x_data[round(self.index)])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.ll_y_data[round(self.index)])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+            self.stages[self.PLAY_STAGE][TARGET_3].set_pos(float(self.rl_x_data[round(self.index)])*PIXEL_SCALE+PIXEL_X_OFFSET, float(self.rl_y_data[round(self.index)])*PIXEL_SCALE+PIXEL_Y_OFFSET)
+
+
 
         self.change_stage()
