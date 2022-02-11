@@ -121,26 +121,26 @@ class Haptic(Activity):
 
         if abs(vertical_dist) > abs(horziontal_dist):
             if vertical_dist > 0:
-                self.s.send("/255/125/125/125\n".encode('ascii'))
-                self.s.send("/255/125/125/125\n".encode('ascii'))
-                self.s.send("/255/125/125/125\n".encode('ascii'))
-                self.s.send("/255/125/125/125\n".encode('ascii'))
+                self.s.send("/255/125/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/255/125/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/255/125/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/255/125/125/125\n".encode('ascii'),timeout=10)
             else:
-                self.s.send("/125/255/125/125\n".encode('ascii'))
-                self.s.send("/125/255/125/125\n".encode('ascii'))
-                self.s.send("/125/255/125/125\n".encode('ascii'))
-                self.s.send("/125/255/125/125\n".encode('ascii'))
+                self.s.send("/125/255/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/255/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/255/125/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/255/125/125\n".encode('ascii'),timeout=10)
 
         else:
             if horziontal_dist > 0:
-                self.s.send("/125/125/255/125\n".encode('ascii'))
-                self.s.send("/125/125/255/125\n".encode('ascii'))
-                self.s.send("/125/125/255/125\n".encode('ascii'))
-                self.s.send("/125/125/255/125\n".encode('ascii'))
+                self.s.send("/125/125/255/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/255/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/255/125\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/255/125\n".encode('ascii'),timeout=10)
             else:
-                self.s.send("/125/125/125/255\n".encode('ascii'))
-                self.s.send("/125/125/125/255\n".encode('ascii'))
-                self.s.send("/125/125/125/255\n".encode('ascii'))
-                self.s.send("/125/125/125/255\n".encode('ascii'))
+                self.s.send("/125/125/125/255\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/125/255\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/125/255\n".encode('ascii'),timeout=10)
+                self.s.send("/125/125/125/255\n".encode('ascii'),timeout=10)
 
         self.change_stage()
