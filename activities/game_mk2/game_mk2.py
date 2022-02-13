@@ -73,7 +73,7 @@ class GameMkII(Activity):
         
         # Index tracks point in the file for a specific group of buttons/points
         self.index = 0
-        self.speed = 0.75
+        self.speed = 1
         self.hit_miss = 0
 
         self.letter_change_delay = 0
@@ -303,8 +303,6 @@ class GameMkII(Activity):
             else:
                 self.hit_miss += 1
             
-            print(f"{self.hit_miss}")
-
             if self.hit_miss < 0 and self.speed > 0.7:
                 self.speed -= 0.01
                 # self.stages[self.PLAY_STAGE][TARGET_0].precision += 0.1
