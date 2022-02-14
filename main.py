@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from activities.shapes.shapes import Shapes
 import numpy as np
 import argparse
 import cv2
@@ -124,6 +125,8 @@ class TwoDimensionGame():
             self.activity = GameMkII(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "haptic":
             self.activity = Haptic(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "shapes":
+            self.activity = Shapes(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
