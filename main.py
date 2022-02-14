@@ -11,6 +11,7 @@ from activities.game_mk2.game_mk2 import GameMkII
 from activities.haptic.haptic import Haptic
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
 from activities.squat.squat import Squat
+from activities.vector_haptic.vector_haptic import VectorHaptic
 from data_logging.logger import Logger
 from data_logging.skeleton_points.point_logger import PointLogger
 from data_logging.video.video_logger import VideoLogger
@@ -127,6 +128,8 @@ class TwoDimensionGame():
             self.activity = Haptic(self.body_point_array, funcs=funcs, path=self.args.file)
         elif self.args.activity == "shapes":
             self.activity = Shapes(self.body_point_array, funcs=funcs, path=self.args.file)
+        elif self.args.activity == "vector_haptic":
+            self.activity = VectorHaptic(self.body_point_array, funcs=funcs, path=self.args.file)
         else:
             print(f"Cannot find activity: {self.args.activity}")
             sys.exit(1)
