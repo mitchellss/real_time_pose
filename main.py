@@ -1,24 +1,14 @@
 import subprocess
 import sys
-from activities.shapes.shapes import Shapes
 import numpy as np
 import argparse
 import cv2
-from activities.bread_crumb.bread_crumb import BreadCrumb
-from activities.custom_activity_dynamic.custom_activity_dynamic import CustomActivityDynamic
-from activities.game.game import Game
-from activities.game_mk2.game_mk2 import GameMkII
-from activities.haptic.haptic import Haptic
-from activities.jumping_jacks.jumping_jacks import JumpingJacks
-from activities.squat.squat import Squat
-from activities.vector_haptic.vector_haptic import VectorHaptic
+from activities.activity_factory import ActivityFactory
 from data_logging.logger import Logger
 from data_logging.skeleton_points.point_logger import PointLogger
 from data_logging.video.video_logger import VideoLogger
-from pyqtgraph import QtCore
 from frame_input.realsense import Realsense
 from frame_input.video_file_input import VideoFileInput
-
 from frame_input.webcam import Webcam
 from pose_detection.blazepose import Blazepose
 from ui.pygame.pygame_ui import PyGameUI
@@ -84,6 +74,7 @@ class TwoDimensionGame():
         parser.add_argument("--video_file", nargs="?", const=".", default=".", help="Path to video to use as input")
         parser.add_argument("--hide_video", action="store_true", help="Set to hide real-time video playback")
         parser.add_argument("--hide_demo", action="store_true", help="Set to hide demo video")
+        parser.add_argument("--gui", choices=["pygame", "pyqtgraph"], default="pygame", help="The user interface to use")
         self.args = parser.parse_args()
 
     def init_ui(self):
@@ -92,9 +83,11 @@ class TwoDimensionGame():
         Registers functional arguments and passes those to
         the relevant activity."""
 
-        # Creates the gui
-        #self.gui = PyQtGraph()
-        self.gui = PyGameUI()
+        if self.args.gui == "pygame":
+            self.gui = PyGameUI()
+        elif self.args.gui == "pyqtgraph":
+            self.gui = PyQtGraph(lambda: self.persistant[TIMER].tick())
+
         self.gui.new_gui()
 
         '''Dict of functions to be given to the activity. This is done this way
@@ -112,27 +105,12 @@ class TwoDimensionGame():
             NEW_LOG:          [logger.new_log         for logger in self.loggers]
         }
 
-        if self.args.activity == "game":
-            self.activity = Game(self.body_point_array, funcs=funcs)
-        elif self.args.activity == "jumping_jacks":
-            self.activity = JumpingJacks(self.body_point_array, funcs=funcs)
-        elif self.args.activity == "squat":
-            self.activity = Squat(self.body_point_array, funcs=funcs)
-        elif self.args.activity == "bread_crumb":
-            self.activity = BreadCrumb(self.body_point_array, funcs=funcs, path=self.args.file)
-        elif self.args.activity == "custom_activity_dynamic":
-            self.activity = CustomActivityDynamic(self.body_point_array, funcs=funcs, path=self.args.file)
-        elif self.args.activity == "game_mk2":
-            self.activity = GameMkII(self.body_point_array, funcs=funcs, path=self.args.file)
-        elif self.args.activity == "haptic":
-            self.activity = Haptic(self.body_point_array, funcs=funcs, path=self.args.file)
-        elif self.args.activity == "shapes":
-            self.activity = Shapes(self.body_point_array, funcs=funcs, path=self.args.file)
-        elif self.args.activity == "vector_haptic":
-            self.activity = VectorHaptic(self.body_point_array, funcs=funcs, path=self.args.file)
-        else:
-            print(f"Cannot find activity: {self.args.activity}")
-            sys.exit(1)
+        af = ActivityFactory(self.args.activity)
+        self.activity = af.new_activity(self.body_point_array, self.args.gui, funcs, self.args.file)
+
+        if self.activity == None:
+            print(f"Cannot find activity: {self.type}")
+            sys.exit(0)
 
         # Dict of components persistant in the ui (don't change between stages)
         # i.e. the clock and the point skeleton components
@@ -149,20 +127,6 @@ class TwoDimensionGame():
 
         # Call change activity initially to render components
         self.activity.change_stage()
-
-        # if ui == pyqtgraph
-        # # Set the function to call on update
-        # #self.timer = QtCore.QTimer()
-        # #self.timer.timeout.connect(self.update)
-        # #self.timer.start(50)
-
-    # def update(self):
-    #     """
-    #     Updates the position of the skeleton component and
-    #     the time on the timer
-    #     """
-    #     self.persistant[SKELETON].set_pos(self.body_point_array)
-    #     self.persistant[TIMER].tick()
 
     def start_image_processing(self):
         """
@@ -198,6 +162,7 @@ class TwoDimensionGame():
 
                 # log data
                 self.log_data()
+            
             # Handles the activity's logic at the end of a frame
             self.activity.handle_frame(surface=self.gui.window)
 

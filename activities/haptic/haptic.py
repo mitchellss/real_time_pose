@@ -1,12 +1,8 @@
 
 from activities.activity import Activity
 from constants.constants import *
-from ui.pygame.pygame_button import PyGameButton
-from ui.pygame.pygame_skeleton import PyGameSkeleton
+from ui.components.component_factory import ComponentFactory
 import random
-
-from ui.pygame.pygame_text import PyGameText
-from ui.pygame.pygame_timer import PyGameTimer
 
 import socket
 
@@ -19,12 +15,15 @@ class Haptic(Activity):
 
     def __init__(self, body_point_array, **kwargs) -> None:
         super().__init__(body_point_array, **kwargs)
+
+        cf = ComponentFactory(self.ui)
+
         self.persist = {}
-        self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(0.3, -1.2, func=self.time_expire_func)
+        self.persist[SKELETON] = cf.new_skeleton(body_point_array)
+        self.persist[TIMER] = cf.new_timer(0.3, -1.2, func=self.time_expire_func)
 
         stage_0 = {}
-        stage_0["target_1"] = PyGameButton(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0, -0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.target_1_func, target_pts=[16])
+        stage_0["target_1"] = cf.new_button(50, (255, 0, 0, 120), random.uniform(-0.7, 0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0, -0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET, precision=50, func=self.target_1_func, target_pts=[16])
 
         self.stages = [stage_0]
         self.stage = 0

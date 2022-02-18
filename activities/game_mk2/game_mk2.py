@@ -1,10 +1,5 @@
 from activities.activity import Activity
-from ui.pygame.pygame_button import PyGameButton
-from ui.pygame.pygame_hand_bubble import PyGameHandBubble
-from ui.pygame.pygame_live_score import PyGameLiveScore
-from ui.pygame.pygame_skeleton import PyGameSkeleton
-from ui.pygame.pygame_text import PyGameText
-from ui.pygame.pygame_timer import PyGameTimer
+from ui.components.component_factory import ComponentFactory
 from constants.constants import *
 import sys
 import pandas as pd
@@ -25,31 +20,23 @@ class GameMkII(Activity):
     PLAY_STAGE = 1
     NAME_STAGE = 2
 
-    def __init__(self, body_point_array, **kwargs) -> None:
+    def __init__(self, body_point_array, ui, **kwargs) -> None:
+        super().__init__(body_point_array, ui, **kwargs)
+
+        cf = ComponentFactory(self.ui)
 
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(WINDOW_WIDTH-250, 60, size=50, func=self.time_expire_func)
-        self.persist[LIVE_SCORE] = PyGameLiveScore(WINDOW_WIDTH-250, 110, size=50)
+        self.persist[SKELETON] = cf.new_skeleton(body_point_array)
+        self.persist[TIMER] = cf.new_timer(WINDOW_WIDTH-250, 60, size=50, func=self.time_expire_func)
+        self.persist[LIVE_SCORE] = cf.new_live_score(WINDOW_WIDTH-250, 110, size=50)
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 
+        stage_0[START_TARGET] = cf.new_button(50, (0, 255, 0, 120), 
                                             0*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                             -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET-100, 
                                             precision=50, func=self.start_button_func, target_pts=[16, 15])
-
-        # Initialize path variable if specified in kwargs
-        if PATH_ARG in kwargs:
-            self.file_path = kwargs[PATH_ARG]
-
-        # Initializes a dict of functions where various capabilities can be passed
-        # i.e (Start logging, stop logging, etc.)
-        if FUNCS in kwargs:
-            self.funcs = kwargs[FUNCS]
-        else:
-            self.funcs = {}
 
         # Attempts to read point data from specified CSV, otherwise exits
         try:
@@ -82,30 +69,30 @@ class GameMkII(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1[TARGET_0] = PyGameButton(50, (255, 0, 0, 60),
+        stage_1[TARGET_0] = cf.new_button(50, (255, 0, 0, 60),
                                               bp2p_x(float(self.lh_x_data[self.index])), 
                                               bp2p_y(float(self.lh_y_data[self.index])),
                                               func=self.target_1_func, target_pts=[15], precision=50)
 
-        stage_1[TARGET_1] = PyGameButton(50, (0, 0, 255, 60),
+        stage_1[TARGET_1] = cf.new_button(50, (0, 0, 255, 60),
                                               bp2p_x(float(self.rh_x_data[self.index])), 
                                               bp2p_y(float(self.rh_y_data[self.index])),
                                               func=self.target_2_func, target_pts=[16], precision=50)
 
-        stage_1[TARGET_2] = PyGameButton(50, (255, 255, 0, 60),
+        stage_1[TARGET_2] = cf.new_button(50, (255, 255, 0, 60),
                                               bp2p_x(float(self.ll_x_data[self.index])), 
                                               bp2p_y(float(self.ll_y_data[self.index])),
                                               func=self.target_3_func, target_pts=[27], precision=50)
 
-        stage_1[TARGET_3] = PyGameButton(50, (0, 255, 255, 60),
+        stage_1[TARGET_3] = cf.new_button(50, (0, 255, 255, 60),
                                               bp2p_x(float(self.rl_x_data[self.index])), 
                                               bp2p_y(float(self.rl_y_data[self.index])),
                                               func=self.target_4_func, target_pts=[28], precision=50)
 
-        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
-        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
-        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, 30, (255, 255, 0, 120))
-        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, 30, (0, 255, 255, 120))
+        stage_1["bubble_1"] = cf.new_hand_bubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_1["bubble_2"] = cf.new_hand_bubble(0, 0, 16, 30, (0, 0, 255, 120))
+        stage_1["bubble_3"] = cf.new_hand_bubble(0, 0, 27, 30, (255, 255, 0, 120))
+        stage_1["bubble_4"] = cf.new_hand_bubble(0, 0, 28, 30, (0, 255, 255, 120))
 
         horz_starting_pt = -0.4
         spacing = 0.25
@@ -118,57 +105,57 @@ class GameMkII(Activity):
         letter_centering_vert = -70
 
         stage_2 = {}
-        stage_2["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
-        stage_2["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
-        stage_2[NAME_TARGET_0 + UP] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2["bubble_1"] = cf.new_hand_bubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_2["bubble_2"] = cf.new_hand_bubble(0, 0, 16, 30, (0, 0, 255, 120))
+        stage_2[NAME_TARGET_0 + UP] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - second_offset, 
                                                         height, 
                                                         func=lambda:self.change_letter(0,1), target_pts=[15], precision=50)
-        stage_2[NAME_TARGET_0 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_0 + DOWN] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - second_offset, 
                                                           height, 
                                                           func=lambda:self.change_letter(0,-1), target_pts=[16], precision=50)
-        stage_2[NAME_TARGET_1 + UP] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_1 + UP] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - first_offset, 
                                                         height, 
                                                         func=lambda:self.change_letter(1,1), target_pts=[15], precision=50)
-        stage_2[NAME_TARGET_1 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_1 + DOWN] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset - first_offset, 
                                                           height, 
                                                           func=lambda:self.change_letter(1,-1), target_pts=[16], precision=50)
-        stage_2[NAME_TARGET_2 + UP] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_2 + UP] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset + first_offset, 
                                                         height, 
                                                         func=lambda:self.change_letter(2,1), target_pts=[15], precision=50)
-        stage_2[NAME_TARGET_2 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_2 + DOWN] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset + first_offset, 
                                                           height, 
                                                           func=lambda:self.change_letter(2,-1), target_pts=[16], precision=50)
-        stage_2[NAME_TARGET_3 + UP] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_3 + UP] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset + second_offset, 
                                                         height, 
                                                         func=lambda:self.change_letter(3,1), target_pts=[15], precision=50)
-        stage_2[NAME_TARGET_3 + DOWN] = PyGameButton(50, (0, 255, 0, 60),
+        stage_2[NAME_TARGET_3 + DOWN] = cf.new_button(50, (0, 255, 0, 60),
                                                         WINDOW_WIDTH/2 - initial_offset + second_offset, 
                                                           height, 
                                                           func=lambda:self.change_letter(3,-1), target_pts=[16], precision=50)
-        stage_2["name_label_0"] = PyGameText(
+        stage_2["name_label_0"] = cf.new_text(
             WINDOW_WIDTH/2 - initial_offset - second_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
-        stage_2["name_label_1"] = PyGameText(
+        stage_2["name_label_1"] = cf.new_text(
             WINDOW_WIDTH/2 - initial_offset - first_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
-        stage_2["name_label_2"] = PyGameText(
+        stage_2["name_label_2"] = cf.new_text(
             WINDOW_WIDTH/2 - initial_offset + first_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
-        stage_2["name_label_3"] = PyGameText(
+        stage_2["name_label_3"] = cf.new_text(
             WINDOW_WIDTH/2 - initial_offset + second_offset - 15, height+letter_centering_vert - 35, text="A", size=50)
-        stage_2["submit_button"] = PyGameButton(50, (0, 0, 255, 120),
+        stage_2["submit_button"] = cf.new_button(50, (0, 0, 255, 120),
                                                      WINDOW_WIDTH-250, WINDOW_HEIGHT/2-100, func=self.submit_score_func, target_pts=[16], precision=50)
-        stage_2["submit_label"] = PyGameText(
+        stage_2["submit_label"] = cf.new_text(
             WINDOW_WIDTH-250-45, WINDOW_HEIGHT/2-190, text="Submit")
-        stage_2["letter_instructions_1"] = PyGameText(
+        stage_2["letter_instructions_1"] = cf.new_text(
             20, 0, text="Enter your name and submit your score!", size=50, font="Sans")
-        # stage_2["letter_instructions_2"] = PyGameText(
+        # stage_2["letter_instructions_2"] = cf.new_text(
         #     20, WINDOW_HEIGHT/2+30-300, text="Red goes forwards", color=(255,0,0))
-        # stage_2["letter_instructions_3"] = PyGameText(
+        # stage_2["letter_instructions_3"] = cf.new_text(
         #     20, WINDOW_HEIGHT/2+60-300, text="Blue goes back", color=(50,50,255))
 
 

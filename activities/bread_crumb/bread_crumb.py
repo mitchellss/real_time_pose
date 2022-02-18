@@ -1,8 +1,5 @@
 from activities.activity import Activity
-from ui.pygame.pygame_button import PyGameButton
-from ui.pygame.pygame_hand_bubble import PyGameHandBubble
-from ui.pygame.pygame_skeleton import PyGameSkeleton
-from ui.pygame.pygame_timer import PyGameTimer
+from ui.components.component_factory import ComponentFactory
 from constants.constants import *
 import sys
 import pandas as pd
@@ -15,20 +12,19 @@ class BreadCrumb(Activity):
         Activity ([type]): Abstract activity object
     """
 
-    def __init__(self, body_point_array, **kwargs) -> None:
-        super().__init__(body_point_array, **kwargs)
+    def __init__(self, body_point_array, ui, **kwargs) -> None:
+        super().__init__(body_point_array, ui, **kwargs)
+
+        cf = ComponentFactory(self.ui)
+
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist[SKELETON] = PyGameSkeleton(body_point_array)
-        self.persist[TIMER] = PyGameTimer(0.3, -1.2, func=self.time_expire_func)
+        self.persist[SKELETON] = cf.new_skeleton(body_point_array)
+        self.persist[TIMER] = cf.new_timer(0.3, -1.2, func=self.time_expire_func)
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = PyGameButton(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, func=self.start_button_func, target_pts=[16, 15])
-
-        # Initialize path variable if specified in kwargs
-        if PATH_ARG in kwargs:
-            self.file_path = kwargs[PATH_ARG]
+        stage_0[START_TARGET] = cf.new_button(50, (0, 255, 0, 120), 0*PIXEL_SCALE+PIXEL_X_OFFSET, -0.6*PIXEL_SCALE+PIXEL_Y_OFFSET, func=self.start_button_func, target_pts=[16, 15])
 
         # Attempts to read point data from specified CSV, otherwise exits
         try:
@@ -55,30 +51,30 @@ class BreadCrumb(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1["target_1"] = PyGameButton(50, (255, 0, 0, 120),
+        stage_1["target_1"] = cf.new_button(50, (255, 0, 0, 120),
                                                 float(self.lh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.lh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                                 func=self.target_1_func, target_pts=[15], precision=100)
 
-        stage_1["target_2"] = PyGameButton(50, (0, 0, 255, 120),
+        stage_1["target_2"] = cf.new_button(50, (0, 0, 255, 120),
                                                 float(self.rh_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.rh_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                                 func=self.target_2_func, target_pts=[16], precision=100)
 
-        stage_1["target_3"] = PyGameButton(50, (255, 255, 0, 0),
+        stage_1["target_3"] = cf.new_button(50, (255, 255, 0, 0),
                                                 float(self.ll_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.ll_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                                 func=self.target_3_func, target_pts=[27], precision=100)
 
-        stage_1["target_4"] = PyGameButton(50, (0, 255, 255, 120),
+        stage_1["target_4"] = cf.new_button(50, (0, 255, 255, 120),
                                                 float(self.rl_x_data[self.index])*PIXEL_SCALE+PIXEL_X_OFFSET, 
                                                 float(self.rl_y_data[self.index])*PIXEL_SCALE+PIXEL_Y_OFFSET,
                                                 func=self.target_4_func, target_pts=[28], precision=100)
 
-        stage_1["bubble_1"] = PyGameHandBubble(0, 0, 15, 30, (255, 0, 0, 120))
-        stage_1["bubble_2"] = PyGameHandBubble(0, 0, 16, 30, (0, 0, 255, 120))
-        stage_1["bubble_3"] = PyGameHandBubble(0, 0, 27, 30, (255, 255, 0, 120))
-        stage_1["bubble_4"] = PyGameHandBubble(0, 0, 28, 30, (0, 255, 255, 120))
+        stage_1["bubble_1"] = cf.new_hand_bubble(0, 0, 15, 30, (255, 0, 0, 120))
+        stage_1["bubble_2"] = cf.new_hand_bubble(0, 0, 16, 30, (0, 0, 255, 120))
+        stage_1["bubble_3"] = cf.new_hand_bubble(0, 0, 27, 30, (255, 255, 0, 120))
+        stage_1["bubble_4"] = cf.new_hand_bubble(0, 0, 28, 30, (0, 255, 255, 120))
 
         # Initializes a dict of functions where various capabilities can be passed
         # i.e (Start logging, stop logging, etc.)

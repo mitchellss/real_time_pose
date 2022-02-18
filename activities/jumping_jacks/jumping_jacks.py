@@ -2,21 +2,21 @@
 from PyQt5.QtGui import QFont
 from activities.activity import Activity
 from constants.constants import *
-from ui.components.button_component import ButtonComponent
-from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
+from ui.components.component_factory import ComponentFactory
 import pyqtgraph as pg
 
 class JumpingJacks(Activity):
 
     def __init__(self, body_point_array, **kwargs) -> None:
         super().__init__(body_point_array, **kwargs)
+
+        cf = ComponentFactory(self.ui)
         self.persist = {}
-        self.persist[SKELETON] = SkeletonComponent(body_point_array)
-        self.persist[TIMER] = PyQtGraphTimer(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist[SKELETON] = cf.new_skeleton(body_point_array)
+        self.persist[TIMER] = cf.new_timer(0.4, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
 
         stage_0 = {}
-        stage_0[START_TARGET] = ButtonComponent(50, pg.mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = cf.new_button(50, pg.mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
 
         self.lh_points_file = open(PATH / "activities" / "jumping_jacks" / "lh_points.csv")
         self.rh_points_file = open(PATH / "activities" / "jumping_jacks" / "rh_points.csv")
@@ -24,8 +24,8 @@ class JumpingJacks(Activity):
         rh_line = self.rh_points_file.readline().split(",")
 
         stage_1 = {}
-        stage_1["target_1"] = ButtonComponent(50, pg.mkBrush(255, 0, 0, 120), float(lh_line[0]), float(lh_line[1]), func=self.target_1_func, target_pts=[15])
-        stage_1["target_2"] = ButtonComponent(50, pg.mkBrush(0, 0, 255, 120), float(rh_line[0]), float(rh_line[1]), func=self.target_2_func, target_pts=[16])
+        stage_1["target_1"] = cf.new_button(50, pg.mkBrush(255, 0, 0, 120), float(lh_line[0]), float(lh_line[1]), func=self.target_1_func, target_pts=[15])
+        stage_1["target_2"] = cf.new_button(50, pg.mkBrush(0, 0, 255, 120), float(rh_line[0]), float(rh_line[1]), func=self.target_2_func, target_pts=[16])
 
         self.stages = [stage_0, stage_1]
         self.stage = 0

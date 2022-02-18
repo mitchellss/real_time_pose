@@ -9,15 +9,20 @@ from constants.constants import *
 
 class Activity:
 
-    def __init__(self, body_point_array, **kwargs) -> None:
+    def __init__(self, body_point_array, ui, **kwargs) -> None:
         self.components: Dict[str, UIComponent] = None
         self.persist: Dict[str, UIComponent] = None
         self.stages: list[Dict[str, UIComponent]] = None
         self.stage: int = 0
+        self.ui = ui
         if FUNCS in kwargs:
             self.funcs = kwargs[FUNCS]
         else:
             self.funcs = {}
+
+        # Initialize path variable if specified in kwargs
+        if PATH_ARG in kwargs:
+            self.file_path = kwargs[PATH_ARG]
 
     def get_stages(self) -> list[Dict[str, UIComponent]]:
         return self.stages
@@ -56,7 +61,8 @@ class Activity:
         the child class's method
         """
         for component in self.components:
-            self.components[component].draw(kwargs["surface"])
+            if "surface" in kwargs:
+                self.components[component].draw(kwargs["surface"])
 
         for component in self.persist:
             if "surface" in kwargs:
