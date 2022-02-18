@@ -1,9 +1,6 @@
 from pyqtgraph.functions import mkBrush
 from activities.activity import Activity
-from ui.components.button_component import ButtonComponent
-from ui.pyqtgraph.pyqtgraph_live_score import PyQtGraphLiveScore
-from ui.components.skeleton_component import SkeletonComponent
-from ui.pyqtgraph.pyqtgraph_timer import PyQtGraphTimer
+from ui.components.component_factory import ComponentFactory
 from PyQt5.QtGui import QFont
 from constants.constants import *
 import sys
@@ -17,16 +14,18 @@ class CustomActivityDynamic(Activity):
     """
 
     def __init__(self, body_point_array, **kwargs) -> None:
+        super().__init__(body_point_array, **kwargs)
 
+        cf = ComponentFactory(self.ui)
         # Initialize persistant component dict (Never dissapear reguardless of active stage)
         self.persist = {}
-        self.persist[SKELETON] = SkeletonComponent(body_point_array)
-        self.persist[TIMER] = PyQtGraphTimer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
-        self.persist["live_score"] = PyQtGraphLiveScore(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
+        self.persist[SKELETON] = cf.new_skeleton(body_point_array)
+        self.persist[TIMER] = cf.new_timer(0.3, -1.2, font=QFont("Arial", 30), text="Time: ", starting_time=0, func=self.time_expire_func)
+        self.persist["live_score"] = cf.new_live_score(-1, -1.2, font=QFont("Arial", 30), text="Score: ")
 
         # Initialize dict for stage 0 
         stage_0 = {}
-        stage_0[START_TARGET] = ButtonComponent(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
+        stage_0[START_TARGET] = cf.new_button(50, mkBrush(0, 255, 0, 120), 0, -0.6, func=self.start_button_func, target_pts=[16, 15])
 
         # Initialize path variable if specified in kwargs
         if "path" in kwargs:
@@ -57,19 +56,19 @@ class CustomActivityDynamic(Activity):
 
         # Initialize stage 1 dict. This contains all the buttons
         stage_1 = {}
-        stage_1["target_1"] = ButtonComponent(50, mkBrush(255, 0, 0, 120),
+        stage_1["target_1"] = cf.new_button(50, mkBrush(255, 0, 0, 120),
                                                 float(self.lh_x_data[self.index]), float(self.lh_y_data[self.index]),
                                                 func=self.target_1_func, target_pts=[15], precision=0.1)
 
-        stage_1["target_2"] = ButtonComponent(50, mkBrush(0, 0, 255, 120),
+        stage_1["target_2"] = cf.new_button(50, mkBrush(0, 0, 255, 120),
                                                 float(self.rh_x_data[self.index]), float(self.rh_y_data[self.index]),
                                                 func=self.target_2_func, target_pts=[16], precision=0.1)
 
-        stage_1["target_3"] = ButtonComponent(50, mkBrush(100, 100, 0, 120),
+        stage_1["target_3"] = cf.new_button(50, mkBrush(100, 100, 0, 120),
                                                 float(self.ll_x_data[self.index]), float(self.ll_y_data[self.index]),
                                                 func=self.target_3_func, target_pts=[27], precision=0.1)
 
-        stage_1["target_4"] = ButtonComponent(50, mkBrush(0, 100, 100, 120),
+        stage_1["target_4"] = cf.new_button(50, mkBrush(0, 100, 100, 120),
                                                 float(self.rl_x_data[self.index]), float(self.rl_y_data[self.index]),
                                                 func=self.target_4_func, target_pts=[28], precision=0.1)
 

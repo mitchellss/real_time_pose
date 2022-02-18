@@ -38,20 +38,15 @@ class PyGameUI(GUI):
         pass
         # component.draw(self.window)
 
-    def update(self):
+    def update(self) -> None:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
             
-            # Processing
-            # This section will be built out later
-        
-            # Render elements of the game
-            #pygame.draw.rect(self.window, (255,0,0), [100,100,400,100], 0)
         pygame.display.update()
         self.fpsClock.tick(self.FPS)
 
-    def clear(self):
+    def clear(self) -> None:
         self.window.fill(self.BACKGROUND)
 
