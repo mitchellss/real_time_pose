@@ -18,8 +18,8 @@ class VectorHaptic(Activity):
     
     MOTORS = np.array([np.array([0,0,1]), np.array([0,0,-1]), np.array([0,-1,0]), np.array([0,1,0])]) #array of motor positions
 
-    def __init__(self, body_point_array, **kwargs) -> None:
-        super().__init__(body_point_array, **kwargs)
+    def __init__(self, body_point_array, ui, **kwargs) -> None:
+        super().__init__(body_point_array, ui, **kwargs)
 
         cf = ComponentFactory(self.ui)
 

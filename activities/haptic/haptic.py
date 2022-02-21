@@ -13,8 +13,8 @@ class Haptic(Activity):
 
     TCP_PORT = 8888
 
-    def __init__(self, body_point_array, **kwargs) -> None:
-        super().__init__(body_point_array, **kwargs)
+    def __init__(self, body_point_array, ui, **kwargs) -> None:
+        super().__init__(body_point_array, ui, **kwargs)
 
         cf = ComponentFactory(self.ui)
 
