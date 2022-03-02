@@ -9,7 +9,7 @@ class HapticGlove(FeedbackDevice):
 
     MOTORS = np.array([np.array([0,0,1]), np.array([0,0,-1]), np.array([0,-1,0]), np.array([0,1,0])]) #array of motor positions
     TIMEOUT = 10 # seconds
-    BLANK_MESSAGE = "/0/0/0/0"
+    MINIMUM_INTENSITY_MESSAGE = "/150/150/150/150"
 
     def __init__(self, tcp_ip: str, tcp_port: int, direction: str = "pull") -> None:
         super().__init__()
@@ -39,12 +39,12 @@ class HapticGlove(FeedbackDevice):
     
     def stop_feedback(self) -> None:
         for _ in range(0,10):
-            self.socket.send(f'{self.BLANK_MESSAGE}\n'.encode('ascii'))
+            self.socket.send(f'{self.MINIMUM_INTENSITY_MESSAGE}\n'.encode('ascii'))
 
     def make_message(self, vect) -> str:
         return f'/{vect[1]}/{vect[0]}/{vect[2]}/{vect[3]}'
 
-    def find_distance(vector1, vector2, normalized=False):
+    def find_distance(self, vector1, vector2, normalized=False):
         if normalized:
             vector1 = vector1 / np.linalg.norm(vector1)
             vector2 = vector2 / np.linalg.norm(vector2)
