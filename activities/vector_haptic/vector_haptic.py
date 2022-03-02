@@ -1,20 +1,16 @@
 
+import math
 import numpy as np
 from activities.activity import Activity
-from activities.vector_haptic.haptic_mapping import find_intensity_array, make_message
 from constants.constants import *
+from feedback.auditory import ComputerSoundFeedback
+from feedback.haptic_glove import HapticGlove
 from ui.components.component_factory import ComponentFactory
-from playsound import playsound
 import random
-import threading
 import socket
 
 
 class VectorHaptic(Activity):
-
-    TCP_IP = "172.16.1.2"
-
-    TCP_PORT = 8888
     
     MOTORS = np.array([np.array([0,0,1]), np.array([0,0,-1]), np.array([0,-1,0]), np.array([0,1,0])]) #array of motor positions
 
@@ -36,22 +32,15 @@ class VectorHaptic(Activity):
 
         self.components = self.stages[self.stage]
 
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((self.TCP_IP, self.TCP_PORT))
-
-        mode = "push"
-
-        pattern = '118'
-        if mode == "push":
-            self.commands = {'up':f'/buz2/{pattern}', 'down':f'/buz0/{pattern}', 'left':f'/buz1/{pattern}', 'right':f'/buz3/{pattern}key'}
-
-        if mode == "pull":
-            self.commands = {'up':f'/buz0/{pattern}', 'down':f'/buz2/{pattern}', 'left':f'/buz3/{pattern}', 'right':f'/buz1/{pattern}'}
-
         self.index = 0
 
         self.current_pos = np.array([0,0,0]) #Current Pos
         self.goal_position = np.array([0,1,1]) # Goal Pos
+
+        self.glove = HapticGlove("172.16.1.2", 8888)
+        self.glove.connect()
+
+        self.auditory = ComputerSoundFeedback()
 
 
     def time_expire_func(self) -> None:
@@ -68,24 +57,25 @@ class VectorHaptic(Activity):
             new_coords = (random.uniform(-0.7,0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0,-0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET)
         
         self.stages[0]["target_1"].set_pos(new_coords[0], new_coords[1])
-        self.alert()
+        self.auditory.beep()
+        self.index = 0
 
     def handle_frame(self, **kwargs) -> None:
         super().handle_frame(**kwargs)
 
         self.index += 1
-
         self.current_pos = np.array([0, self.persist[SKELETON].skeleton_array[16][0], self.persist[SKELETON].skeleton_array[16][1]]) #Current Pos
         self.goal_position = np.array([0, self.stages[0]["target_1"].x_pos, self.stages[0]["target_1"].y_pos])
 
-        intensity = find_intensity_array(self.current_pos, self.goal_position, self.MOTORS)
-        print(self.goal_position, intensity)
-        message = make_message(intensity)
+        if self.index > 300:
+            print("stop")
+            self.glove.stop_feedback()
+        else:
+            self.glove.send_pull_feedback(self.current_pos, self.goal_position)
 
-        for _ in range(0,10):
-            self.s.send(f'{message}\n'.encode('ascii'))
+
+
 
         self.change_stage()
 
-    def alert(self):
-        threading.Thread(target=playsound, args=(PATH / "activities/vector_haptic/beep.mp3",), daemon=True).start()
+
