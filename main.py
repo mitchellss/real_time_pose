@@ -140,10 +140,11 @@ class TwoDimensionGame():
         while True:
             # Get image frame
             color_image = self.frame_input.get_frame()
+            depth_image = self.frame_input.get_depth_image()
 
             # Flip the image horizontally for a later selfie-view display, and convert
             # the BGR image to RGB.
-            image = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
+            image = cv2.cvtColor(cv2.flip(depth_image, 1), cv2.COLOR_BGR2RGB)
 
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.

@@ -35,16 +35,18 @@ class Realsense(FrameInput):
         # Start streaming
         self.pipeline.start(config)
 
+        self.depth_image = None
+
     def get_frame(self) -> np.ndarray:
         # Wait for a coherent pair of frames: depth and color
         frames = self.pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
-        if not depth_frame or not color_frame:
+        if not self.depth_frame or not color_frame:
             return None
 
         # Convert images to numpy arrays
-        # depth_image = np.asanyarray(depth_frame.get_data())
+        self.depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         return color_image
 
@@ -55,3 +57,6 @@ class Realsense(FrameInput):
     def get_frame_width(self) -> int:
         # TODO
         return super().get_frame_width()
+
+    def get_depth_image(self) -> np.ndarray:
+        return self.depth_image
