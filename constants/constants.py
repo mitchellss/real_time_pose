@@ -33,6 +33,7 @@ FUNCS: str = "funcs"
 PIXEL_SCALE: int = 450
 PIXEL_X_OFFSET: int = 450
 PIXEL_Y_OFFSET: int = 600
+PIXEL_Z_OFFSET: int = 600
 
 WINDOW_WIDTH: int = 1920//2
 WINDOW_HEIGHT: int = 1000

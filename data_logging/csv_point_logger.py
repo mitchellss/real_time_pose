@@ -4,7 +4,7 @@ from data_logging.logger import Logger
 import time
 
 
-class PointLogger(Logger):
+class CSVPointLogger(Logger):
 
     def __init__(self, fname, **kwargs) -> None:
         super().__init__(fname)
