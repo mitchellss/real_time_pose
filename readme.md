@@ -31,7 +31,7 @@ The project is laid out in seperate modules in an attempt to achieve the lowest 
 
 A basic flow of data can be seen below. 
 
-![Basic layout of the real time pose project.](https://imgur.com/a/KzBnHSp.png)
+![Basic layout of the real time pose project.](https://i.imgur.com/t9cskhs.png)
 
 ### Modules
 
