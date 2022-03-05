@@ -1,5 +1,4 @@
 
-from mediapipe.framework.formats.landmark_pb2 import LandmarkList
 from constants.constants import *
 from pose_detection.computer_vision.cv_model.cv_model import CVModel
 import numpy as np
@@ -32,14 +31,9 @@ class Blazepose(CVModel):
     def get_pose(self, image: np.ndarray) -> np.ndarray:
         landmarks = self.pose.process(image).pose_world_landmarks.landmark
         for landmark in range(0,len(landmarks)):
-            # Scale up data to fit to a bigger pixel grid
-            # self.skeleton_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
-            # self.skeleton_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
-            # self.skeleton_array[landmark][2] = landmarks[landmark].z*PIXEL_SCALE+PIXEL_Z_OFFSET
-            # self.skeleton_array[landmark][3] = landmarks[landmark].visibility
             # Save raw data for logging purposes
             self.skeleton_array[landmark][0] = landmarks[landmark].x
             self.skeleton_array[landmark][1] = landmarks[landmark].y
             self.skeleton_array[landmark][2] = landmarks[landmark].z
             self.skeleton_array[landmark][3] = landmarks[landmark].visibility
-        return self.skeleton_array#, self.skeleton_array
+        return self.skeleton_array

@@ -7,10 +7,15 @@ import cv2
 
 class ComputerVision(PoseDetection):
     
-    def __init__(self, cv_model: CVModel, frame_input: FrameInput) -> None:
+    def __init__(self, cv_model: CVModel, frame_input: FrameInput, **kwargs) -> None:
         super().__init__()
         self.cv_model = cv_model
         self.frame_input = frame_input
+
+        if "hide_video" in kwargs:
+            self.hide_video = kwargs["hide_video"]
+        else:
+            self.hide_video = False
     
     def add_pose_to_queue(self) -> bool:
 
@@ -23,8 +28,9 @@ class ComputerVision(PoseDetection):
         self.pose = self.cv_model.get_pose(image)
         image.flags.writeable = True
 
-        image2 = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        cv2.imshow("MediaPipe Pose", image2)
+        if not self.hide_video:
+            image2 = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            cv2.imshow("MediaPipe Pose", image2)
 
         if cv2.waitKey(5) & 0xFF == 27:
             return False
