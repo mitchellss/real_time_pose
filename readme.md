@@ -2,12 +2,21 @@
 
 Real Time Pose is a tool created by the wearable computing research group. Headed and advised by Dr. Jason Forsyth. The purpose of the tool is to provide a modular video feedback mechanism that can take a variety of input, process that input with a pose detection model, display the results of the model, and allow researchers to manipulate the displayed results for the purposes of feedback and direction.
 
+In order to use the tool, first ensure that rabbitmq is running. On linux use the following command:
+> `sudo systemctl status rabbitmq.service`
+
+Next, start the user interface with `start_ui.py` and specify the desired activity. Once the first program is running, run `start_pose.py` with the desired input method. 
+
+`start_pose.py` will fill up a queue with data points that will then be consumed by the front end.
+
 ### Example Usage:
-> `python main.py --help`
+> `python start_pose.py --help`
 
-> `python main.py webcam --activity game`
+> `python start_ui.py --activity game`
+> `python start_pose.py video webcam` \
 
-> `python main.py video --video_file ./activities/jumping_jacks/demo.mp4 --activity game_mk2 --file ./data/looped/jumping_jacks.csv --hide_demo --hide_video`
+> `python start_ui.py --activity game_mk2 --file data/looped/jumping_jacks.csv --hide_demo`
+> `python start_pose.py video --hide_video file --path ./activities/jumping_jacks/demo.mp4` \
 
 ### Currently Working Activities:
 * **game** - Two floating buttons that move around randomly.
@@ -22,14 +31,14 @@ The project is laid out in seperate modules in an attempt to achieve the lowest 
 
 A basic flow of data can be seen below. 
 
-![Basic layout of the real time pose project.](https://i.imgur.com/BrLD8xj.png)
+![Basic layout of the real time pose project.](https://imgur.com/a/KzBnHSp.png)
 
 ### Modules
 
 The following are main modules that comprise the project. Each can be found in a seperate folder in the project.
 
-* frame_input
 * pose_detection
+* feedback
 * ui
 * data_logging
 * activities
