@@ -12,11 +12,11 @@ Next, start the user interface with `start_ui.py` and specify the desired activi
 ### Example Usage:
 > `python start_pose.py --help`
 
-> `python start_ui.py --activity game`
-> `python start_pose.py video webcam` \
+> `python start_ui.py --activity game`<br/>
+> `python start_pose.py video webcam` 
 
-> `python start_ui.py --activity game_mk2 --file data/looped/jumping_jacks.csv --hide_demo`
-> `python start_pose.py video --hide_video file --path ./activities/jumping_jacks/demo.mp4` \
+> `python start_ui.py --activity game_mk2 --file data/looped/jumping_jacks.csv --hide_demo`<br/>
+> `python start_pose.py video --hide_video file --path ./activities/jumping_jacks/demo.mp4` 
 
 ### Currently Working Activities:
 * **game** - Two floating buttons that move around randomly.
