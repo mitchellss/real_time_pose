@@ -1,7 +1,8 @@
 import sys
 import cv2
 import numpy as np
-from frame_input.frame_input import FrameInput
+
+from pose_detection.computer_vision.frame_input.frame_input import FrameInput
 
 class VideoFileInput(FrameInput):
     """

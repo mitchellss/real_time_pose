@@ -1,17 +1,15 @@
+import json
+import os
 import subprocess
 import sys
 import numpy as np
 import argparse
-import cv2
+import pika
 from activities.activity_factory import ActivityFactory
 from data_logging.logger import Logger
 from data_logging.csv_point_logger import CSVPointLogger
 from data_logging.video_logger import VideoLogger
 from data_logging.zarr_point_logger import ZarrPointLogger
-from frame_input.realsense import Realsense
-from frame_input.video_file_input import VideoFileInput
-from frame_input.webcam import Webcam
-from pose_detection.blazepose import Blazepose
 from ui.pygame.pygame_ui import PyGameUI
 from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
@@ -32,17 +30,6 @@ class TwoDimensionGame():
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 4))
-        self.body_point_array_raw = np.zeros((self.NUM_LANDMARKS, 4))
-
-        self.pose_detector = Blazepose(model_complexity=1)
-
-        # Initialize realsense or webcam
-        if self.args.camera_type == "webcam":
-            self.frame_input = Webcam()
-        elif self.args.camera_type == "realsense":
-            self.frame_input = Realsense()
-        elif self.args.camera_type == "video":
-            self.frame_input = VideoFileInput(self.args.video_file)
 
         if not self.args.hide_demo:
             subprocess.Popen(['python', 'play_demo.py', self.args.activity])
@@ -51,32 +38,30 @@ class TwoDimensionGame():
         self.loggers: list[Logger] = []
         if self.args.record_points:
             self.loggers.append(CSVPointLogger(self.args.activity))
-        if self.args.record_video:
-            self.loggers.append(VideoLogger(self.args.activity,
-                frame_width=self.frame_input.get_frame_width(), 
-                frame_height=self.frame_input.get_frame_height()))
         if self.args.record_zarr:
             self.loggers.append(ZarrPointLogger(self.args.activity))
 
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        self.channel = connection.channel()
+        self.channel.queue_declare(queue=QUEUE_NAME, durable=False, auto_delete=True, arguments={'x-max-length' : 10})
+        self.channel.queue_purge(queue=QUEUE_NAME)
+        self.channel.basic_qos(prefetch_count=1)
+        
     def start(self):
         """Initializes the game's user interface and starts processing data"""
         # Initialize graphs and labels for the user interface
         self.init_ui()
 
         # Start processing images
-        self.start_image_processing()
+        self.process()
 
     def arg_parse(self):
         """Parses the arguments given to the program"""
         parser = argparse.ArgumentParser()
-        parser.add_argument("camera_type", choices=["webcam", "realsense", "video"], help="The input type to be used")
         parser.add_argument("--record_points", action="store_true", help="Record point data")
         parser.add_argument("--record_zarr", action="store_true", help="Record zarr data")
-        parser.add_argument("--record_video", action="store_true", help="Record video data")
         parser.add_argument("--activity", nargs="?", const="game", default="game", help="Activity to be recorded, default is game")
         parser.add_argument("--file", nargs="?", const=".", default=".", help="Path to the file to be used as the activity")
-        parser.add_argument("--video_file", nargs="?", const=".", default=".", help="Path to video to use as input")
-        parser.add_argument("--hide_video", action="store_true", help="Set to hide real-time video playback")
         parser.add_argument("--hide_demo", action="store_true", help="Set to hide demo video")
         parser.add_argument("--gui", choices=["pygame", "pyqtgraph"], default="pygame", help="The user interface to use")
         self.args = parser.parse_args()
@@ -132,7 +117,7 @@ class TwoDimensionGame():
         # Call change activity initially to render components
         self.activity.change_stage()
 
-    def start_image_processing(self):
+    def process(self):
         """
         Infinitely processes new images coming in from the
         frame_input source until the program is exited (esc).
@@ -142,72 +127,45 @@ class TwoDimensionGame():
         function.
         """
         while True:
-            # Get image frame
-            color_image = self.frame_input.get_frame()
-
-            # Flip the image horizontally for a later selfie-view display, and convert
-            # the BGR image to RGB.
-            image = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
-
-            # To improve performance, optionally mark the image as not writeable to
-            # pass by reference.
-            image.flags.writeable = False
-            blaze_pose_coords = self.pose_detector.get_pose(image)
-
-            # Draw the pose annotation on the image.
-            image.flags.writeable = True
-            self.image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            _, _, body = self.channel.basic_get(queue=QUEUE_NAME)
+            try:
+                self.body_point_array = np.array(json.loads(body))
+            except:
+                pass
 
             # If global coords were successfully found
-            if blaze_pose_coords is not None:
-                landmarks = blaze_pose_coords.landmark
-                self.update_point_and_connection_data(landmarks)
-
-
+            if self.body_point_array is not None:
+                scaled_array = np.array(self.body_point_array)
+                scaled_array[:,0] = scaled_array[:,0]*PIXEL_SCALE+PIXEL_X_OFFSET
+                scaled_array[:,1] = scaled_array[:,1]*PIXEL_SCALE+PIXEL_Y_OFFSET
+                scaled_array[:,2] = scaled_array[:,2]*PIXEL_SCALE+PIXEL_Z_OFFSET
+                self.persistant[SKELETON].set_pos(scaled_array)
                 # log data
                 self.log_data()
             
             # Handles the activity's logic at the end of a frame
             self.activity.handle_frame(surface=self.gui.window)
 
-            if not self.args.hide_video:
-                cv2.imshow('MediaPipe Pose', self.image)
-            
-            #cv2.imshow('Demo', self.d.get_image())
-            if cv2.waitKey(5) & 0xFF == 27:
-                break
-
             self.gui.update()
             self.gui.clear()
             self.persistant[TIMER].tick()
-
-
-    def update_point_and_connection_data(self, landmarks):
-        """Updates the numpy array with the most current coordinate data"""
-        # Loop through results and add them to the body point numpy array
-        for landmark in range(0,len(landmarks)):
-            # Scale up data to fit to a bigger pixel grid
-            self.body_point_array[landmark][0] = landmarks[landmark].x*PIXEL_SCALE+PIXEL_X_OFFSET
-            self.body_point_array[landmark][1] = landmarks[landmark].y*PIXEL_SCALE+PIXEL_Y_OFFSET
-            self.body_point_array[landmark][2] = landmarks[landmark].z*PIXEL_SCALE+PIXEL_Z_OFFSET
-            self.body_point_array[landmark][3] = landmarks[landmark].visibility
-            # Save raw data for logging purposes
-            self.body_point_array_raw[landmark][0] = landmarks[landmark].x
-            self.body_point_array_raw[landmark][1] = landmarks[landmark].y
-            self.body_point_array_raw[landmark][2] = landmarks[landmark].z
-            self.body_point_array_raw[landmark][3] = landmarks[landmark].visibility
-
-        self.persistant[SKELETON].set_pos(self.body_point_array)
 
 
     def log_data(self):
         """Calls the log method on any instantiated loggers"""
         for logger in self.loggers:
             if isinstance(logger, CSVPointLogger) or isinstance(logger, ZarrPointLogger):
-                logger.log(self.body_point_array_raw)
+                logger.log(self.body_point_array)
             if isinstance(logger, VideoLogger):
                 logger.log(self.image)
 
 if __name__ == "__main__":
     td = TwoDimensionGame()
-    td.start()
+    try:
+        td.start()
+    except KeyboardInterrupt:
+        print('Interrupted')
+    try:
+        sys.exit(0)
+    except SystemExit:
+        os._exit(0)

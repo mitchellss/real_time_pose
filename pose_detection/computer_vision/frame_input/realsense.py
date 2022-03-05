@@ -1,6 +1,7 @@
-from frame_input.frame_input import FrameInput
 import pyrealsense2 as rs
 import numpy as np
+
+from pose_detection.computer_vision.frame_input.frame_input import FrameInput
 
 class Realsense(FrameInput):
     """FrameInput implementation representing an intel realsense camera"""

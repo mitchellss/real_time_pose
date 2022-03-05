@@ -1,6 +1,7 @@
-from frame_input.frame_input import FrameInput
 import numpy as np
 import cv2
+
+from pose_detection.computer_vision.frame_input.frame_input import FrameInput
 
 class Webcam(FrameInput):
     """FrameInput implementation representing a video capture 0 webcam"""
