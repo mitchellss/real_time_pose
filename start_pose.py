@@ -45,7 +45,7 @@ class PoseService:
     def arg_parse(self) -> None:
         parser = argparse.ArgumentParser(description='''
             Generates skeleton data based on arbitrary input. Meant to be consumed
-            by the main.py microservice.''')
+            by the start_ui.py microservice.''')
 
         subparsers = parser.add_subparsers(dest="input", description="The input selected to generate skeleton data on.", required=True)
 
