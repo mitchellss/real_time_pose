@@ -45,7 +45,7 @@ class PoseService:
     def arg_parse(self) -> None:
         parser = argparse.ArgumentParser(description='''
             Generates skeleton data based on arbitrary input. Meant to be consumed
-            by the main.py microservice.''')
+            by the start_ui.py microservice.''')
 
         parser.add_argument("--queue", choices=["redis", "rabbitmq"], default="redis", help="The type of queue to use to transfer skeleton data.")
 

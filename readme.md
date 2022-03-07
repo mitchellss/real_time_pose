@@ -12,11 +12,11 @@ Next, start the user interface with `start_ui.py` and specify the desired activi
 ### Example Usage:
 > `python start_pose.py --help`
 
-> `python start_ui.py --activity game`
-> `python start_pose.py video webcam` \
+> `python start_ui.py --activity game`<br/>
+> `python start_pose.py video webcam` 
 
-> `python start_ui.py --activity game_mk2 --file data/looped/jumping_jacks.csv --hide_demo`
-> `python start_pose.py video --hide_video file --path ./activities/jumping_jacks/demo.mp4` \
+> `python start_ui.py --activity game_mk2 --file data/looped/jumping_jacks.csv --hide_demo`<br/>
+> `python start_pose.py video --hide_video file --path ./activities/jumping_jacks/demo.mp4` 
 
 ### Currently Working Activities:
 * **game** - Two floating buttons that move around randomly.
@@ -31,7 +31,7 @@ The project is laid out in seperate modules in an attempt to achieve the lowest 
 
 A basic flow of data can be seen below. 
 
-![Basic layout of the real time pose project.](https://imgur.com/a/KzBnHSp.png)
+![Basic layout of the real time pose project.](https://i.imgur.com/t9cskhs.png)
 
 ### Modules
 
