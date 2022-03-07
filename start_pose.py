@@ -33,10 +33,10 @@ class PoseService:
             self.cv_model = Blazepose()
 
             # Set pose detection method
-            self.pose_detection = ComputerVision(cv_model=self.cv_model, frame_input=self.frame_input, hide_video=self.args.hide_video)
+            self.pose_detection = ComputerVision(self.args.queue, cv_model=self.cv_model, frame_input=self.frame_input, hide_video=self.args.hide_video)
 
         elif self.args.input == "vicon":
-            self.pose_detection = Vicon()
+            self.pose_detection = Vicon(self.args.queue)
 
     def start(self) -> None:
         while self.pose_detection.add_pose_to_queue():
@@ -47,12 +47,15 @@ class PoseService:
             Generates skeleton data based on arbitrary input. Meant to be consumed
             by the main.py microservice.''')
 
+        parser.add_argument("--queue", choices=["redis", "rabbitmq"], default="redis", help="The type of queue to use to transfer skeleton data.")
+
         subparsers = parser.add_subparsers(dest="input", description="The input selected to generate skeleton data on.", required=True)
 
         # Video subparser
         video_parser = subparsers.add_parser('video', description="Generates skeleton data based on video input.")
         video_parser.add_argument("--hide_video", action="store_true", help="Hide real-time video playback.")
         video_subparsers = video_parser.add_subparsers(dest="video_input", description="The type of video input to be used.", required=True)
+        
         file_parser = video_subparsers.add_parser("file", description="Generate skeleton data based on a video file.")
         file_parser.add_argument("--path", help="Path to the file to be used as the activity", required=True)
         video_subparsers.add_parser("webcam", description="Generate skeleton data based on webcam input.")

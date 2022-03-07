@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import argparse
 import pika
+import redis
 from activities.activity_factory import ActivityFactory
 from data_logging.logger import Logger
 from data_logging.csv_point_logger import CSVPointLogger
@@ -41,11 +42,17 @@ class TwoDimensionGame():
         if self.args.record_zarr:
             self.loggers.append(ZarrPointLogger(self.args.activity))
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-        self.channel = connection.channel()
-        self.channel.queue_declare(queue=QUEUE_NAME, durable=False, auto_delete=True, arguments={'x-max-length' : 10})
-        self.channel.queue_purge(queue=QUEUE_NAME)
-        self.channel.basic_qos(prefetch_count=1)
+        if self.args.queue == "rabbitmq":
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            self.channel = connection.channel()
+            self.channel.queue_declare(queue=QUEUE_NAME, durable=False, auto_delete=True, arguments={'x-max-length' : 10})
+            self.channel.queue_purge(queue=QUEUE_NAME)
+            self.channel.basic_qos(prefetch_count=1)
+        elif self.args.queue == "redis":
+            r = redis.Redis(host='localhost', port=6379, db=0)
+            self.channel = r.pubsub()
+            self.channel.subscribe(QUEUE_NAME)
+
         
     def start(self):
         """Initializes the game's user interface and starts processing data"""
@@ -64,6 +71,7 @@ class TwoDimensionGame():
         parser.add_argument("--file", nargs="?", const=".", default=".", help="Path to the file to be used as the activity")
         parser.add_argument("--hide_demo", action="store_true", help="Set to hide demo video")
         parser.add_argument("--gui", choices=["pygame", "pyqtgraph"], default="pygame", help="The user interface to use")
+        parser.add_argument("--queue", choices=["rabbitmq", "redis"], default="redis", help="The type of queue to use to accept skeleton data.")
         self.args = parser.parse_args()
 
     def init_ui(self):
@@ -127,11 +135,15 @@ class TwoDimensionGame():
         function.
         """
         while True:
-            _, _, body = self.channel.basic_get(queue=QUEUE_NAME)
-            try:
-                self.body_point_array = np.array(json.loads(body))
-            except:
-                pass
+            if self.args.queue == "rabbitmq":
+                _, _, body = self.channel.basic_get(queue=QUEUE_NAME)
+            elif self.args.queue == "redis":
+                data = self.channel.get_message()
+                if data is not None:
+                    body = data["data"]
+
+            if body is not None:
+                self.body_point_array = np.array(json.loads(body))                
 
             # If global coords were successfully found
             if self.body_point_array is not None:
