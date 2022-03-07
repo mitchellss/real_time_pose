@@ -145,7 +145,10 @@ class TwoDimensionGame():
                     body = data["data"]
 
             if body is not None:
-                self.body_point_array = np.array(json.loads(body))                
+                try:
+                    self.body_point_array = np.array(json.loads(body))
+                except:
+                    pass
 
             # If global coords were successfully found
             if self.body_point_array is not None:
