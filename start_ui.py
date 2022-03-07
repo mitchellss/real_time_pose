@@ -52,7 +52,6 @@ class TwoDimensionGame():
             r = redis.Redis(host='localhost', port=6379, db=0)
             self.channel = r.pubsub()
             self.channel.subscribe(QUEUE_NAME)
-
         
     def start(self):
         """Initializes the game's user interface and starts processing data"""
@@ -129,12 +128,9 @@ class TwoDimensionGame():
 
     def process(self):
         """
-        Infinitely processes new images coming in from the
-        frame_input source until the program is exited (esc).
-        Passes frames to an object that implements the pose_detection
-        interface to get skeleton points. Updates the skeleton, handles
-        any kind of activity (i.e. button clicking), and calls the log
-        function.
+        Infinitely loads skeletons from the queue until the program is 
+        exited (esc). Updates the skeleton, handles any kind of activity 
+        (i.e. button clicking), and calls the log function.
         """
         while True:
             if self.args.queue == "rabbitmq":
