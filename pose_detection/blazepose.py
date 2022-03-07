@@ -13,6 +13,10 @@ class Blazepose(PoseDetector):
         min_tracking_confidence: minimum tracking confidence
     """
 
+    mp_pose = mp.solutions.pose
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+
     def __init__(self, *, model_complexity: int = 1,
         min_detection_confidence: float = 0.5,
         min_tracking_confidence: float = 0.5) -> None:
@@ -26,4 +30,11 @@ class Blazepose(PoseDetector):
                 min_tracking_confidence=min_tracking_confidence, model_complexity=model_complexity)
 
     def get_pose(self, image: np.ndarray) -> list:
-        return self.pose.process(image).pose_world_landmarks
+        self.results = self.pose.process(image)
+        return self.results.pose_world_landmarks
+    
+    def get_pose_landmarks(self):
+        return self.results.pose_landmarks
+
+    def get_connections(self):
+        return mp

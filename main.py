@@ -1,3 +1,4 @@
+from re import S
 import subprocess
 import sys
 import numpy as np
@@ -144,22 +145,36 @@ class TwoDimensionGame():
 
             # Flip the image horizontally for a later selfie-view display, and convert
             # the BGR image to RGB.
-            image = cv2.cvtColor(cv2.flip(depth_image, 1), cv2.COLOR_BGR2RGB)
+            image1 = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
+            image2 = cv2.cvtColor(cv2.flip(depth_image, 1), cv2.COLOR_BGR2RGB)
 
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.
-            image.flags.writeable = False
-            blaze_pose_coords = self.pose_detector.get_pose(image)
+            image1.flags.writeable = False
+            blaze_pose_coords = self.pose_detector.get_pose(image1)
 
             # Draw the pose annotation on the image.
-            image.flags.writeable = True
-            self.image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            image1.flags.writeable = True
+            self.image = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
+            self.image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
+
+            self.pose_detector.mp_drawing.draw_landmarks(
+                self.image2,
+                self.pose_detector.get_pose_landmarks(),
+                self.pose_detector.mp_pose.POSE_CONNECTIONS,
+                landmark_drawing_spec=self.pose_detector.mp_drawing_styles.get_default_pose_landmarks_style()
+            )
+
 
             # If global coords were successfully found
             if blaze_pose_coords is not None:
                 landmarks = blaze_pose_coords.landmark
                 self.update_point_and_connection_data(landmarks)
 
+                # for i in self.pose_detector.get_pose_landmarks().landmark:
+                #     print(i)
+
+                # sys.exit(1)
 
                 # log data
                 self.log_data()
@@ -168,7 +183,7 @@ class TwoDimensionGame():
             self.activity.handle_frame(surface=self.gui.window)
 
             if not self.args.hide_video:
-                cv2.imshow('MediaPipe Pose', self.image)
+                cv2.imshow('MediaPipe Pose', self.image2)
             
             #cv2.imshow('Demo', self.d.get_image())
             if cv2.waitKey(5) & 0xFF == 27:

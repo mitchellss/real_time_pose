@@ -33,20 +33,46 @@ class Realsense(FrameInput):
         else:
             config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
         # Start streaming
-        self.pipeline.start(config)
+        pipe_profile = self.pipeline.start(config)
+
+        depth_sensor = pipe_profile.get_device().first_depth_sensor()
+
+        # preset_range = depth_sensor.get_option_range(rs.option.visual_preset)
+        # for i in range(int(preset_range.max)):
+        #     visulpreset = depth_sensor.get_option_value_description(rs.option.visual_preset,i)
+        #     print('%02d: %s'%(i,visulpreset))
+        '''
+        00: Custom
+        01: Default
+        02: Hand
+        03: High Accuracy
+        04: High Density
+        '''
+
+        depth_sensor.set_option(rs.option.visual_preset, 3)
 
         self.depth_image = None
+
+        align_to = rs.stream.color
+        self.align = rs.align(align_to)
 
     def get_frame(self) -> np.ndarray:
         # Wait for a coherent pair of frames: depth and color
         frames = self.pipeline.wait_for_frames()
-        depth_frame = frames.get_depth_frame()
-        color_frame = frames.get_color_frame()
+        aligned_frames = self.align.process(frames)
+
+        self.depth_frame = aligned_frames.get_depth_frame()
+        color_frame = aligned_frames.get_color_frame()
         if not self.depth_frame or not color_frame:
             return None
+        
+        # print(depth_frame.get_distance(depth_frame.width//2,depth_frame.height//2), end="\r")
+
+        colorizer = rs.colorizer()
+        self.depth_image = np.asanyarray(colorizer.colorize(self.depth_frame).get_data())
 
         # Convert images to numpy arrays
-        self.depth_image = np.asanyarray(depth_frame.get_data())
+        # self.depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
         return color_image
 
@@ -60,3 +86,6 @@ class Realsense(FrameInput):
 
     def get_depth_image(self) -> np.ndarray:
         return self.depth_image
+
+    def get_distance(self, x: int, y: int) -> float:
+        return self.depth_frame.get_distance(x, y)
