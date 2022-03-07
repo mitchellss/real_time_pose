@@ -29,11 +29,15 @@ class Blazepose(CVModel):
                 min_tracking_confidence=min_tracking_confidence, model_complexity=model_complexity)
 
     def get_pose(self, image: np.ndarray) -> np.ndarray:
-        landmarks = self.pose.process(image).pose_world_landmarks.landmark
-        for landmark in range(0,len(landmarks)):
-            # Save raw data for logging purposes
-            self.skeleton_array[landmark][0] = landmarks[landmark].x
-            self.skeleton_array[landmark][1] = landmarks[landmark].y
-            self.skeleton_array[landmark][2] = landmarks[landmark].z
-            self.skeleton_array[landmark][3] = landmarks[landmark].visibility
-        return self.skeleton_array
+        landmarks = self.pose.process(image).pose_world_landmarks
+        try:
+            landmarks = landmarks.landmark
+            for landmark in range(0,len(landmarks)):
+                # Save raw data for logging purposes
+                self.skeleton_array[landmark][0] = landmarks[landmark].x
+                self.skeleton_array[landmark][1] = landmarks[landmark].y
+                self.skeleton_array[landmark][2] = landmarks[landmark].z
+                self.skeleton_array[landmark][3] = landmarks[landmark].visibility
+            return self.skeleton_array
+        except:
+            return self.skeleton_array

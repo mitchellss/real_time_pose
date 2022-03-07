@@ -7,8 +7,8 @@ import cv2
 
 class ComputerVision(PoseDetection):
     
-    def __init__(self, cv_model: CVModel, frame_input: FrameInput, **kwargs) -> None:
-        super().__init__()
+    def __init__(self, queue, cv_model: CVModel, frame_input: FrameInput, **kwargs) -> None:
+        super().__init__(queue)
         self.cv_model = cv_model
         self.frame_input = frame_input
 
