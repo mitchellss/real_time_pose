@@ -27,6 +27,6 @@ class ZarrPointLogger(Logger):
         self.data = np.zeros((0,133))
 
     def stop_logging(self) -> None:
-        df = pd.DataFrame(self.data)
-        df.to_csv(PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.csv", header=None, index=None)
+        # df = pd.DataFrame(self.data)
+        # df.to_csv(PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.csv")
         zarr.save(PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.zarr", self.data)

@@ -30,11 +30,12 @@ class Game(Activity):
         self.components = self.stages[self.stage]
 
     def time_expire_func(self) -> None:
-        self.stage = 0
-        self.change_stage()
-        if STOP_LOGGING in self.funcs:
-            for func in self.funcs[STOP_LOGGING]:
-                func()
+        if self.stage == 1:
+            self.stage = 0
+            self.change_stage()
+            if STOP_LOGGING in self.funcs:
+                for func in self.funcs[STOP_LOGGING]:
+                    func()
     
     def target_1_func(self) -> None:
         self.stages[1]["target_1"].set_pos(random.uniform(-0.7,0.7)*PIXEL_SCALE+PIXEL_X_OFFSET, random.uniform(0.0,-0.8)*PIXEL_SCALE+PIXEL_Y_OFFSET)
