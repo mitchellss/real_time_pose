@@ -31,8 +31,13 @@ class Realsense(FrameInput):
 
         if device_product_line == 'L500':
             config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+            self.width = 960
+            self.height = 540
         else:
             config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+            self.width = 640
+            self.height = 480
+
         # Start streaming
         self.pipeline.start(config)
 
@@ -50,9 +55,7 @@ class Realsense(FrameInput):
         return color_image
 
     def get_frame_height(self) -> int:
-        # TODO
-        return super().get_frame_height()
+        return self.height
 
     def get_frame_width(self) -> int:
-        # TODO
-        return super().get_frame_width()
+        return self.width
