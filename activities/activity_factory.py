@@ -8,6 +8,7 @@ from activities.game.game import Game
 from activities.game_mk2.game_mk2 import GameMkII
 from activities.haptic.haptic import Haptic
 from activities.jumping_jacks.jumping_jacks import JumpingJacks
+from activities.record_data.record_data import RecordData
 from activities.shapes.shapes import Shapes
 from activities.squat.squat import Squat
 from activities.vector_haptic.vector_haptic import VectorHaptic
@@ -37,5 +38,7 @@ class ActivityFactory:
             return Shapes(body_point_array, ui, funcs=funcs, path=path)
         elif self.type == "vector_haptic":
             return VectorHaptic(body_point_array, ui, funcs=funcs, path=path)
+        elif self.type == "record_data":
+            return RecordData(body_point_array, ui, funcs=funcs, path=path)
         else:
             return None

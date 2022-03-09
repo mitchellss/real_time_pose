@@ -13,7 +13,7 @@ class PyGameTimer(TimerComponent):
     
     def tick(self) -> None:
         if self.time > 0:
-            self.time -= 0.04
+            self.time -= 0.0167
         else:
             self.time = 0
             self.time_expire()
