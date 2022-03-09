@@ -28,11 +28,16 @@ class PoseService:
                 self.frame_input = VideoFileInput(self.args.path)
             if self.args.video_input == "webcam":
                 self.frame_input = Webcam()
+                self.fps = 20
             if self.args.video_input == "realsense":
                 self.frame_input = Realsense()
+                self.fps = 30
 
             if self.args.record_video:
-                self.video_logger = VideoLogger(str(int(time.time())), self.frame_input.get_frame_width(), self.frame_input.get_frame_height())
+                self.video_logger = VideoLogger(str(int(time.time())), 
+                    self.frame_input.get_frame_width(), 
+                    self.frame_input.get_frame_height(),
+                    self.fps)
                 self.video_logger.logging = True
             else:
                 self.video_logger = None
