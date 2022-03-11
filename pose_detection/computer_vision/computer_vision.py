@@ -19,7 +19,7 @@ class ComputerVision(PoseDetection):
             self.hide_video = False
 
         if "record_video" in kwargs:
-            self.video_logger: VideoLogger = kwargs["record_video"]
+            self.video_logger, self.depth_logger = kwargs["record_video"]
         else:
             self.video_logger = None
 
@@ -28,8 +28,8 @@ class ComputerVision(PoseDetection):
     
     def add_pose_to_queue(self) -> bool:
 
-        frame: np.ndarray = self.frame_input.get_frame()
-        image = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
+        color_frame, depth_frame = self.frame_input.get_frame()
+        image = cv2.cvtColor(cv2.flip(color_frame, 1), cv2.COLOR_BGR2RGB)
 
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
@@ -37,10 +37,12 @@ class ComputerVision(PoseDetection):
         self.pose = self.cv_model.get_pose(image)
         image.flags.writeable = True
 
+        image2 = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        if self.video_logger != None:
+            self.video_logger.log(image2)
+            self.depth_logger.log(depth_frame)
+
         if not self.hide_video:
-            image2 = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            if self.video_logger != None:
-                self.video_logger.log(image2)
             cv2.imshow("MediaPipe Pose", image2)
 
         if cv2.waitKey(5) & 0xFF == 27:

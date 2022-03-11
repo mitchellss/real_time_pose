@@ -18,7 +18,7 @@ class PoseDetection:
             self.channel = redis.Redis(host='localhost', port=6379, db=0)
 
 
-    def add_pose_to_queue(self) -> None:
+    def add_pose_to_queue(self) -> bool:
         if self.queue == "rabbitmq":
             # RabbitMQ logic
             self.channel.basic_publish(exchange='',

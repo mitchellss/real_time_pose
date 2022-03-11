@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import time
+from data_logging.depth_logger import DepthLogger
 from data_logging.video_logger import VideoLogger
 from pose_detection.computer_vision.computer_vision import ComputerVision
 
@@ -39,8 +40,10 @@ class PoseService:
                     self.frame_input.get_frame_height(),
                     self.fps)
                 self.video_logger.logging = True
+                self.depth_logger = DepthLogger(str(int(time.time())))
             else:
                 self.video_logger = None
+                self.depth_logger = None
 
             # Select computer vision model
             self.cv_model = Blazepose()
@@ -48,7 +51,7 @@ class PoseService:
             # Set pose detection method
             self.pose_detection = ComputerVision(self.args.queue, cv_model=self.cv_model, 
                 frame_input=self.frame_input, hide_video=self.args.hide_video,
-                record_video=self.video_logger)
+                record_video=(self.video_logger, self.depth_logger))
 
         elif self.args.input == "vicon":
             self.pose_detection = Vicon(self.args.queue)
@@ -92,6 +95,8 @@ if __name__ == "__main__":
             print("Stop video logger")
             pd.video_logger.stop_logging()
             pd.video_logger.close()
+            pd.depth_logger.stop_logging()
+            pd.depth_logger.close()
     try:
         sys.exit(0)
     except SystemExit:

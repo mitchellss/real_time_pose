@@ -52,7 +52,9 @@ class Realsense(FrameInput):
         # Convert images to numpy arrays
         # depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        return color_image
+        depth_data = np.asanyarray(depth_frame.get_data())
+        # print(depth_data)
+        return color_image, depth_data
 
     def get_frame_height(self) -> int:
         return self.height
