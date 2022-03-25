@@ -36,8 +36,8 @@ class JumpingJacks(Activity):
         self.stage = 0
         self.change_stage()
 
-        if STOP_LOGGING in self.funcs:
-            for func in self.funcs[STOP_LOGGING]:
+        if CLOSE in self.funcs:
+            for func in self.funcs[CLOSE]:
                 func()
 
         self.lh_points_file.close()

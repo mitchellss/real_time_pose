@@ -46,8 +46,8 @@ class VectorHaptic(Activity):
     def time_expire_func(self) -> None:
         self.stage = 0
         self.change_stage()
-        if STOP_LOGGING in self.funcs:
-            for func in self.funcs[STOP_LOGGING]:
+        if CLOSE in self.funcs:
+            for func in self.funcs[CLOSE]:
                 func()
     
     def target_1_func(self) -> None:

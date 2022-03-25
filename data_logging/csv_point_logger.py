@@ -24,7 +24,7 @@ class CSVPointLogger(Logger):
         self.current_time = int(time.time())
         self.data = np.zeros((0,133))
 
-    def stop_logging(self):
+    def close(self):
         np.savetxt(PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.csv", 
         self.data, delimiter=",", header="timestamp,x00,y00,z00,vis00,\
 x01,y01,z01,vis01,x02,y02,z02,vis02,x03,y03,z03,vis03,x04,y04,z04,vis04,\
