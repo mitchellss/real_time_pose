@@ -54,9 +54,13 @@ class RecordData(Activity):
 
     def submit_score_func(self):
         self.stage = 0
+        if CLOSE in self.funcs:
+            for func in self.funcs[CLOSE]:
+                func()
         if STOP_LOGGING in self.funcs:
             for func in self.funcs[STOP_LOGGING]:
                 func()
+
 
 
     def start_button_func(self) -> None:

@@ -79,7 +79,7 @@ class BreadCrumb(Activity):
         # Initializes a dict of functions where various capabilities can be passed
         # i.e (Start logging, stop logging, etc.)
         if FUNCS in kwargs:
-            self.funcs = kwargs[FUNCS]
+            self.funcs: dict[str,function] = kwargs[FUNCS]
         else:
             self.funcs = {}
 
@@ -99,8 +99,8 @@ class BreadCrumb(Activity):
             self.stage = 0
             self.index = 0
             self.change_stage()
-            if STOP_LOGGING in self.funcs:
-                for func in self.funcs[STOP_LOGGING]:
+            if CLOSE in self.funcs:
+                for func in self.funcs[CLOSE]:
                     func()
     
     def target_1_func(self) -> None:

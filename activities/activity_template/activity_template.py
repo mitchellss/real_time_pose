@@ -52,8 +52,8 @@ class ActivityTemplate(Activity):
 
         # This code iterates through all the active loggers and makes sure they stop. 
         # Loggers are setup in the "main.py" file
-        if STOP_LOGGING in self.funcs:
-            for func in self.funcs[STOP_LOGGING]:
+        if CLOSE in self.funcs:
+            for func in self.funcs[CLOSE]:
                 func()
     
     # Use functions like this to manipulate components when

@@ -26,6 +26,7 @@ DOWN: str = "_down"
 STOP_LOGGING: str = "stop_logging"
 START_LOGGING: str = "start_logging"
 NEW_LOG: str = "new_log"
+CLOSE: str = "close"
 
 PATH_ARG: str = "path"
 FUNCS: str = "funcs"

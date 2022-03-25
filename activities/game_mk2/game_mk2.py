@@ -213,8 +213,8 @@ class GameMkII(Activity):
         if self.stage == 1:
             self.stage = 2
             self.index = 0
-            if STOP_LOGGING in self.funcs:
-                for func in self.funcs[STOP_LOGGING]:
+            if CLOSE in self.funcs:
+                for func in self.funcs[CLOSE]:
                     func()
             self.persist[TIMER].set_timer(20)
             self.persist[TIMER].hide()
