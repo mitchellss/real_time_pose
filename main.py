@@ -158,18 +158,30 @@ class TwoDimensionGame():
             self.image = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
             self.image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
 
-            self.pose_detector.mp_drawing.draw_landmarks(
-                self.image2,
-                self.pose_detector.get_pose_landmarks(),
-                self.pose_detector.mp_pose.POSE_CONNECTIONS,
-                landmark_drawing_spec=self.pose_detector.mp_drawing_styles.get_default_pose_landmarks_style()
-            )
+            if blaze_pose_coords is not None:
+                landmarks = self.pose_detector.get_pose_landmarks().landmark
+                for landmark in landmarks:
+                    x = landmark.x
+                    y = landmark.y
+
+                    shape = self.image2.shape 
+                    relative_x = int(x * shape[1])
+                    relative_y = int(y * shape[0])
+
+                    cv2.circle(self.image2, (relative_x, relative_y), radius=5, color=(0, 0, 255), thickness=5)  
+
+            # self.pose_detector.mp_drawing.draw_landmarks(
+            #     self.image2,
+            #     self.pose_detector.get_pose_landmarks(),
+            #     self.pose_detector.mp_pose.POSE_CONNECTIONS,
+            #     landmark_drawing_spec=self.pose_detector.mp_drawing_styles.get_default_pose_landmarks_style()
+            # )
 
 
             # If global coords were successfully found
             if blaze_pose_coords is not None:
-                landmarks = blaze_pose_coords.landmark
-                self.update_point_and_connection_data(landmarks)
+                world_landmarks = blaze_pose_coords.landmark
+                self.update_point_and_connection_data(world_landmarks)
 
                 # for i in self.pose_detector.get_pose_landmarks().landmark:
                 #     print(i)

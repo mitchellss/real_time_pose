@@ -49,6 +49,7 @@ class Realsense(FrameInput):
         04: High Density
         '''
 
+        # https://intelrealsense.github.io/librealsense/python_docs/_generated/pyrealsense2.option.html
         depth_sensor.set_option(rs.option.visual_preset, 3)
 
         self.depth_image = None
@@ -66,9 +67,12 @@ class Realsense(FrameInput):
         if not self.depth_frame or not color_frame:
             return None
         
-        # print(depth_frame.get_distance(depth_frame.width//2,depth_frame.height//2), end="\r")
+        # print(self.depth_frame.get_distance(self.depth_frame.width//2,self.depth_frame.height//2), end="\r")
 
         colorizer = rs.colorizer()
+        colorizer.set_option(rs.option.visual_preset, 1) # 0=Dynamic, 1=Fixed, 2=Near, 3=Far
+        # colorizer.set_option(rs.option.max_distance, 4)
+
         self.depth_image = np.asanyarray(colorizer.colorize(self.depth_frame).get_data())
 
         # Convert images to numpy arrays
