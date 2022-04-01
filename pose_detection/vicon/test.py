@@ -8,6 +8,8 @@ import asyncio
 import sys
 import qtm
 
+# https://qualisys.github.io/qualisys_python_sdk/index.html
+
 
 def on_packet(packet):
     """ Callback function that is called everytime a data packet arrives from QTM """
