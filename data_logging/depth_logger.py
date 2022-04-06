@@ -25,7 +25,9 @@ class DepthLogger(Logger):
                 relative_y = int(y * self.height)
                 if landmark == 15:
                     a = self.get_distance(depth_frame, relative_x, relative_y)
-                    print(a, end="\r")
+                    print(a)
+        else:
+            print("none")
         # if self.logging:
         #     self.vid_writer.write(data)
 

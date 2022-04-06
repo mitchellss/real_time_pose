@@ -53,6 +53,17 @@ class ComputerVision(PoseDetection):
             
         if self.depth_logger != None:
             self.depth_logger.log(depth_frame, self.cv_model.get_pose_landmarks())
+
+        landmarks = self.cv_model.get_pose_landmarks()
+        if landmarks is not None:
+            for landmark in range(0,len(landmarks)):
+                x = landmarks[landmark].x
+                y = landmarks[landmark].y
+                relative_x = int(x * 640)
+                relative_y = int(y * 480)
+                if landmark == 15:
+                    cv2.circle(image2, (relative_x, relative_y), 5, (255,0,0), thickness=2)
+
             
         if not self.hide_video:
             cv2.imshow("MediaPipe Pose", image2)
