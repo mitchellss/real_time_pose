@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import time
+from data_logging.depth_logger import DepthLogger
 from data_logging.video_logger import VideoLogger
 from pose_detection.computer_vision.computer_vision import ComputerVision
 
@@ -41,6 +42,13 @@ class PoseService:
                 self.video_logger.logging = True
             else:
                 self.video_logger = None
+            
+            if self.args.record_depth:
+                self.depth_logger = DepthLogger("test.csv", 
+                                                self.frame_input.get_frame_width(), 
+                                                self.frame_input.get_frame_height())
+            else:
+                self.depth_logger = None
 
             # Select computer vision model
             self.cv_model = Blazepose()
@@ -48,7 +56,7 @@ class PoseService:
             # Set pose detection method
             self.pose_detection = ComputerVision(self.args.queue, cv_model=self.cv_model, 
                 frame_input=self.frame_input, hide_video=self.args.hide_video,
-                record_video=self.video_logger)
+                video_logger=self.video_logger, depth_logger=self.depth_logger)
 
         elif self.args.input == "vicon":
             self.pose_detection = Vicon(self.args.queue)
@@ -70,6 +78,7 @@ class PoseService:
         video_parser = subparsers.add_parser('video', description="Generates skeleton data based on video input.")
         video_parser.add_argument("--hide_video", action="store_true", help="Hide real-time video playback.")
         video_parser.add_argument("--record_video", action="store_true", help="Record real-time video playback.")
+        video_parser.add_argument("--record_depth", action="store_true", help="Record real-time depth.")
         video_subparsers = video_parser.add_subparsers(dest="video_input", description="The type of video input to be used.", required=True)
         
         file_parser = video_subparsers.add_parser("file", description="Generate skeleton data based on a video file.")

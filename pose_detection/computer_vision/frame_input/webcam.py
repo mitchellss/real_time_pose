@@ -7,6 +7,7 @@ class Webcam(FrameInput):
     """FrameInput implementation representing a video capture 0 webcam"""
 
     def __init__(self) -> None:
+        super().__init__()
         self.cap = cv2.VideoCapture(0)
         self.vid_width= int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.vid_height= int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

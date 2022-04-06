@@ -7,9 +7,12 @@ class Realsense(FrameInput):
     """FrameInput implementation representing an intel realsense camera"""
 
     def __init__(self) -> None:
+        super().__init__()
         # Configure depth and color streams 
         self.pipeline = rs.pipeline()
         config = rs.config()
+        self.has_depth = True
+        self.depth_frame = None
 
         # Get device product line for setting a supporting resolution
         pipeline_wrapper = rs.pipeline_wrapper(self.pipeline)
@@ -44,9 +47,9 @@ class Realsense(FrameInput):
     def get_frame(self) -> np.ndarray:
         # Wait for a coherent pair of frames: depth and color
         frames = self.pipeline.wait_for_frames()
-        depth_frame = frames.get_depth_frame()
+        self.depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
-        if not depth_frame or not color_frame:
+        if not self.depth_frame or not color_frame:
             return None
 
         # Convert images to numpy arrays
@@ -59,3 +62,8 @@ class Realsense(FrameInput):
 
     def get_frame_width(self) -> int:
         return self.width
+    
+    def get_depth_frame(self) -> np.ndarray:
+        """Returns an np.ndarray representing a single depth frame"""
+        return self.depth_frame
+

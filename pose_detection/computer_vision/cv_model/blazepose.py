@@ -29,7 +29,8 @@ class Blazepose(CVModel):
                 min_tracking_confidence=min_tracking_confidence, model_complexity=model_complexity)
 
     def get_pose(self, image: np.ndarray) -> np.ndarray:
-        landmarks = self.pose.process(image).pose_world_landmarks
+        self.results = self.pose.process(image)
+        landmarks = self.results.pose_world_landmarks
         try:
             landmarks = landmarks.landmark
             for landmark in range(0,len(landmarks)):
@@ -41,3 +42,9 @@ class Blazepose(CVModel):
             return self.skeleton_array
         except:
             return self.skeleton_array
+    
+    def get_pose_landmarks(self):
+        try:
+            return self.results.pose_landmarks.landmark
+        except:
+            return None

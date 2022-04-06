@@ -15,3 +15,6 @@ class CVModel():
     def get_pose(self, image: np.ndarray) -> list:
         """Return an np.ndarray of points based on an image."""
         pass
+
+    def get_pose_landmarks(self):
+        pass
