@@ -148,6 +148,7 @@ class TwoDimensionGame():
             image1 = cv2.cvtColor(cv2.flip(color_image, 1), cv2.COLOR_BGR2RGB)
             image2 = cv2.cvtColor(cv2.flip(depth_image, 1), cv2.COLOR_BGR2RGB)
 
+
             # To improve performance, optionally mark the image as not writeable to
             # pass by reference.
             image1.flags.writeable = False
@@ -158,17 +159,32 @@ class TwoDimensionGame():
             self.image = cv2.cvtColor(image1, cv2.COLOR_RGB2BGR)
             self.image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
 
+            # x = self.frame_input.get_frame_width()//4
+            # y = self.frame_input.get_frame_height()//4
+
+            # a = self.frame_input.get_distance(x,y)
+            # # print(a, end="\r")
+            # cv2.circle(self.image, (x, y), radius=5, color=(0, 255, 0), thickness=5)  
+
+
             if blaze_pose_coords is not None:
                 landmarks = self.pose_detector.get_pose_landmarks().landmark
-                for landmark in landmarks:
-                    x = landmark.x
-                    y = landmark.y
+                for landmark in range(0, len(landmarks)):
+                    x = landmarks[landmark].x
+                    y = landmarks[landmark].y
 
-                    shape = self.image2.shape 
+                    shape = self.image.shape 
                     relative_x = int(x * shape[1])
                     relative_y = int(y * shape[0])
 
-                    cv2.circle(self.image2, (relative_x, relative_y), radius=5, color=(0, 0, 255), thickness=5)  
+                    cv2.circle(self.image, (relative_x, relative_y), radius=3, color=(0, 0, 255), thickness=2)
+                    if landmark == 15:
+                        try:
+                            print(self.frame_input.get_distance(relative_x,relative_y), end="\r")
+                        except Exception as e:
+                            # print(e)
+                            pass
+                    
 
             # self.pose_detector.mp_drawing.draw_landmarks(
             #     self.image2,
@@ -195,7 +211,7 @@ class TwoDimensionGame():
             self.activity.handle_frame(surface=self.gui.window)
 
             if not self.args.hide_video:
-                cv2.imshow('MediaPipe Pose', self.image2)
+                cv2.imshow('MediaPipe Pose', self.image)
             
             #cv2.imshow('Demo', self.d.get_image())
             if cv2.waitKey(5) & 0xFF == 27:
@@ -204,7 +220,6 @@ class TwoDimensionGame():
             self.gui.update()
             self.gui.clear()
             self.persistant[TIMER].tick()
-
 
     def update_point_and_connection_data(self, landmarks):
         """Updates the numpy array with the most current coordinate data"""

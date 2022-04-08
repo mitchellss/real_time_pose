@@ -29,8 +29,12 @@ class Realsense(FrameInput):
         config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
         if device_product_line == 'L500':
+            # print("L500")
             config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
         else:
+            # print("other")
+            self.frame_height = 480
+            self.frame_width = 640
             config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
         # Start streaming
         pipe_profile = self.pipeline.start(config)
@@ -82,14 +86,23 @@ class Realsense(FrameInput):
 
     def get_frame_height(self) -> int:
         # TODO
-        return super().get_frame_height()
+        return self.frame_height
 
     def get_frame_width(self) -> int:
         # TODO
-        return super().get_frame_width()
+        return self.frame_width
 
     def get_depth_image(self) -> np.ndarray:
         return self.depth_image
 
-    def get_distance(self, x: int, y: int) -> float:
-        return self.depth_frame.get_distance(x, y)
+    def get_distance(self, x: int, y: int, flip=True) -> float:
+        if flip:
+            return self.depth_frame.get_distance(self._flip(x), y)
+        else:
+            return self.depth_frame.get_distance(x, y)
+
+    def _flip(self, x_coord: int) -> int:
+        """X coord for getting distance needs to be mirrored on x axis. This is
+        because the image gets flipped before it's displayed"""
+        return self.get_frame_width()-x_coord
+
