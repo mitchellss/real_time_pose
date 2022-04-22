@@ -37,6 +37,6 @@ PIXEL_Y_OFFSET: int = 600
 PIXEL_Z_OFFSET: int = 600
 
 WINDOW_WIDTH: int = 1920//2
-WINDOW_HEIGHT: int = 1000
+WINDOW_HEIGHT: int = 800
 
 QUEUE_NAME: str = "skeleton_queue"
