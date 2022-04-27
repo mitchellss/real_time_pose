@@ -11,8 +11,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QComboBox, QLabel, QFileDialog, QPushBu
 import os
 import multiprocessing as mp
 
-from start_pose import PoseService
-from start_ui import TwoDimensionGame
 
 class Dialog(QDialog):
     """Dialog."""
@@ -53,7 +51,7 @@ class Dialog(QDialog):
         
         # Choose activity dropdown
         self.activityDropdown = QComboBox(parent=self.inputDropdown)
-        self.activityDropdown.addItems(["game", "record_data"])
+        self.activityDropdown.addItems(["game", "record_data", "vector_haptic", "haptic"])
         self.activityDropdown.currentIndexChanged.connect(self.input_selection_changed3)
         self.activityLabel = QLabel('Activity:', parent=self.activityDropdown)
         self.activityDescLabel = QLabel('Description:', parent=self.activityDropdown)
@@ -196,10 +194,12 @@ class Dialog(QDialog):
         #     os._exit(0)
             
     def start_ui(self, **kwargs):
+        from start_ui import TwoDimensionGame
         self.td = TwoDimensionGame(**kwargs)
         self.td.start()
         
     def click_ok_button(self):
+        from start_pose import PoseService
         queue = self.queueDropdown.currentText()
         input = self.inputDropdown.currentText()
         record_video = self.record_checkbox.isChecked()
