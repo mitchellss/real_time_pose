@@ -8,6 +8,11 @@ from PyQt5.QtWidgets import QDialogButtonBox
 from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QVBoxLayout, QComboBox, QLabel, QFileDialog, QPushButton, QCheckBox
+import os
+import multiprocessing as mp
+
+from start_pose import PoseService
+from start_ui import TwoDimensionGame
 
 class Dialog(QDialog):
     """Dialog."""
@@ -20,9 +25,14 @@ class Dialog(QDialog):
         self.dlgLayout = QVBoxLayout()
         formLayout = QFormLayout()
         
-        queueDropdown = QComboBox()
-        queueDropdown.addItems(["redis (recommended)", "rabbitmq"])
-        formLayout.addRow('Message Queue:', queueDropdown)
+        self.filepath = ""
+        self.pose_service = None
+        self.p = None
+        self.td = None
+        
+        self.queueDropdown = QComboBox()
+        self.queueDropdown.addItems(["redis", "rabbitmq"])
+        formLayout.addRow('Message Queue:', self.queueDropdown)
         
         self.inputDropdown = QComboBox()
         self.inputDropdown.addItems(["video", "vicon"])
@@ -43,7 +53,7 @@ class Dialog(QDialog):
         
         # Choose activity dropdown
         self.activityDropdown = QComboBox(parent=self.inputDropdown)
-        self.activityDropdown.addItems(["haptic_glove"])
+        self.activityDropdown.addItems(["game", "record_data"])
         self.activityDropdown.currentIndexChanged.connect(self.input_selection_changed3)
         self.activityLabel = QLabel('Activity:', parent=self.activityDropdown)
         self.activityDescLabel = QLabel('Description:', parent=self.activityDropdown)
@@ -94,6 +104,10 @@ class Dialog(QDialog):
         btns = QDialogButtonBox()
         btns.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         self.dlgLayout.addWidget(btns)
+        
+        btns.accepted.connect(self.click_ok_button)
+        btns.rejected.connect(self.click_cancel_button)
+        
         self.setLayout(self.dlgLayout)
         
     def input_selection_changed(self):
@@ -136,6 +150,7 @@ class Dialog(QDialog):
         path = QFileDialog.getOpenFileName(self, 'Open a file', '', 'All Files (*.*)')
         if path != ('', ''):
             self.filePushButton.setText(pathlib.Path(path[0]).name)
+            self.filepath = pathlib.Path(path[0])
     
     def click_record_video_data(self):
         if self.record_checkbox.isChecked():
@@ -163,6 +178,67 @@ class Dialog(QDialog):
             
     def click_hide_video_output(self):
         pass
+    
+    def click_cancel_button(self):
+        if self.pose_service != None:
+            if self.pose_service.video_logger != None:
+                print("Stop video logger")
+                self.pose_service.video_logger.stop_logging()
+                self.pose_service.video_logger.close()
+        if self.p != None:
+            self.p.terminate()
+            
+        self.pose_service.stop()
+            
+        # try:
+        #     sys.exit(0)
+        # except SystemExit:
+        #     os._exit(0)
+            
+    def start_ui(self, **kwargs):
+        self.td = TwoDimensionGame(**kwargs)
+        self.td.start()
+        
+    def click_ok_button(self):
+        queue = self.queueDropdown.currentText()
+        input = self.inputDropdown.currentText()
+        record_video = self.record_checkbox.isChecked()
+        hide_video = self.hide_video.isChecked()
+        if input == "video":
+            video_source = self.videoSourceDropdown.currentText()
+            if video_source == "file":
+                path = self.filepath
+                self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue, video_input=video_source, path=path)
+            else:
+                self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue, video_input=video_source)
+            
+        elif input == "vicon":
+            self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue)
+        
+        kwargs = {
+            "activity": self.activityDropdown.currentText(),
+            "queue": self.queueDropdown.currentText(),
+            "record_points": self.record_skeleton.isChecked(),
+            "record_hdf5": self.record_skeleton_hdf5.isChecked()
+            }
+        self.p = mp.Process(target=self.start_ui, kwargs=kwargs)
+        self.p.start()
+        
+        try:
+            self.pose_service.start()
+        except KeyboardInterrupt:
+            print('Interrupted')
+            if self.pose_service.video_logger != None:
+                print("Stop video logger")
+                self.pose_service.video_logger.stop_logging()
+                self.pose_service.video_logger.close()
+            
+            if self.p != None:
+                self.p.terminate()
+        # try:
+        #     sys.exit(0)
+        # except SystemExit:
+        #     os._exit(0)
     
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -22,3 +22,6 @@ class Webcam(FrameInput):
 
     def get_frame_height(self) -> int:
         return int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    def close(self):
+        self.cap.release()

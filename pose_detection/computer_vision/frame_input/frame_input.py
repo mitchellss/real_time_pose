@@ -18,3 +18,6 @@ class FrameInput():
     def get_frame_height(self) -> int:
         """Returns the frame height of the frames being sent"""
         pass
+
+    def close(self):
+        pass
