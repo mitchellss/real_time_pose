@@ -18,3 +18,6 @@ class GUI():
 
     def clear(self) -> None:
         pass
+
+    def quit(self) -> None:
+        pass

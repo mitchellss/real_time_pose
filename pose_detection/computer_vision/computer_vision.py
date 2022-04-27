@@ -48,3 +48,6 @@ class ComputerVision(PoseDetection):
 
         super().add_pose_to_queue()
         return True
+    
+    def close(self):
+        self.frame_input.close()

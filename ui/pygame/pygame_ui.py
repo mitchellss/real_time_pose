@@ -49,4 +49,7 @@ class PyGameUI(GUI):
 
     def clear(self) -> None:
         self.window.fill(self.BACKGROUND)
+        
+    def quit(self) -> None:
+        pygame.quit()
 

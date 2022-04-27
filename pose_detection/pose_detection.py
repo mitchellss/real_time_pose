@@ -27,3 +27,6 @@ class PoseDetection:
         elif self.queue == "redis":
             # Redis logic
             self.channel.publish(QUEUE_NAME, json.dumps(self.pose.tolist()))
+
+    def close(self):
+        pass

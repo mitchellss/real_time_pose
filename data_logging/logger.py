@@ -13,7 +13,7 @@ class Logger():
         if not os.path.isdir(PATH / "data" / self.folder_name):
             os.makedirs(PATH / "data" / self.folder_name)
 
-    def log(self, data) -> None:
+    def log(self, **data) -> None:
         pass
 
     def new_log(self) -> None:
