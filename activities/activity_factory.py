@@ -38,6 +38,8 @@ class ActivityFactory:
             return Shapes(body_point_array, ui, funcs=funcs, path=path)
         elif self.type == "vector_haptic":
             return VectorHaptic(body_point_array, ui, funcs=funcs, path=path)
+        elif self.type == "vector_haptic_acc":
+            return VectorHaptic(body_point_array, ui, funcs=funcs, path=path)
         elif self.type == "record_data":
             return RecordData(body_point_array, ui, funcs=funcs, path=path)
         else:

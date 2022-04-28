@@ -10,7 +10,7 @@ import random
 import socket
 
 
-class VectorHaptic(Activity):
+class VectorHapticAcc(Activity):
     
     MOTORS = np.array([np.array([0,0,1]), np.array([0,0,-1]), np.array([0,-1,0]), np.array([0,1,0])]) #array of motor positions
     POINT = 16

@@ -51,7 +51,7 @@ class Dialog(QDialog):
         
         # Choose activity dropdown
         self.activityDropdown = QComboBox(parent=self.inputDropdown)
-        self.activityDropdown.addItems(["game", "record_data", "vector_haptic", "haptic"])
+        self.activityDropdown.addItems(["game", "record_data", "vector_haptic", "vector_haptic_acc"])
         self.activityDropdown.currentIndexChanged.connect(self.input_selection_changed3)
         self.activityLabel = QLabel('Activity:', parent=self.activityDropdown)
         self.activityDescLabel = QLabel('Description:', parent=self.activityDropdown)
