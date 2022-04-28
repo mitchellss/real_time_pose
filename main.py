@@ -194,12 +194,17 @@ class Dialog(QDialog):
         #     os._exit(0)
             
     def start_ui(self, **kwargs):
-        from start_ui import TwoDimensionGame
+        from start_ui import TwoDimensionGame # KEEP THIS HERE
+        # Weird errors on ubuntu if you move the import statement
+        # to the top of the file
+
         self.td = TwoDimensionGame(**kwargs)
         self.td.start()
         
     def click_ok_button(self):
-        from start_pose import PoseService
+        from start_pose import PoseService # KEEP THIS HERE
+        # Weird errors on ubuntu if you move the import statement
+        # to the top of the file
         queue = self.queueDropdown.currentText()
         input = self.inputDropdown.currentText()
         record_video = self.record_checkbox.isChecked()
@@ -239,6 +244,18 @@ class Dialog(QDialog):
         #     sys.exit(0)
         # except SystemExit:
         #     os._exit(0)
+        
+    def closeEvent(self, event):
+        if self.pose_service != None:
+            if self.pose_service.video_logger != None:
+                print("Stop video logger")
+                self.pose_service.video_logger.stop_logging()
+                self.pose_service.video_logger.close()
+            self.pose_service.stop()
+        if self.p != None:
+            self.p.terminate()
+        
+        event.accept()
     
 if __name__ == '__main__':
     app = QApplication(sys.argv)
