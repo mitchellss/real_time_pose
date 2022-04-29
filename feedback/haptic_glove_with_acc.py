@@ -106,7 +106,7 @@ class HapticGloveAcc(FeedbackDevice):
         D = np.linalg.norm(U)
         #print(f'Distance from goal: {D}')
 
-        I = self.map_to_range(D, 0, 0.6, 150, 255,  bounded=True)
+        I = self.map_to_range(D, 0, .2, 150, 255,  bounded=True)
         #print(f'Distance adjusted to range: {I}')
 
         motor_distance = [0.0,0.0,0.0,0.0]
@@ -122,7 +122,7 @@ class HapticGloveAcc(FeedbackDevice):
         #print(f'Motor intensity proportions: {mapped}')
 
         intensity = np.array(I * mapped).astype(int)
-        #print(f'Motor intensity array: {intensity}')
+        print(f'Motor intensity array: {intensity}')
         return intensity
     
     def get_acceleration(self):
@@ -137,7 +137,7 @@ class HapticGloveAcc(FeedbackDevice):
             self.accel_norm[0] = round(self.accel_norm[0],2)
             self.accel_norm[1] = round(self.accel_norm[1],2)
             self.accel_norm[2] = round(self.accel_norm[2],2)                    
-            print(self.accel_norm)
+            # print(self.accel_norm)
         except:
             None
 

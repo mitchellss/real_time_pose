@@ -38,7 +38,7 @@ class VectorHaptic(Activity):
         self.current_pos = np.array([0,0,0]) #Current Pos
         self.goal_position = np.array([0,1,1]) # Goal Pos
 
-        self.glove = HapticGlove("192.168.1.4", 8888)
+        self.glove = HapticGlove("172.16.1.4", 8888)
         self.glove.connect()
 
         self.auditory = ComputerSoundFeedback()

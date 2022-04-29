@@ -4,7 +4,7 @@ import numpy as np
 from activities.activity import Activity
 from constants.constants import *
 from feedback.auditory import ComputerSoundFeedback
-from feedback.haptic_glove import HapticGlove
+from feedback.haptic_glove_with_acc import HapticGloveAcc
 from ui.components.component_factory import ComponentFactory
 import random
 import socket
@@ -37,7 +37,7 @@ class VectorHapticAcc(Activity):
         self.current_pos = np.array([0,0,0]) #Current Pos
         self.goal_position = np.array([0,1,1]) # Goal Pos
 
-        self.glove = HapticGlove("192.168.1.4", 8888)
+        self.glove = HapticGloveAcc("172.16.1.4", 8888)
         self.glove.connect()
 
         self.auditory = ComputerSoundFeedback()
