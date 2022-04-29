@@ -239,6 +239,17 @@ class Dialog(QDialog):
         #     sys.exit(0)
         # except SystemExit:
         #     os._exit(0)
+        
+    def closeEvent(self, event):
+        if self.pose_service != None:
+            if self.pose_service.video_logger != None:
+                print("Stop video logger")
+                self.pose_service.video_logger.stop_logging()
+                self.pose_service.video_logger.close()
+            self.pose_service.stop()
+        if self.p != None:
+            self.p.terminate()
+
     
 if __name__ == '__main__':
     app = QApplication(sys.argv)
