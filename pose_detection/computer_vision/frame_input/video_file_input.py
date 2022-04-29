@@ -14,7 +14,7 @@ class VideoFileInput(FrameInput):
     """
 
     def __init__(self, path) -> None:
-        self.cap = cv2.VideoCapture(path)
+        self.cap = cv2.VideoCapture(str(path))
 
     def get_frame(self) -> np.ndarray:
         if self.cap.isOpened():
