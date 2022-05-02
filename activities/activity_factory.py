@@ -12,6 +12,7 @@ from activities.record_data.record_data import RecordData
 from activities.shapes.shapes import Shapes
 from activities.squat.squat import Squat
 from activities.vector_haptic.vector_haptic import VectorHaptic
+from activities.vector_haptic_acc.vector_haptic_acc import VectorHapticAcc
 
 
 class ActivityFactory:
@@ -38,6 +39,8 @@ class ActivityFactory:
             return Shapes(body_point_array, ui, funcs=funcs, path=path)
         elif self.type == "vector_haptic":
             return VectorHaptic(body_point_array, ui, funcs=funcs, path=path)
+        elif self.type == "vector_haptic_acc":
+            return VectorHapticAcc(body_point_array, ui, funcs=funcs, path=path)
         elif self.type == "record_data":
             return RecordData(body_point_array, ui, funcs=funcs, path=path)
         else:
