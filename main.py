@@ -194,17 +194,12 @@ class Dialog(QDialog):
             self.p.terminate()
             
     def start_ui(self, **kwargs):
-        from start_ui import TwoDimensionGame # KEEP THIS HERE
-        # Weird errors on ubuntu if you move the import statement
-        # to the top of the file
-
-        self.td = TwoDimensionGame(**kwargs)
+        from interface_service import InterfaceService
+        self.td = InterfaceService(**kwargs)
         self.td.start()
         
     def click_ok_button(self):
-        from start_pose import PoseService # KEEP THIS HERE
-        # Weird errors on ubuntu if you move the import statement
-        # to the top of the file
+        from pose_service import PoseService
         queue = self.queueDropdown.currentText()
         input = self.inputDropdown.currentText()
         record_video = self.record_checkbox.isChecked()

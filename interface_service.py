@@ -16,7 +16,7 @@ from ui.pygame.pygame_ui import PyGameUI
 from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
 
-class TwoDimensionGame():
+class InterfaceService():
     """
     Creates a 2-dimensional user interface displaying the results
     of a pose detection algorithm. Allows users to interact with
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     parser.add_argument("--queue", choices=["rabbitmq", "redis"], default="redis", help="The type of queue to use to accept skeleton data.")
     args = parser.parse_args()
     
-    td = TwoDimensionGame(activity_name=args.activity, hide_demo=args.hide_demo, record_points=args.record_points,
+    td = InterfaceService(activity_name=args.activity, hide_demo=args.hide_demo, record_points=args.record_points,
                           record_zarr=args.record_zarr, record_hdf5=args.record_hdf5, queue=args.queue, gui_name=args.gui, activity_playback_csv=args.file)
     try:
         td.start()

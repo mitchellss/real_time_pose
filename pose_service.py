@@ -18,12 +18,20 @@ from pose_detection.vicon.vicon import Vicon
 
 
 class PoseService:
+    """
+    The pose service program takes some kind of input and produces a pose skeleton. Frame
+    input is currently the only kind of input allowed, however there is a dummy class
+    that could be used for directly inputting vicon data. Frame data is interpretted by 
+    a computer vision model and the resultant skeleton is put in a messaging queue to be
+    consumed by the UI service. Experimental Intel Realsense support is being developed
+    to allow for real time depth to be incorporated into the model.
+    """
 
     def __init__(self, input="video", video_input="webcam", path=".", record_video=False, queue="redis", hide_video=False) -> None:
                 
         self.pose_detection: PoseDetection = None
         self.frame_input: FrameInput = None
-        self.cont = True
+        self.continue_processing = True
 
         if input == "video":
             # Select video input method
@@ -57,11 +65,17 @@ class PoseService:
             self.pose_detection = Vicon(queue)
 
     def start(self) -> None:
-        while self.pose_detection.add_pose_to_queue() and self.cont:
+        """Loop infinitely, processing input and adding skeletons to the queue
+        until an error occurs or the program is exited.
+        """
+        while self.pose_detection.add_pose_to_queue() and self.continue_processing:
             pass
 
     def stop(self) -> None:
-        self.cont = False
+        """
+        Stop the cv2 window showing the video input and close the video input stream.
+        """
+        self.continue_processing = False
         cv2.destroyAllWindows()
         self.pose_detection.close()
 
