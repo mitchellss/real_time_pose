@@ -64,33 +64,33 @@ class Dialog(QDialog):
         self.record_checkbox.clicked.connect(self.click_record_video_data)
         formLayout.addRow(self.record_checkbox)
         
-        self.mp4_name_field = QLineEdit(f"{int(time.time())}.mp4")
-        self.mp4_name_label = QLabel("Filename")
-        formLayout.addRow(self.mp4_name_label, self.mp4_name_field)
-        self.mp4_name_field.setHidden(True)
-        self.mp4_name_label.setHidden(True)
+        # self.mp4_name_field = QLineEdit(f"{int(time.time())}.mp4")
+        # self.mp4_name_label = QLabel("Filename")
+        # formLayout.addRow(self.mp4_name_label, self.mp4_name_field)
+        # self.mp4_name_field.setHidden(True)
+        # self.mp4_name_label.setHidden(True)
 
         # Record csv data checkbox
         self.record_skeleton = QCheckBox("Record skeleton data (CSV)")
         self.record_skeleton.clicked.connect(self.click_record_skeleton_data)
         formLayout.addRow(self.record_skeleton)
         
-        self.skeleton_csv_name_field = QLineEdit(f"{int(time.time())}.csv")
-        self.skeleton_csv_name_label = QLabel("Filename")
-        formLayout.addRow(self.skeleton_csv_name_label, self.skeleton_csv_name_field)
-        self.skeleton_csv_name_field.setHidden(True)
-        self.skeleton_csv_name_label.setHidden(True)
+        # self.skeleton_csv_name_field = QLineEdit(f"{int(time.time())}.csv")
+        # self.skeleton_csv_name_label = QLabel("Filename")
+        # formLayout.addRow(self.skeleton_csv_name_label, self.skeleton_csv_name_field)
+        # self.skeleton_csv_name_field.setHidden(True)
+        # self.skeleton_csv_name_label.setHidden(True)
         
         # Record hdf5 data checkbox
         self.record_skeleton_hdf5 = QCheckBox("Record skeleton data (hdf5)")
         self.record_skeleton_hdf5.clicked.connect(self.click_record_skeleton_data_hdf5)
         formLayout.addRow(self.record_skeleton_hdf5)
         
-        self.skeleton_hdf5_name_field = QLineEdit(f"{int(time.time())}.hdf5")
-        self.skeleton_hdf5_name_label = QLabel("Filename")
-        formLayout.addRow(self.skeleton_hdf5_name_label, self.skeleton_hdf5_name_field)
-        self.skeleton_hdf5_name_field.setHidden(True)
-        self.skeleton_hdf5_name_label.setHidden(True)
+        self.data_folder_name_field = QLineEdit(f"{int(time.time())}")
+        self.data_folder_name_label = QLabel("Data Folder Name")
+        formLayout.addRow(self.data_folder_name_label, self.data_folder_name_field)
+        self.data_folder_name_field.setHidden(True)
+        self.data_folder_name_label.setHidden(True)
         
         # Hide video output checkbox
         self.hide_video = QCheckBox("Hide video output")
@@ -152,27 +152,33 @@ class Dialog(QDialog):
     
     def click_record_video_data(self):
         if self.record_checkbox.isChecked():
-            self.mp4_name_field.setHidden(False)
-            self.mp4_name_label.setHidden(False)
-        elif not self.record_checkbox.isChecked():
-            self.mp4_name_field.setHidden(True)
-            self.mp4_name_label.setHidden(True)
+            self.data_folder_name_field.setHidden(False)
+            self.data_folder_name_label.setHidden(False)
+        elif not self.record_checkbox.isChecked() \
+            and not self.record_skeleton.isChecked() \
+                and not self.record_skeleton_hdf5.isChecked():
+            self.data_folder_name_field.setHidden(True)
+            self.data_folder_name_label.setHidden(True)
             
     def click_record_skeleton_data(self):
         if self.record_skeleton.isChecked():
-            self.skeleton_csv_name_field.setHidden(False)
-            self.skeleton_csv_name_label.setHidden(False)
-        elif not self.record_skeleton.isChecked():
-            self.skeleton_csv_name_field.setHidden(True)
-            self.skeleton_csv_name_label.setHidden(True)
+            self.data_folder_name_field.setHidden(False)
+            self.data_folder_name_label.setHidden(False)
+        elif not self.record_checkbox.isChecked() \
+            and not self.record_skeleton.isChecked() \
+                and not self.record_skeleton_hdf5.isChecked():
+            self.data_folder_name_field.setHidden(True)
+            self.data_folder_name_label.setHidden(True)
             
     def click_record_skeleton_data_hdf5(self):
         if self.record_skeleton_hdf5.isChecked():
-            self.skeleton_hdf5_name_field.setHidden(False)
-            self.skeleton_hdf5_name_label.setHidden(False)
-        elif not self.record_skeleton_hdf5.isChecked():
-            self.skeleton_hdf5_name_field.setHidden(True)
-            self.skeleton_hdf5_name_label.setHidden(True)
+            self.data_folder_name_field.setHidden(False)
+            self.data_folder_name_label.setHidden(False)
+        elif not self.record_checkbox.isChecked() \
+            and not self.record_skeleton.isChecked() \
+                and not self.record_skeleton_hdf5.isChecked():
+            self.data_folder_name_field.setHidden(True)
+            self.data_folder_name_label.setHidden(True)
             
     def click_hide_video_output(self):
         pass
@@ -183,28 +189,17 @@ class Dialog(QDialog):
                 print("Stop video logger")
                 self.pose_service.video_logger.stop_logging()
                 self.pose_service.video_logger.close()
+            self.pose_service.stop()
         if self.p != None:
             self.p.terminate()
             
-        self.pose_service.stop()
-            
-        # try:
-        #     sys.exit(0)
-        # except SystemExit:
-        #     os._exit(0)
-            
     def start_ui(self, **kwargs):
-        from start_ui import TwoDimensionGame # KEEP THIS HERE
-        # Weird errors on ubuntu if you move the import statement
-        # to the top of the file
-
-        self.td = TwoDimensionGame(**kwargs)
+        from interface_service import InterfaceService
+        self.td = InterfaceService(**kwargs)
         self.td.start()
         
     def click_ok_button(self):
-        from start_pose import PoseService # KEEP THIS HERE
-        # Weird errors on ubuntu if you move the import statement
-        # to the top of the file
+        from pose_service import PoseService
         queue = self.queueDropdown.currentText()
         input = self.inputDropdown.currentText()
         record_video = self.record_checkbox.isChecked()
@@ -213,18 +208,24 @@ class Dialog(QDialog):
             video_source = self.videoSourceDropdown.currentText()
             if video_source == "file":
                 path = self.filepath
-                self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue, video_input=video_source, path=path)
+                self.pose_service = PoseService(input=input, record_video=record_video, 
+                                                hide_video=hide_video, queue=queue, 
+                                                video_input=video_source, path=path)
             else:
-                self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue, video_input=video_source)
+                self.pose_service = PoseService(input=input, record_video=record_video, 
+                                                hide_video=hide_video, queue=queue, 
+                                                video_input=video_source)
             
         elif input == "vicon":
-            self.pose_service = PoseService(input=input, record_video=record_video, hide_video=hide_video, queue=queue)
+            self.pose_service = PoseService(input=input, record_video=record_video, 
+                                            hide_video=hide_video, queue=queue)
         
         kwargs = {
-            "activity": self.activityDropdown.currentText(),
+            "activity_name": self.activityDropdown.currentText(),
             "queue": self.queueDropdown.currentText(),
             "record_points": self.record_skeleton.isChecked(),
-            "record_hdf5": self.record_skeleton_hdf5.isChecked()
+            "record_hdf5": self.record_skeleton_hdf5.isChecked(),
+            "data_folder_name": self.data_folder_name_field.text()
             }
         self.p = mp.Process(target=self.start_ui, kwargs=kwargs)
         self.p.start()

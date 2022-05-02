@@ -28,7 +28,7 @@ START_LOGGING: str = "start_logging"
 NEW_LOG: str = "new_log"
 CLOSE: str = "close"
 
-PATH_ARG: str = "path"
+PATH_ARG: str = "activity_playback_csv_path"
 FUNCS: str = "funcs"
 
 PIXEL_SCALE: int = 450
