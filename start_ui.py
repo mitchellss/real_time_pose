@@ -25,23 +25,28 @@ class TwoDimensionGame():
 
     NUM_LANDMARKS = 33
 
-    def __init__(self, activity="game", hide_demo=True, record_points=False, 
-                 record_zarr=False, record_hdf5=False, queue="redis", gui="pygame", file="."):
+    def __init__(self, activity_name="game", hide_demo=True, record_points=False, 
+                 record_zarr=False, record_hdf5=False, queue="redis", gui_name="pygame", activity_playback_csv=".", data_folder_name=""):
 
         # Array of the 33 mapped points
         self.body_point_array = np.zeros((self.NUM_LANDMARKS, 4))
 
         if not hide_demo:
-            subprocess.Popen(['python', 'play_demo.py', activity])
+            subprocess.Popen(['python', 'play_demo.py', activity_name])
+
+        if data_folder_name == "":
+            self.data_folder_name = self.activity_name
+        else:
+            self.data_folder_name = data_folder_name
 
         # Init loggers
         self.loggers: list[Logger] = []
         if record_points:
-            self.loggers.append(CSVPointLogger(activity))
+            self.loggers.append(CSVPointLogger(self.data_folder_name))
         if record_zarr:
-            self.loggers.append(ZarrPointLogger(activity))
+            self.loggers.append(ZarrPointLogger(self.data_folder_name))
         if record_hdf5:
-            self.loggers.append(Hdf5PointLogger(activity))
+            self.loggers.append(Hdf5PointLogger(self.data_folder_name))
 
         if queue == "rabbitmq":
             connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -53,10 +58,10 @@ class TwoDimensionGame():
             r = redis.Redis(host='localhost', port=6379, db=0)
             self.channel = r.pubsub()
             self.channel.subscribe(QUEUE_NAME)
-            
-        self.gui_arg = gui
-        self.activity = activity
-        self.file = file
+                        
+        self.gui_name = gui_name
+        self.activity_name = activity_name
+        self.activity_playback_csv = activity_playback_csv
         self.queue = queue
         
     def start(self):
@@ -73,9 +78,9 @@ class TwoDimensionGame():
         Registers functional arguments and passes those to
         the relevant activity."""
 
-        if self.gui_arg == "pygame":
+        if self.gui_name == "pygame":
             self.gui = PyGameUI()
-        elif self.gui_arg == "pyqtgraph":
+        elif self.gui_name == "pyqtgraph":
             self.gui = PyQtGraph(lambda: self.persistant[TIMER].tick())
 
         self.gui.new_gui()
@@ -96,19 +101,18 @@ class TwoDimensionGame():
             CLOSE:            [logger.close           for logger in self.loggers]
         }
 
-        af = ActivityFactory(self.activity)
-        self.activity = af.new_activity(self.body_point_array, self.gui_arg, funcs, self.file)
+        af = ActivityFactory(self.activity_name)
+        self.activity_name = af.new_activity(self.body_point_array, self.gui_name, funcs, self.activity_playback_csv)
 
-        if self.activity == None:
-            print(f"Cannot find activity: {self.type}")
-            sys.exit(0)
+        if self.activity_name == None:
+            sys.exit(1)
 
         # Dict of components persistant in the ui (don't change between stages)
         # i.e. the clock and the point skeleton components
-        self.persistant = self.activity.get_persist()
+        self.persistant = self.activity_name.get_persist()
 
         # Adds all components to the ui
-        for stage in self.activity.get_stages():
+        for stage in self.activity_name.get_stages():
             for component in stage:
                 self.gui.add_component(stage[component])
                 stage[component].hide() # hides all components
@@ -117,7 +121,7 @@ class TwoDimensionGame():
             self.gui.add_component(self.persistant[component])
 
         # Call change activity initially to render components
-        self.activity.change_stage()
+        self.activity_name.change_stage()
 
     def process(self):
         """
@@ -150,7 +154,7 @@ class TwoDimensionGame():
                 self.log_data()
             
             # Handles the activity's logic at the end of a frame
-            self.activity.handle_frame(surface=self.gui.window)
+            self.activity_name.handle_frame(surface=self.gui.window)
 
             self.gui.update()
             self.gui.clear()
@@ -184,8 +188,8 @@ if __name__ == "__main__":
     parser.add_argument("--queue", choices=["rabbitmq", "redis"], default="redis", help="The type of queue to use to accept skeleton data.")
     args = parser.parse_args()
     
-    td = TwoDimensionGame(activity=args.activity, hide_demo=args.hide_demo, record_points=args.record_points,
-                          record_zarr=args.record_zarr, record_hdf5=args.record_hdf5, queue=args.queue, gui=args.gui, file=args.file)
+    td = TwoDimensionGame(activity_name=args.activity, hide_demo=args.hide_demo, record_points=args.record_points,
+                          record_zarr=args.record_zarr, record_hdf5=args.record_hdf5, queue=args.queue, gui_name=args.gui, activity_playback_csv=args.file)
     try:
         td.start()
     except KeyboardInterrupt:
