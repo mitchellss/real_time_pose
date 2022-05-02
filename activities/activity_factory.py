@@ -12,6 +12,7 @@ from activities.record_data.record_data import RecordData
 from activities.shapes.shapes import Shapes
 from activities.squat.squat import Squat
 from activities.vector_haptic.vector_haptic import VectorHaptic
+from constants.constants import PATH_ARG
 
 
 class ActivityFactory:
@@ -27,18 +28,19 @@ class ActivityFactory:
         elif self.type == "squat":
             return Squat(body_point_array, ui, funcs=funcs)
         elif self.type == "bread_crumb":
-            return BreadCrumb(body_point_array, ui, funcs=funcs, path=path)
+            return BreadCrumb(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "custom_activity_dynamic":
-            return CustomActivityDynamic(body_point_array, ui, funcs=funcs, path=path)
+            return CustomActivityDynamic(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "game_mk2":
-            return GameMkII(body_point_array, ui, funcs=funcs, path=path)
+            return GameMkII(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "haptic":
-            return Haptic(body_point_array, ui, funcs=funcs, path=path)
+            return Haptic(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "shapes":
-            return Shapes(body_point_array, ui, funcs=funcs, path=path)
+            return Shapes(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "vector_haptic":
-            return VectorHaptic(body_point_array, ui, funcs=funcs, path=path)
+            return VectorHaptic(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         elif self.type == "record_data":
-            return RecordData(body_point_array, ui, funcs=funcs, path=path)
+            return RecordData(body_point_array, ui, funcs=funcs, activity_playback_csv_path=path)
         else:
+            print(f"Activity not in factory: {self.type}")
             return None
