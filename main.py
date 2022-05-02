@@ -189,14 +189,9 @@ class Dialog(QDialog):
                 print("Stop video logger")
                 self.pose_service.video_logger.stop_logging()
                 self.pose_service.video_logger.close()
-                self.pose_service.stop()
+            self.pose_service.stop()
         if self.p != None:
             self.p.terminate()
-            
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
             
     def start_ui(self, **kwargs):
         from start_ui import TwoDimensionGame # KEEP THIS HERE
