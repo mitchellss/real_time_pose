@@ -40,7 +40,7 @@ The project is laid out in seperate modules in an attempt to achieve the lowest 
 
 A basic flow of data can be seen below. 
 
-![Basic layout of the real time pose project.](./system_diagram.drawio.svg)
+![Basic layout of the real time pose project.](./documentation/system_diagram.drawio.svg)
 
 ### Modules
 
