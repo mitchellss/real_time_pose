@@ -11,10 +11,11 @@ from activities.activity_factory import ActivityFactory
 from data_logging.hdf5_point_logger import Hdf5PointLogger
 from data_logging.logger import Logger
 from data_logging.csv_point_logger import CSVPointLogger
-from data_logging.video_logger import VideoLogger
 from data_logging.zarr_point_logger import ZarrPointLogger
+
 from skeleton_queue.skeleton_queue import SkeletonQueue
 from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
+
 from ui.pygame.pygame_ui import PyGameUI
 from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *

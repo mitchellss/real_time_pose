@@ -8,7 +8,7 @@ import time
 
 class CSVPointLogger(Logger):
 
-    def __init__(self, fname, **kwargs) -> None:
+    def __init__(self, fname) -> None:
         super().__init__(fname)
         self.data = np.zeros((0,133))
 

@@ -4,11 +4,11 @@ from constants.constants import PATH
 
 class Logger():
 
-    def __init__(self, fname, **kwargs) -> None:
+    def __init__(self, fname) -> None:
         self.current_time = int(time.time())
         self.fname = fname
         self.logging = False
-        self.folder_name = f"{self.current_time}_{self.fname}"
+        self.folder_name = f"{self.fname}"
 
         if not os.path.isdir(PATH / "data" / self.folder_name):
             os.makedirs(PATH / "data" / self.folder_name)

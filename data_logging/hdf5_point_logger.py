@@ -10,12 +10,11 @@ import pandas as pd
 
 class Hdf5PointLogger(Logger):
 
-    def __init__(self, fname, **kwargs) -> None:
+    def __init__(self, fname) -> None:
         super().__init__(fname)
         self.data = np.zeros((0,133))
         h5_filename = f"{str(self.current_time)}.h5"
         self.h5f = h5py.File(PATH / "data" / self.folder_name / h5_filename,'w')
-
 
     def log(self, data: np.ndarray):
         if self.logging:

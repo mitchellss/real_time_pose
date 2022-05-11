@@ -10,8 +10,7 @@ import cv2
 class ComputerVision(PoseDetection):
     
     def __init__(self, queue, cv_model_name: str, **kwargs) -> None:
-        super().__init__(queue)
-
+        self.pose = None
         cv_model_factory = CVModelFactory()
         self.cv_model: CVModel = cv_model_factory.get_cv_model(cv_model_name)
     

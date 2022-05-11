@@ -3,10 +3,9 @@ import argparse
 import os
 import sys
 import time
-
 import cv2
-from data_logging.video_logger import VideoLogger
 
+from data_logging.logger_factory import LoggerFactory
 from frame_input.frame_input_factory import FrameInputFactory
 from pose_detection.pose_detection_factory import PoseDetectionFactory
 from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
@@ -24,24 +23,34 @@ class PoseService:
 
     def __init__(self, input:str="video", video_input:str="webcam", path:str=".", 
                  record_video:bool=False, queue_name:str="redis", hide_video:bool=False,
-                 cv_model_name:str="blazepose") -> None:
+                 cv_model_name:str="blazepose", data_folder_name:str="") -> None:
                 
         frame_input_factory = FrameInputFactory(path)
         skeleton_queue_factory = SkeletonQueueFactory()
         pose_detection_factory = PoseDetectionFactory()
+        logger_factory = LoggerFactory()
 
         self.skeleton_queue = skeleton_queue_factory.get_skeleton_queue(queue_name)
         self.pose_detection = pose_detection_factory.get_pose_detection(input, queue_name, cv_model_name)
         
         self.continue_processing = True
+        
+        if data_folder_name == "":
+            self.data_folder_name = str(time.time())
+        else:
+            self.data_folder_name = data_folder_name
 
         if input == "video":
             self.video_frame_input, self.fps = frame_input_factory.get_frame_input(video_input)
 
             if record_video:
-                self.video_logger = VideoLogger(str(int(time.time())), 
-                    self.video_frame_input.get_frame_width(), self.video_frame_input.get_frame_height(),
-                    self.fps)
+                self.video_logger = logger_factory.get_logger("video", data_folder_name=self.data_folder_name, 
+                                                              frame_width=self.video_frame_input.get_frame_width(),
+                                                              frame_height=self.video_frame_input.get_frame_height(),
+                                                              fps=self.fps)
+                # VideoLogger(str(int(time.time())), 
+                #     self.video_frame_input.get_frame_width(), self.video_frame_input.get_frame_height(),
+                #     self.fps)
                 self.video_logger.logging = True
             else:
                 self.video_logger = None
