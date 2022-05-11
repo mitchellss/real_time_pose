@@ -15,7 +15,7 @@ class ComputerVision(PoseDetection):
         cv_model_factory = CVModelFactory()
         self.cv_model: CVModel = cv_model_factory.get_cv_model(cv_model_name)
     
-    def get_skeleton(self, preprocessed_image: cv2.Mat) -> np.ndarray:
+    def get_skeleton(self, preprocessed_image: any) -> np.ndarray:
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
         preprocessed_image.flags.writeable = False

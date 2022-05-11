@@ -14,7 +14,7 @@ class VideoLogger(Logger):
         self.frame_height = frame_height
         self.vid_writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*'mp4v'), 30, (self.frame_width, self.frame_height))
 
-    def log(self, data: cv2.Mat) -> None:
+    def log(self, data: any) -> None:
         if self.logging:
             self.vid_writer.write(data)
 

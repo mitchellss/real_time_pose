@@ -1,5 +1,6 @@
 import json
 import os
+import queue
 import subprocess
 import sys
 import numpy as np
@@ -12,6 +13,8 @@ from data_logging.logger import Logger
 from data_logging.csv_point_logger import CSVPointLogger
 from data_logging.video_logger import VideoLogger
 from data_logging.zarr_point_logger import ZarrPointLogger
+from skeleton_queue.skeleton_queue import SkeletonQueue
+from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
 from ui.pygame.pygame_ui import PyGameUI
 from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
@@ -48,21 +51,13 @@ class InterfaceService():
         if record_hdf5:
             self.loggers.append(Hdf5PointLogger(self.data_folder_name))
 
-        if queue == "rabbitmq":
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-            self.channel = connection.channel()
-            self.channel.queue_declare(queue=QUEUE_NAME, durable=False, auto_delete=True, arguments={'x-max-length' : 10})
-            self.channel.queue_purge(queue=QUEUE_NAME)
-            self.channel.basic_qos(prefetch_count=1)
-        elif queue == "redis":
-            r = redis.Redis(host='localhost', port=6379, db=0)
-            self.channel = r.pubsub()
-            self.channel.subscribe(QUEUE_NAME)
-                        
+        skeleton_queue_factory = SkeletonQueueFactory()
+        self.skeleton_queue: SkeletonQueue = skeleton_queue_factory.get_skeleton_queue(queue)
+        self.skeleton_queue.prepare_to_recieve()
+        
         self.gui_name = gui_name
         self.activity_name = activity_name
         self.activity_playback_csv = activity_playback_csv
-        self.queue = queue
         
     def start(self):
         """Initializes the game's user interface and starts processing data"""
@@ -130,18 +125,8 @@ class InterfaceService():
         (i.e. button clicking), and calls the log function.
         """
         while True:
-            if self.queue == "rabbitmq":
-                _, _, body = self.channel.basic_get(queue=QUEUE_NAME)
-            elif self.queue == "redis":
-                data = self.channel.get_message()
-                if data is not None:
-                    body = data["data"]
-
-            if body is not None:
-                try:
-                    self.body_point_array = np.array(json.loads(body))
-                except:
-                    pass
+            
+            self.body_point_array = self.skeleton_queue.get_data()
 
             # If global coords were successfully found
             if self.body_point_array is not None:

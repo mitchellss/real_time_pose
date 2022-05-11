@@ -55,10 +55,10 @@ class PoseService:
             else:
                 self.video_logger = None
 
+            self.hide_video = hide_video
+
             # Set pose detection method
-            self.pose_detection = ComputerVision(queue, cv_model_name=cv_model_name, 
-                frame_input=self.video_frame_input, hide_video=hide_video,
-                record_video_function=self.video_logger.log)
+            self.pose_detection = ComputerVision(queue, cv_model_name=cv_model_name)
             
             self.skeleton_queue = skeleton_queue_factory.get_skeleton_queue(queue)
 
@@ -71,16 +71,19 @@ class PoseService:
         """
         while self.continue_processing:
             video_frame = self.video_frame_input.get_video_frame()
-            preprocessed_frame = cv2.cvtColor(cv2.flip(video_frame, 1), cv2.COLOR_BGR2RGB)
-            pose = self.pose_detection.get_skeleton(preprocessed_frame)
-            self.skeleton_queue.push_data(pose)
-            
-            frame_to_log = cv2.cvtColor(preprocessed_frame, cv2.COLOR_RGB2BGR)
-            if not self.hide_video:
-                cv2.imshow("MediaPipe Pose", frame_to_log)
+            if video_frame is not None:
+                preprocessed_frame = cv2.cvtColor(cv2.flip(video_frame, 1), cv2.COLOR_BGR2RGB)
+                pose = self.pose_detection.get_skeleton(preprocessed_frame)
+                self.skeleton_queue.push_data(pose)
                 
-            if self.video_logger != None:
-                self.video_logger.log(frame_to_log)
+                frame_to_log = cv2.cvtColor(preprocessed_frame, cv2.COLOR_RGB2BGR)
+                if not self.hide_video:
+                    cv2.imshow("MediaPipe Pose", frame_to_log)
+                    if cv2.waitKey(25) & 0xFF == ord('q'):
+                        break
+
+                if self.video_logger != None:
+                    self.video_logger.log(frame_to_log)
 
 
     def stop(self) -> None:
@@ -89,7 +92,7 @@ class PoseService:
         """
         self.continue_processing = False
         cv2.destroyAllWindows()
-        self.pose_detection.close()
+        self.video_frame_input.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='''

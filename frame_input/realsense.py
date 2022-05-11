@@ -59,3 +59,8 @@ class Realsense(FrameInput):
 
     def get_frame_width(self) -> int:
         return self.width
+    
+    def close(self):
+        # TODO: implement realsense close method
+        print("UNIMPLEMENTED")
+        pass
