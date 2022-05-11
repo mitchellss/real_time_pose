@@ -7,16 +7,9 @@ import time
 import cv2
 from data_logging.video_logger import VideoLogger
 
-from frame_input.frame_input import FrameInput
 from frame_input.frame_input_factory import FrameInputFactory
-
-from skeleton_queue.skeleton_queue import SkeletonQueue
+from pose_detection.pose_detection_factory import PoseDetectionFactory
 from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
-
-from pose_detection.computer_vision.computer_vision import ComputerVision
-from pose_detection.pose_detection import PoseDetection
-from pose_detection.vicon.vicon import Vicon
-
 
 
 class PoseService:
@@ -30,21 +23,19 @@ class PoseService:
     """
 
     def __init__(self, input:str="video", video_input:str="webcam", path:str=".", 
-                 record_video:bool=False, queue:str="redis", hide_video:bool=False,
+                 record_video:bool=False, queue_name:str="redis", hide_video:bool=False,
                  cv_model_name:str="blazepose") -> None:
                 
-        self.pose_detection: PoseDetection = None
-        
-        self.video_frame_input: FrameInput = None
         frame_input_factory = FrameInputFactory(path)
-        
-        self.skeleton_queue: SkeletonQueue = None
         skeleton_queue_factory = SkeletonQueueFactory()
+        pose_detection_factory = PoseDetectionFactory()
+
+        self.skeleton_queue = skeleton_queue_factory.get_skeleton_queue(queue_name)
+        self.pose_detection = pose_detection_factory.get_pose_detection(input, queue_name, cv_model_name)
         
         self.continue_processing = True
 
         if input == "video":
-                
             self.video_frame_input, self.fps = frame_input_factory.get_frame_input(video_input)
 
             if record_video:
@@ -56,14 +47,11 @@ class PoseService:
                 self.video_logger = None
 
             self.hide_video = hide_video
-
-            # Set pose detection method
-            self.pose_detection = ComputerVision(queue, cv_model_name=cv_model_name)
             
-            self.skeleton_queue = skeleton_queue_factory.get_skeleton_queue(queue)
-
         elif input == "vicon":
-            self.pose_detection = Vicon(queue)
+            # vicon specific logic
+            pass
+        
 
     def start(self) -> None:
         """Loop infinitely, processing input and adding skeletons to the queue

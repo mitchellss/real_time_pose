@@ -209,16 +209,16 @@ class Dialog(QDialog):
             if video_source == "file":
                 path = self.filepath
                 self.pose_service = PoseService(input=input, record_video=record_video, 
-                                                hide_video=hide_video, queue=queue, 
+                                                hide_video=hide_video, queue_name=queue, 
                                                 video_input=video_source, path=path)
             else:
                 self.pose_service = PoseService(input=input, record_video=record_video, 
-                                                hide_video=hide_video, queue=queue, 
+                                                hide_video=hide_video, queue_name=queue, 
                                                 video_input=video_source)
             
         elif input == "vicon":
             self.pose_service = PoseService(input=input, record_video=record_video, 
-                                            hide_video=hide_video, queue=queue)
+                                            hide_video=hide_video, queue_name=queue)
         
         kwargs = {
             "activity_name": self.activityDropdown.currentText(),
