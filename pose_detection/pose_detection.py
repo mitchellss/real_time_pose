@@ -1,7 +1,5 @@
 import json
 import numpy as np
-import pika
-import redis
 
 from constants.constants import QUEUE_NAME
 
@@ -18,7 +16,7 @@ class PoseDetection:
         #     self.channel = redis.Redis(host='localhost', port=6379, db=0)
 
 
-    def update_pose(self) -> None:
+    def get_skeleton(self) -> np.ndarray:
         pass
         # if self.queue == "rabbitmq":
         #     # RabbitMQ logic

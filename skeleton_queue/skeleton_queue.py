@@ -8,5 +8,5 @@ class SkeletonQueue():
     def get_data(self) -> np.ndarray:
         pass
     
-    def push_data(self) -> np.ndarray:
+    def push_data(self, pose: np.ndarray) -> None:
         pass

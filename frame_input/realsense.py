@@ -1,7 +1,7 @@
 import pyrealsense2 as rs
 import numpy as np
 
-from pose_detection.computer_vision.frame_input.frame_input import FrameInput
+from frame_input.frame_input import FrameInput
 
 class Realsense(FrameInput):
     """FrameInput implementation representing an intel realsense camera"""
@@ -41,7 +41,7 @@ class Realsense(FrameInput):
         # Start streaming
         self.pipeline.start(config)
 
-    def get_frame(self) -> np.ndarray:
+    def get_video_frame(self) -> np.ndarray:
         # Wait for a coherent pair of frames: depth and color
         frames = self.pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()

@@ -35,7 +35,7 @@ class PoseService:
                 
         self.pose_detection: PoseDetection = None
         
-        self.frame_input: FrameInput = None
+        self.video_frame_input: FrameInput = None
         frame_input_factory = FrameInputFactory(path)
         
         self.skeleton_queue: SkeletonQueue = None
@@ -45,11 +45,11 @@ class PoseService:
 
         if input == "video":
                 
-            self.frame_input, self.fps = frame_input_factory.get_frame_input(video_input)
+            self.video_frame_input, self.fps = frame_input_factory.get_frame_input(video_input)
 
             if record_video:
                 self.video_logger = VideoLogger(str(int(time.time())), 
-                    self.frame_input.get_frame_width(), self.frame_input.get_frame_height(),
+                    self.video_frame_input.get_frame_width(), self.video_frame_input.get_frame_height(),
                     self.fps)
                 self.video_logger.logging = True
             else:
@@ -57,10 +57,10 @@ class PoseService:
 
             # Set pose detection method
             self.pose_detection = ComputerVision(queue, cv_model_name=cv_model_name, 
-                frame_input=self.frame_input, hide_video=hide_video,
-                record_video=self.video_logger)
+                frame_input=self.video_frame_input, hide_video=hide_video,
+                record_video_function=self.video_logger.log)
             
-            self.queue = skeleton_queue_factory.get_skeleton_queue(queue)
+            self.skeleton_queue = skeleton_queue_factory.get_skeleton_queue(queue)
 
         elif input == "vicon":
             self.pose_detection = Vicon(queue)
@@ -69,8 +69,19 @@ class PoseService:
         """Loop infinitely, processing input and adding skeletons to the queue
         until an error occurs or the program is exited.
         """
-        while self.continue_processing and self.pose_detection.update_pose():
-            self.queue.push(self.pose_detection.pose)
+        while self.continue_processing:
+            video_frame = self.video_frame_input.get_video_frame()
+            preprocessed_frame = cv2.cvtColor(cv2.flip(video_frame, 1), cv2.COLOR_BGR2RGB)
+            pose = self.pose_detection.get_skeleton(preprocessed_frame)
+            self.skeleton_queue.push_data(pose)
+            
+            frame_to_log = cv2.cvtColor(preprocessed_frame, cv2.COLOR_RGB2BGR)
+            if not self.hide_video:
+                cv2.imshow("MediaPipe Pose", frame_to_log)
+                
+            if self.video_logger != None:
+                self.video_logger.log(frame_to_log)
+
 
     def stop(self) -> None:
         """
