@@ -6,15 +6,17 @@ import time
 
 import cv2
 from data_logging.video_logger import VideoLogger
-from pose_detection.computer_vision.computer_vision import ComputerVision
 
-from pose_detection.computer_vision.cv_model.blazepose import Blazepose
-from pose_detection.computer_vision.frame_input.frame_input import FrameInput
-from pose_detection.computer_vision.frame_input.realsense import Realsense
-from pose_detection.computer_vision.frame_input.video_file_input import VideoFileInput
-from pose_detection.computer_vision.frame_input.webcam import Webcam
+from frame_input.frame_input import FrameInput
+from frame_input.frame_input_factory import FrameInputFactory
+
+from skeleton_queue.skeleton_queue import SkeletonQueue
+from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
+
+from pose_detection.computer_vision.computer_vision import ComputerVision
 from pose_detection.pose_detection import PoseDetection
 from pose_detection.vicon.vicon import Vicon
+
 
 
 class PoseService:
@@ -27,39 +29,38 @@ class PoseService:
     to allow for real time depth to be incorporated into the model.
     """
 
-    def __init__(self, input="video", video_input="webcam", path=".", record_video=False, queue="redis", hide_video=False) -> None:
+    def __init__(self, input:str="video", video_input:str="webcam", path:str=".", 
+                 record_video:bool=False, queue:str="redis", hide_video:bool=False,
+                 cv_model_name:str="blazepose") -> None:
                 
         self.pose_detection: PoseDetection = None
+        
         self.frame_input: FrameInput = None
+        frame_input_factory = FrameInputFactory(path)
+        
+        self.skeleton_queue: SkeletonQueue = None
+        skeleton_queue_factory = SkeletonQueueFactory()
+        
         self.continue_processing = True
 
         if input == "video":
-            # Select video input method
-            if video_input == "file":
-                self.frame_input = VideoFileInput(path)
-            if video_input == "webcam":
-                self.frame_input = Webcam()
-                self.fps = 20
-            if video_input == "realsense":
-                self.frame_input = Realsense()
-                self.fps = 30
+                
+            self.frame_input, self.fps = frame_input_factory.get_frame_input(video_input)
 
             if record_video:
                 self.video_logger = VideoLogger(str(int(time.time())), 
-                    self.frame_input.get_frame_width(), 
-                    self.frame_input.get_frame_height(),
+                    self.frame_input.get_frame_width(), self.frame_input.get_frame_height(),
                     self.fps)
                 self.video_logger.logging = True
             else:
                 self.video_logger = None
 
-            # Select computer vision model
-            self.cv_model = Blazepose()
-
             # Set pose detection method
-            self.pose_detection = ComputerVision(queue, cv_model=self.cv_model, 
+            self.pose_detection = ComputerVision(queue, cv_model_name=cv_model_name, 
                 frame_input=self.frame_input, hide_video=hide_video,
                 record_video=self.video_logger)
+            
+            self.queue = skeleton_queue_factory.get_skeleton_queue(queue)
 
         elif input == "vicon":
             self.pose_detection = Vicon(queue)
@@ -68,8 +69,8 @@ class PoseService:
         """Loop infinitely, processing input and adding skeletons to the queue
         until an error occurs or the program is exited.
         """
-        while self.pose_detection.add_pose_to_queue() and self.continue_processing:
-            pass
+        while self.continue_processing and self.pose_detection.update_pose():
+            self.queue.push(self.pose_detection.pose)
 
     def stop(self) -> None:
         """

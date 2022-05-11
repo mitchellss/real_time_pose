@@ -1,16 +1,24 @@
 
+import sys
 import numpy as np
 from data_logging.video_logger import VideoLogger
+from frame_input.frame_input import FrameInput
+from pose_detection.computer_vision.cv_model.blazepose import Blazepose
 from pose_detection.computer_vision.cv_model.cv_model import CVModel
-from pose_detection.computer_vision.frame_input.frame_input import FrameInput
 from pose_detection.pose_detection import PoseDetection
 import cv2
 
 class ComputerVision(PoseDetection):
     
-    def __init__(self, queue, cv_model: CVModel, frame_input: FrameInput, **kwargs) -> None:
+    def __init__(self, queue, cv_model_name: str, frame_input: FrameInput, **kwargs) -> None:
         super().__init__(queue)
-        self.cv_model = cv_model
+        
+        if cv_model_name == "blazepose":
+            self.cv_model = Blazepose()
+        else:
+            print("Unrecognized computer vision model: {cv_model_name}")
+            sys.exit(1)
+        
         self.frame_input = frame_input
 
         if "hide_video" in kwargs:
@@ -22,11 +30,8 @@ class ComputerVision(PoseDetection):
             self.video_logger: VideoLogger = kwargs["record_video"]
         else:
             self.video_logger = None
-
-        # if self.video_logger != None:
-        #     self.video_logger.new_log()
     
-    def add_pose_to_queue(self) -> bool:
+    def update_pose(self) -> bool:
 
         frame: np.ndarray = self.frame_input.get_frame()
         image = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
@@ -46,7 +51,7 @@ class ComputerVision(PoseDetection):
         if cv2.waitKey(5) & 0xFF == 27:
             return False
 
-        super().add_pose_to_queue()
+        # super().add_pose_to_queue()
         return True
     
     def close(self):
