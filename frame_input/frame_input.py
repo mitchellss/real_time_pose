@@ -7,7 +7,7 @@ class FrameInput():
     called upon.
     """
 
-    def get_frame(self) -> np.ndarray:
+    def get_video_frame(self) -> np.ndarray:
         """Returns an np.ndarray representing a single frame"""
         pass
 

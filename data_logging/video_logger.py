@@ -12,9 +12,10 @@ class VideoLogger(Logger):
         path = PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.mp4"
         self.frame_width = frame_width
         self.frame_height = frame_height
-        self.vid_writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*'mp4v'), 30, (self.frame_width, self.frame_height))
+        self.fps = fps
+        self.vid_writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*'mp4v'), self.fps, (self.frame_width, self.frame_height))
 
-    def log(self, data) -> None:
+    def log(self, data: any) -> None:
         if self.logging:
             self.vid_writer.write(data)
 
@@ -23,7 +24,7 @@ class VideoLogger(Logger):
             self.close()
         self.current_time = int(time.time())
         path = PATH / "data" / self.folder_name / f"{self.current_time}_{self.fname}.mp4"
-        self.vid_writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*'mp4v'), 30, (self.frame_width, self.frame_height))
+        self.vid_writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*'mp4v'), self.fps, (self.frame_width, self.frame_height))
 
     def close(self):
         self.vid_writer.release()

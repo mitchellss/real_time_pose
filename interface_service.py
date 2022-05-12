@@ -1,5 +1,6 @@
 import json
 import os
+import queue
 import subprocess
 import sys
 import numpy as np
@@ -10,8 +11,11 @@ from activities.activity_factory import ActivityFactory
 from data_logging.hdf5_point_logger import Hdf5PointLogger
 from data_logging.logger import Logger
 from data_logging.csv_point_logger import CSVPointLogger
-from data_logging.video_logger import VideoLogger
 from data_logging.zarr_point_logger import ZarrPointLogger
+
+from skeleton_queue.skeleton_queue import SkeletonQueue
+from skeleton_queue.skeleton_queue_factory import SkeletonQueueFactory
+
 from ui.pygame.pygame_ui import PyGameUI
 from ui.pyqtgraph.pyqtgraph_ui import PyQtGraph
 from constants.constants import *
@@ -48,21 +52,13 @@ class InterfaceService():
         if record_hdf5:
             self.loggers.append(Hdf5PointLogger(self.data_folder_name))
 
-        if queue == "rabbitmq":
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-            self.channel = connection.channel()
-            self.channel.queue_declare(queue=QUEUE_NAME, durable=False, auto_delete=True, arguments={'x-max-length' : 10})
-            self.channel.queue_purge(queue=QUEUE_NAME)
-            self.channel.basic_qos(prefetch_count=1)
-        elif queue == "redis":
-            r = redis.Redis(host='localhost', port=6379, db=0)
-            self.channel = r.pubsub()
-            self.channel.subscribe(QUEUE_NAME)
-                        
+        skeleton_queue_factory = SkeletonQueueFactory()
+        self.skeleton_queue: SkeletonQueue = skeleton_queue_factory.get_skeleton_queue(queue)
+        self.skeleton_queue.prepare_to_recieve()
+        
         self.gui_name = gui_name
         self.activity_name = activity_name
         self.activity_playback_csv = activity_playback_csv
-        self.queue = queue
         
     def start(self):
         """Initializes the game's user interface and starts processing data"""
@@ -102,17 +98,17 @@ class InterfaceService():
         }
 
         af = ActivityFactory(self.activity_name)
-        self.activity_name = af.new_activity(self.body_point_array, self.gui_name, funcs, self.activity_playback_csv)
+        self.activity = af.new_activity(self.body_point_array, self.gui_name, funcs, self.activity_playback_csv)
 
-        if self.activity_name == None:
+        if self.activity == None:
             sys.exit(1)
 
         # Dict of components persistant in the ui (don't change between stages)
         # i.e. the clock and the point skeleton components
-        self.persistant = self.activity_name.get_persist()
+        self.persistant = self.activity.get_persist()
 
         # Adds all components to the ui
-        for stage in self.activity_name.get_stages():
+        for stage in self.activity.get_stages():
             for component in stage:
                 self.gui.add_component(stage[component])
                 stage[component].hide() # hides all components
@@ -121,7 +117,7 @@ class InterfaceService():
             self.gui.add_component(self.persistant[component])
 
         # Call change activity initially to render components
-        self.activity_name.change_stage()
+        self.activity.change_stage()
 
     def process(self):
         """
@@ -130,18 +126,8 @@ class InterfaceService():
         (i.e. button clicking), and calls the log function.
         """
         while True:
-            if self.queue == "rabbitmq":
-                _, _, body = self.channel.basic_get(queue=QUEUE_NAME)
-            elif self.queue == "redis":
-                data = self.channel.get_message()
-                if data is not None:
-                    body = data["data"]
-
-            if body is not None:
-                try:
-                    self.body_point_array = np.array(json.loads(body))
-                except:
-                    pass
+            
+            self.body_point_array = self.skeleton_queue.get_data()
 
             # If global coords were successfully found
             if self.body_point_array is not None:
@@ -154,7 +140,7 @@ class InterfaceService():
                 self.log_data()
             
             # Handles the activity's logic at the end of a frame
-            self.activity_name.handle_frame(surface=self.gui.window)
+            self.activity.handle_frame(surface=self.gui.window)
 
             self.gui.update()
             self.gui.clear()
@@ -166,8 +152,6 @@ class InterfaceService():
         for logger in self.loggers:
             if isinstance(logger, CSVPointLogger) or isinstance(logger, ZarrPointLogger) or isinstance(logger, Hdf5PointLogger):
                 logger.log(self.body_point_array)
-            if isinstance(logger, VideoLogger):
-                logger.log(self.image)
                 
     def quit(self):
         self.gui.quit()
@@ -188,8 +172,7 @@ if __name__ == "__main__":
     parser.add_argument("--queue", choices=["rabbitmq", "redis"], default="redis", help="The type of queue to use to accept skeleton data.")
     args = parser.parse_args()
     
-    td = InterfaceService(activity_name=args.activity, hide_demo=args.hide_demo, record_points=args.record_points,
-                          record_zarr=args.record_zarr, record_hdf5=args.record_hdf5, queue=args.queue, gui_name=args.gui, activity_playback_csv=args.file)
+    td = InterfaceService(**vars(args))
     try:
         td.start()
     except KeyboardInterrupt:

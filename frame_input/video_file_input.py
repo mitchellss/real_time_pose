@@ -2,7 +2,8 @@ import sys
 import cv2
 import numpy as np
 
-from pose_detection.computer_vision.frame_input.frame_input import FrameInput
+from frame_input.frame_input import FrameInput
+
 
 class VideoFileInput(FrameInput):
     """
@@ -16,7 +17,7 @@ class VideoFileInput(FrameInput):
     def __init__(self, path) -> None:
         self.cap = cv2.VideoCapture(str(path))
 
-    def get_frame(self) -> np.ndarray:
+    def get_video_frame(self) -> np.ndarray:
         if self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
@@ -25,5 +26,10 @@ class VideoFileInput(FrameInput):
                 print("Error getting frame from video file")
                 sys.exit(1)
 
+
+    def close(self):
+        # TODO: implement file close method
+        print("UNIMPLEMENTED")
+        pass
 
     

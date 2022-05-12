@@ -12,6 +12,6 @@ class CVModel():
         # Array of the 33 mapped points
         self.skeleton_array = np.zeros((self.NUM_LANDMARKS, 4))
 
-    def get_pose(self, image: np.ndarray) -> list:
+    def get_pose(self, image: np.ndarray) -> np.ndarray:
         """Return an np.ndarray of points based on an image."""
         pass
