@@ -9,6 +9,12 @@ from typing_extensions import Protocol
 
 
 class Activity(Protocol):
+    """
+    Represents an activity. An activity is a group of related scenes
+    and the logic that controls both the switching between said
+    scenes and the values/behaviour of the components that make up
+    the scenes themselves.
+    """
 
     def __init__(self, body_point_array, ui, **kwargs) -> None:
         self.components: Dict[str, UIComponent] = None
@@ -26,25 +32,32 @@ class Activity(Protocol):
             self.file_path = kwargs[PATH_ARG]
     
     def add_scene(self, scene: Scene):
+        """Appends a new scene to the activity"""
         self.scenes.append(scene)
 
     def get_scenes(self) -> list[Dict[str, UIComponent]]:
+        """
+        Returns the list of scenes that make up the activity 
+        in the order they were added
+        """
         return self.scenes
 
     def get_persist(self) -> Dict[str, UIComponent]:
         return self.persist
 
     def get_current_scene(self) -> int:
+        """Returns the currently active scene"""
         return self.scene
 
     def set_current_scene(self, scene: int) -> None:
+        """Sets the current scene to the scene specified by the provided index"""
         self.scene = scene
 
-    def get_components(self) -> Dict[str, UIComponent]:
-        return self.components
-
-    def set_components(self, components: Dict[str, UIComponent]) -> None:
-        self.components = components
+    def next_scene(self) -> None:
+        """TODO"""
+    
+    def previous_scene(self) -> None:
+        """TODO"""
 
     def change_scene(self) -> None:
         # Hides old components
