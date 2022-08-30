@@ -25,6 +25,8 @@ activity.add_logger(rtp.Logger(type=rtp.CSV_LOGGER))
 scene_1 = rtp.new_scene()
 scene_1.add_component(rtp.Button(x=0, y=0, size=10, color="red", callback=callback_func))
 
+activity.add_scene(scene_1)
+
 activity.run()
 
 def callback_func() {
