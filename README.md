@@ -29,7 +29,5 @@ activity.add_scene(scene_1)
 
 activity.run()
 
-def callback_func() {
+def callback_func():
     print("Hello world!")
-}
-```

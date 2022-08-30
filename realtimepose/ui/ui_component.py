@@ -1,5 +1,8 @@
 
-class UIComponent:
+from typing_extensions import Protocol
+
+
+class UIComponent(Protocol):
 
     def __init__(self, x_pos: float, y_pos: float) -> None:
         self.x_pos = x_pos

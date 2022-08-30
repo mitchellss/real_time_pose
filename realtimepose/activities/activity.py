@@ -24,6 +24,9 @@ class Activity(Protocol):
         # Initialize path variable if specified in kwargs
         if PATH_ARG in kwargs:
             self.file_path = kwargs[PATH_ARG]
+    
+    def add_scene(self, scene: Scene):
+        pass
 
     def get_stages(self) -> list[Dict[str, UIComponent]]:
         return self.stages

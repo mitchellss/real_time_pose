@@ -1,5 +1,8 @@
 
-class GUI():
+from typing_extensions import Protocol
+
+
+class GUI(Protocol):
     """
     Abstract representation of a graphical user interface
     capable of having components added to it
