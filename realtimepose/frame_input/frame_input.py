@@ -1,6 +1,7 @@
+from typing_extensions import Protocol
 import numpy as np
 
-class FrameInput():
+class FrameInput(Protocol):
     """
     Interface for defining an abstract frame input
     device that is capable of sending ndarrays when

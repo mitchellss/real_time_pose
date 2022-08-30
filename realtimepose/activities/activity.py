@@ -5,9 +5,10 @@ from ui.components.button_component import ButtonComponent
 from ui.components.hand_bubble_component import HandBubbleComponent
 from ui.ui_component import UIComponent
 from constants.constants import *
+from typing_extensions import Protocol
 
 
-class Activity:
+class Activity(Protocol):
 
     def __init__(self, body_point_array, ui, **kwargs) -> None:
         self.components: Dict[str, UIComponent] = None

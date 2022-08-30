@@ -2,11 +2,10 @@
 import numpy as np
 import pandas as pd
 from constants.constants import PATH
-from data_logging.logger import Logger
 import time
 
 
-class CSVPointLogger(Logger):
+class CSVPointLogger:
 
     def __init__(self, fname) -> None:
         super().__init__(fname)

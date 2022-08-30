@@ -1,6 +1,7 @@
+from typing_extensions import Protocol
 import numpy as np
 
-class PoseDetection:
+class PoseDetection(Protocol):
 
     def __init__(self) -> None:
         self.pose: np.ndarray = None

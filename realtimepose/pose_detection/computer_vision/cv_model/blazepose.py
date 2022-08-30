@@ -1,10 +1,9 @@
 
 from constants.constants import *
-from pose_detection.computer_vision.cv_model.cv_model import CVModel
 import numpy as np
 import mediapipe as mp
 
-class Blazepose(CVModel):
+class Blazepose:
     """
     PoseDetector implementation of Google's BlazePose model
     

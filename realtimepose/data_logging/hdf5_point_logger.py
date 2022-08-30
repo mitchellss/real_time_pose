@@ -1,6 +1,5 @@
 
 from constants.constants import PATH
-from data_logging.logger import Logger
 import time
 import h5py
 import numpy as np
@@ -8,7 +7,7 @@ import pandas as pd
 
 
 
-class Hdf5PointLogger(Logger):
+class Hdf5PointLogger:
 
     def __init__(self, fname) -> None:
         super().__init__(fname)

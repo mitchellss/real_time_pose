@@ -2,10 +2,9 @@
 import math
 import socket
 import numpy as np
-from feedback.feedback_device import FeedbackDevice
 
 
-class HapticGloveAcc(FeedbackDevice):
+class HapticGloveAcc:
 
     MOTORS = np.array([np.array([0.0,0.0,1.0]), np.array([0.0,0.0,-1.0]), np.array([0.0,-1.0,0.0]), np.array([0.0,1.0,0.0])]) #array of motor positions
     MOTORS_UD = np.array([np.array([0.0,0.0,-1.0]), np.array([0.0,0.0,1.0]), np.array([0.0,1.0,0.0]), np.array([0.0,-1.0,0.0])])

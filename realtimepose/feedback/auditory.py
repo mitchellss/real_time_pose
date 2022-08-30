@@ -2,10 +2,9 @@
 import threading
 from playsound import playsound
 from constants.constants import PATH
-from feedback.feedback_device import FeedbackDevice
 
 
-class ComputerSoundFeedback(FeedbackDevice):
+class ComputerSoundFeedback:
 
     def __init__(self) -> None:
         super().__init__()

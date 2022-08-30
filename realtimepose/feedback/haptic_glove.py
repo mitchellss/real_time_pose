@@ -2,10 +2,9 @@
 import math
 import socket
 import numpy as np
-from feedback.feedback_device import FeedbackDevice
 
 
-class HapticGlove(FeedbackDevice):
+class HapticGlove:
 
     MOTORS = np.array([np.array([0,0,1]), np.array([0,0,-1]), np.array([0,-1,0]), np.array([0,1,0])]) #array of motor positions
     TIMEOUT = 10 # seconds

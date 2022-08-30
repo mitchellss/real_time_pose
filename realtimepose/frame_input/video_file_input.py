@@ -2,10 +2,9 @@ import sys
 import cv2
 import numpy as np
 
-from frame_input.frame_input import FrameInput
 
 
-class VideoFileInput(FrameInput):
+class VideoFileInput:
     """
     Frame input implementation for a pre-recorded video
 

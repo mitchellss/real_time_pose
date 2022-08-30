@@ -4,10 +4,9 @@ import numpy as np
 from pose_detection.computer_vision.cv_model.cv_model import CVModel
 from pose_detection.computer_vision.cv_model.cv_model_factory import CVModelFactory
 
-from pose_detection.pose_detection import PoseDetection
 import cv2
 
-class ComputerVision(PoseDetection):
+class ComputerVision:
     
     def __init__(self, queue, cv_model_name: str, **kwargs) -> None:
         self.pose = None

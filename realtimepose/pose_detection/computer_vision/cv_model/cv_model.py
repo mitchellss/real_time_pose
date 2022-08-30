@@ -1,7 +1,8 @@
+from typing_extensions import Protocol
 import numpy as np
 
 
-class CVModel():
+class CVModel(Protocol):
     """
     Abstract interface representing a pose detection model
     that can return an ndarray of points when given an image.

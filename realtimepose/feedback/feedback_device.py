@@ -1,6 +1,7 @@
+from typing_extensions import Protocol
 
 
-class FeedbackDevice:
+class FeedbackDevice(Protocol):
 
     def __init__(self) -> None:
         pass

@@ -2,9 +2,8 @@
 import time
 import cv2
 from constants.constants import PATH
-from data_logging.logger import Logger
 
-class VideoLogger(Logger):
+class VideoLogger:
 
 
     def __init__(self, fname, frame_width, frame_height, fps) -> None:

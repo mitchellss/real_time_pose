@@ -1,8 +1,9 @@
 import os
 import time
 from constants.constants import PATH
+from typing_extensions import Protocol
 
-class Logger():
+class Logger(Protocol):
 
     def __init__(self, fname) -> None:
         self.current_time = int(time.time())
