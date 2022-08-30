@@ -103,21 +103,21 @@ class InterfaceService():
         if self.activity == None:
             sys.exit(1)
 
-        # Dict of components persistant in the ui (don't change between stages)
+        # Dict of components persistant in the ui (don't change between scenes)
         # i.e. the clock and the point skeleton components
         self.persistant = self.activity.get_persist()
 
         # Adds all components to the ui
-        for stage in self.activity.get_stages():
-            for component in stage:
-                self.gui.add_component(stage[component])
-                stage[component].hide() # hides all components
+        for scene in self.activity.get_scenes():
+            for component in scene:
+                self.gui.add_component(scene[component])
+                scene[component].hide() # hides all components
 
         for component in self.persistant:
             self.gui.add_component(self.persistant[component])
 
         # Call change activity initially to render components
-        self.activity.change_stage()
+        self.activity.change_scene()
 
     def process(self):
         """

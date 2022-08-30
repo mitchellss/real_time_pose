@@ -23,7 +23,7 @@ The architecture of `pose_service.py` can be seen below:
 
 ## Data Flow
 
-The main stages of the program's data flow include the creation of a skeleton, the storage/transmission of the skeleton, and the interpretation of the skeleton resulting in feedback.
+The main scenes of the program's data flow include the creation of a skeleton, the storage/transmission of the skeleton, and the interpretation of the skeleton resulting in feedback.
 
 A diagram of this data flow can be seen below. 
 

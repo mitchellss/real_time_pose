@@ -13,8 +13,8 @@ class Activity(Protocol):
     def __init__(self, body_point_array, ui, **kwargs) -> None:
         self.components: Dict[str, UIComponent] = None
         self.persist: Dict[str, UIComponent] = None
-        self.stages: list[Dict[str, UIComponent]] = None
-        self.stage: int = 0
+        self.scenes: list[Dict[str, UIComponent]] = None
+        self.scene: int = 0
         self.ui = ui
         if FUNCS in kwargs:
             self.funcs = kwargs[FUNCS]
@@ -26,19 +26,19 @@ class Activity(Protocol):
             self.file_path = kwargs[PATH_ARG]
     
     def add_scene(self, scene: Scene):
-        pass
+        self.scenes.append(scene)
 
-    def get_stages(self) -> list[Dict[str, UIComponent]]:
-        return self.stages
+    def get_scenes(self) -> list[Dict[str, UIComponent]]:
+        return self.scenes
 
     def get_persist(self) -> Dict[str, UIComponent]:
         return self.persist
 
-    def get_current_stage(self) -> int:
-        return self.stage
+    def get_current_scene(self) -> int:
+        return self.scene
 
-    def set_current_stage(self, stage: int) -> None:
-        self.stage = stage
+    def set_current_scene(self, scene: int) -> None:
+        self.scene = scene
 
     def get_components(self) -> Dict[str, UIComponent]:
         return self.components
@@ -46,17 +46,24 @@ class Activity(Protocol):
     def set_components(self, components: Dict[str, UIComponent]) -> None:
         self.components = components
 
-    def change_stage(self) -> None:
+    def change_scene(self) -> None:
         # Hides old components
         for component in self.components:
             self.components[component].hide()
 
         # Switches out new components
-        self.components = self.stages[self.stage]
+        self.components = self.scenes[self.scene]
 
         # Shows new components
         for component in self.components:
             self.components[component].show()
+    
+    def run(self) -> None:
+        while True:
+            self.body_point_array = self.skeleton.get_points()
+            self.loggers.log_data()
+            self.handle_frame()
+            self.gui.update()
 
     def handle_frame(self, **kwargs) -> None:
         """
