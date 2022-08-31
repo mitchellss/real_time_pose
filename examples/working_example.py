@@ -3,15 +3,24 @@ import realtimepose as rtp
 def callback_func():
     print("Hello world!")
 
-video_input = rtp.new_input(type=rtp.WEBCAM, fps=60)
-gui = rtp.new_gui(frontend=rtp.PYGAME)
+# Specify input
+webcam: rtp.FrameInput = rtp.WebcamInput(type=rtp.WEBCAM, fps=60)
+blazepose: rtp.CVModel = rtp.BlazePose()
+webcam_pose: rtp.PoseGenerator = rtp.ComputerVisonPose(input=webcam, model=blazepose)
 
-activity = rtp.new_activity(input=video_input, gui=gui, backend=rtp.BLAZEPOSE)
+# Specify GUI
+pygame: rtp.GUI = rtp.PyGame()
+
+# Create activity
+activity = rtp.Activity(input=webcam_pose, frontend=pygame)
+
+# Attach logger to activity
 activity.add_logger(rtp.CSVPointLogger("logger.csv"))
 
-scene_1 = rtp.new_scene()
+# Add scene to activity
+scene_1 = rtp.Scene()
 scene_1.add_component(rtp.Button(x=0, y=0, size=10, color="red", callback=callback_func))
-
 activity.add_scene(scene_1)
 
+# Start
 activity.run()

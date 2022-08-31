@@ -1,6 +1,8 @@
 
 from typing import Dict
 
+from realtimepose.pose_detection.pose_detection import PoseDetection
+
 from ..data_logging.logger import Logger
 
 from ..ui.components.button_component import ButtonComponent
@@ -18,6 +20,14 @@ class Activity():
     scenes and the values/behaviour of the components that make up
     the scenes themselves.
     """
+
+    active_components: Dict[str, UIComponent] = {}
+    scenes: list[Scene] = []
+    active_scene: int = 0
+
+    def __init__(self, input: PoseDetection, frontend: GUI) -> None:
+        self.input = input
+        self.frontend = frontend
 
     # def __init__(self, body_point_array, ui, **kwargs) -> None:
     #     self.components: Dict[str, UIComponent] = None
