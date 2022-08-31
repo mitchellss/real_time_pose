@@ -10,11 +10,15 @@ from .core import (
 )
 
 from .gui import (
-    PyGameButton,
-    PyGameHandBubble,
-    PyGameLiveScore,
-    PyGameSkeleton,
-    PyGameText,
-    PyGameTimer,
+    PyGameButton, PyGameHandBubble,
+    PyGameLiveScore, PyGameSkeleton,
+    PyGameText, PyGameTimer,
     PyGameUI,
+)
+
+from .inputs import (
+    Vicon,
+    ComputerVision, BlazePose, CVModel,
+    FrameInput, Realsense, VideoFileInput,
+    Webcam
 )
