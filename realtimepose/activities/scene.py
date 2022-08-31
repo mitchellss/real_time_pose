@@ -1,4 +1,4 @@
-from ui.ui_component import UIComponent
+from ..ui.ui_component import UIComponent
 
 class Scene:
     """

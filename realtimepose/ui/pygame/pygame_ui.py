@@ -1,14 +1,16 @@
 import sys
-from constants.constants import *
+# from constants.constants import *
 
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 from pygame.constants import QUIT
 
-from ui.gui import GUI
-from ui.ui_component import UIComponent
+from ..gui import GUI
+from ..ui_component import UIComponent
 
+WINDOW_WIDTH: int = 1920//2
+WINDOW_HEIGHT: int = 1000
 
 class PyGameUI(GUI):
 

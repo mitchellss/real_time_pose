@@ -1,16 +1,18 @@
 
-from realtimepose.activities.activity import Activity
-from realtimepose.activities.scene import Scene
-from realtimepose.data_logging import Logger
+from ..ui import GUI
+from .. import frame_input
+from ..activities.activity import Activity
+from ..activities.scene import Scene
+from ..data_logging import Logger
 
 
 BLAZEPOSE = 0
 
-def new_activity(input: FrameInput, gui: GUI, backend: int) -> Activity:
-    pass
+def new_activity(input: frame_input, gui: GUI, backend: int) -> Activity:
+    return Activity()
 
 def new_scene() -> Scene:
-    pass
+    return Scene()
 
 def add_logger(logger: Logger):
-    pass
+    return Logger()

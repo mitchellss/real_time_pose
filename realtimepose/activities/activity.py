@@ -1,14 +1,17 @@
 
 from typing import Dict
 
-from ui.components.button_component import ButtonComponent
-from ui.components.hand_bubble_component import HandBubbleComponent
-from ui.ui_component import UIComponent
-from constants.constants import *
+from ..data_logging.logger import Logger
+
+from ..ui.components.button_component import ButtonComponent
+from ..ui.components.hand_bubble_component import HandBubbleComponent
+from ..ui.ui_component import UIComponent
+from ..constants.constants import *
 from typing_extensions import Protocol
+from .scene import Scene
 
 
-class Activity(Protocol):
+class Activity():
     """
     Represents an activity. An activity is a group of related scenes
     and the logic that controls both the switching between said
@@ -16,24 +19,27 @@ class Activity(Protocol):
     the scenes themselves.
     """
 
-    def __init__(self, body_point_array, ui, **kwargs) -> None:
-        self.components: Dict[str, UIComponent] = None
-        self.persist: Dict[str, UIComponent] = None
-        self.scenes: list[Dict[str, UIComponent]] = None
-        self.scene: int = 0
-        self.ui = ui
-        if FUNCS in kwargs:
-            self.funcs = kwargs[FUNCS]
-        else:
-            self.funcs = {}
+    # def __init__(self, body_point_array, ui, **kwargs) -> None:
+    #     self.components: Dict[str, UIComponent] = None
+    #     self.persist: Dict[str, UIComponent] = None
+    #     self.scenes: list[Dict[str, UIComponent]] = None
+    #     self.scene: int = 0
+    #     self.ui = ui
+    #     if FUNCS in kwargs:
+    #         self.funcs = kwargs[FUNCS]
+    #     else:
+    #         self.funcs = {}
 
-        # Initialize path variable if specified in kwargs
-        if PATH_ARG in kwargs:
-            self.file_path = kwargs[PATH_ARG]
+    #     # Initialize path variable if specified in kwargs
+    #     if PATH_ARG in kwargs:
+    #         self.file_path = kwargs[PATH_ARG]
     
     def add_scene(self, scene: Scene):
         """Appends a new scene to the activity"""
         self.scenes.append(scene)
+    
+    def add_logger(self, logger: Logger):
+        pass
 
     def get_scenes(self) -> list[Dict[str, UIComponent]]:
         """

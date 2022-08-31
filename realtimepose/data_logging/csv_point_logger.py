@@ -1,14 +1,14 @@
 
 import numpy as np
 import pandas as pd
-from constants.constants import PATH
+from ..constants import PATH
 import time
 
 
 class CSVPointLogger:
 
     def __init__(self, fname) -> None:
-        super().__init__(fname)
+        # super().__init__(fname)
         self.data = np.zeros((0,133))
 
     def log(self, data):

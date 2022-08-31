@@ -1,4 +1,4 @@
-from ui.ui_component import UIComponent
+from ..ui_component import UIComponent
 import numpy as np
 
 class SkeletonComponent(UIComponent):

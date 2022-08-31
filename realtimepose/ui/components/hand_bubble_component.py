@@ -1,5 +1,5 @@
 
-from ui.ui_component import UIComponent
+from ..ui_component import UIComponent
 
 
 class HandBubbleComponent(UIComponent):
