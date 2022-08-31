@@ -1,30 +1,50 @@
+# Contributing
+
+Contributions and pull requests are welcome. If you wish to contribute, please
+open a new issue first and make it known that you are working on it. I
+(Stephen Mitchell) indend on supporting this project for the forseeable future
+and will attempt to merge pull requests as often as my schedule permits.
+
+If you find a bug, please create a new issue and tag it as such. Additionally,
+please provide the version of the package you found the bug, the desired
+behavior, the actual behavior, and any steps needed to reproduce the said
+behavior.
+
 # Project Layout
-## Modules
 
-The following are main modules that comprise the project. Each can be found in a seperate folder.
+## bin
 
-* activities - Configuration files for setting up an activity (or "mode" of the program, if you will)
-* constants 
-* data_logging - Different kinds of data loggers for collecting information during an activity
-* feedback - Modules used to deliver feedback to a user
-* frame_input - Inputs in the form of RGB video frames 
-* pose_detection - Methods of getting a user's pose and creating a skeleton of points
-* skeleton_queue - Storing and sending a user's skeleton points for use elsewhere
-* ui - Frontend frameworks and reusable components for user interaction
-* utils - Commonly needed functions across all programs
+Contains executable files.
 
+## docs
 
-## Project Architecture
-The project is laid out in a [hexagonal architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) in an attempt to achieve the lowest amount of [coupling](https://en.wikipedia.org/wiki/Coupling_%28computer_programming%29) possible. This allows frame inputs, pose detection algorithms, and frontends to be swapped seamlessly as they do not depend on each other. This design choice was made in an effort to future-proof the tool in the event that new algorithms or feedback approaches are released or pursued.
+Documentation for the project.
 
-The architecture of `pose_service.py` can be seen below:
+## realtimepose
 
-![Pose service project architecture](./docs/pose_service.drawio.svg)
+Package containing the project's source code.
 
-## Data Flow
+This project uses a 
+[hexagonal architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) 
+(also called "ports and adapters" architecture)
+such that it can more easily support a varied array of inputs, graphical
+outputs, and feedback devices. Core business logic is stored in
+sub-packages under the `core` package. These include:
+- `displaying`: Interfaces and logic for displaying data
+- `feedback_providing`: Interfaces and logic for providing feedback to user
+- `logging`: Interfaces and logic for logging 
+- `recieving`: Interfaces and logic for data input
 
-The main scenes of the program's data flow include the creation of a skeleton, the storage/transmission of the skeleton, and the interpretation of the skeleton resulting in feedback.
+The interfaces ("Protocols" in python) in these core packages define
+"ports", or standards that need to be met in order to interact with the 
+program. By implementing these interfaces, concrete classes create 
+"adapters" that allow them to "plug in" to the project. 
 
-A diagram of this data flow can be seen below. 
+The rest of the packages under `realtimepose` provide adapters to the ports
+defined in `core`. For instance, the `gui` package provides different
+graphical user interface implementations that conform to the `displaying`
+core package port (found under `core/displaying/gui.py`).
 
-![Basic layout of the real time pose project.](./docs/system_diagram.drawio.svg)
+## tests
+
+lol
