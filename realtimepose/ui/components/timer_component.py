@@ -1,7 +1,6 @@
-from ..ui_component import UIComponent
 
 
-class TimerComponent(UIComponent):
+class TimerComponent:
 
     def __init__(self, x_pos: float, y_pos: float, **kwargs) -> None:
         super().__init__(x_pos, y_pos)

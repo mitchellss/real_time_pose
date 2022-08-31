@@ -1,7 +1,5 @@
-from ..ui_component import UIComponent
 
-
-class ButtonComponent(UIComponent):
+class ButtonComponent:
 
     def __init__(self, size: int, color: tuple[int, int, int, int], x_pos: float,
                  y_pos: float, precision: float = 0, **kwargs) -> None:

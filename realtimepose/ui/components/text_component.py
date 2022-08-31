@@ -1,9 +1,5 @@
 
-
-from ..ui_component import UIComponent
-
-
-class TextComponent(UIComponent):
+class TextComponent:
 
     def __init__(self, x_pos: float, y_pos: float, text: str, **kwargs) -> None:
         super().__init__(x_pos, y_pos)

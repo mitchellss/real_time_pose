@@ -1,7 +1,6 @@
-from ..ui_component import UIComponent
 import numpy as np
 
-class SkeletonComponent(UIComponent):
+class SkeletonComponent:
     
     # Where to connect limbs. Refer to here 
     # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png

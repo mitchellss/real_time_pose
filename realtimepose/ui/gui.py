@@ -7,9 +7,6 @@ class GUI(Protocol):
     Abstract representation of a graphical user interface
     capable of having components added to it
     """
-    def __init__(self) -> None:
-        self.window = None
-
     def new_gui(self) -> None:
         pass
 
