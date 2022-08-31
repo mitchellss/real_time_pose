@@ -7,7 +7,7 @@ import pandas as pd
 
 
 
-class ZarrPointLogger:
+class ZarrLogger:
 
     def __init__(self, fname) -> None:
         super().__init__(fname)

@@ -5,7 +5,7 @@ from ..constants import PATH
 import time
 
 
-class CSVPointLogger:
+class CSVLogger:
 
     def __init__(self, fname) -> None:
         # super().__init__(fname)

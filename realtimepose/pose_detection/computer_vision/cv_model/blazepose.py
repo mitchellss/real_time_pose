@@ -13,11 +13,14 @@ class Blazepose:
         min_tracking_confidence: minimum tracking confidence
     """
 
+    NUM_LANDMARKS = 33
+
     def __init__(self, *, model_complexity: int = 1,
         min_detection_confidence: float = 0.5,
         min_tracking_confidence: float = 0.5) -> None:
         super().__init__()
 
+        self.skeleton_array = np.zeros((self.NUM_LANDMARKS, 4))
         self.mp_pose = mp.solutions.pose
 
         # Model complexity:

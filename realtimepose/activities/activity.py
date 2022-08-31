@@ -13,7 +13,7 @@ from typing_extensions import Protocol
 from .scene import Scene
 
 
-class Activity():
+class Activity:
     """
     Represents an activity. An activity is a group of related scenes
     and the logic that controls both the switching between said

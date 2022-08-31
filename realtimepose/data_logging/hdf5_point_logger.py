@@ -7,7 +7,7 @@ import pandas as pd
 
 
 
-class Hdf5PointLogger:
+class Hdf5Logger:
 
     def __init__(self, fname) -> None:
         super().__init__(fname)

@@ -32,4 +32,5 @@ class Logger(Protocol):
         pass
 
     def is_logging(self) -> bool:
-        return self.logging
+        # return self.logging
+        pass
