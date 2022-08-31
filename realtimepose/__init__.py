@@ -1,10 +1,23 @@
 from .activities import Activity, Scene
-from .data_logging import Logger, CSVLogger, Hdf5Logger, VideoLogger, ZarrLogger
-from .feedback import *
-from .frame_input import FrameInput, Realsense, VideoFileInput, Webcam
-from .pose_detection import PoseDetection, ComputerVision, BlazePose, CVModel, Vicon
-from .ui import (
-    GUI, UIComponent,
+
+from .logging import (
+    Logger, CSVLogger, Hdf5Logger, 
+    VideoLogger, ZarrLogger
+)
+
+from .feedback_providing import *
+
+from .recieving import (
+    PoseDetection, 
+    ComputerVision, BlazePose, CVModel, 
+    FrameInput, Realsense, VideoFileInput,
+    Webcam,
+    Vicon
+)
+
+from .displaying import (
+    GUI, 
+    UIComponent,
     PyGameButton, PyGameHandBubble, 
     PyGameLiveScore, PyGameSkeleton, 
     PyGameText, PyGameTimer, PyGameUI,
