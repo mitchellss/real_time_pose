@@ -1,23 +1,31 @@
+"""Test"""
 from realtimepose2.core.displaying.components import Button
 
+
 class Pyglet:
-    """"""
+    """Test"""
+
     def add_component(self, component):
-        """"""
-    
+        """Test"""
+
     def clear(self):
-        """"""
-    
-    def button(self, x:float, y:float) -> Button:
-        return PygletButton(x, y)
-    
+        """Test"""
+
+    def button(self, x_coord: float, y_coord: float) -> Button:
+        """Test"""
+        return PygletButton(x_coord, y_coord)
+
+
 class PygletButton:
-    def __init__(self, x: float, y: float) -> None:
-        self.x = x
-        self.y = y
-    
-    def is_clicked(self, x: float, y:float, distance: float) -> bool:
+    """Test"""
+    def __init__(self, x_coord: float, y_coord: float) -> None:
+        self.x_coord = x_coord
+        self.y_coord = y_coord
+
+    def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:
+        """Test"""
         return False
-    
+
     def render(self):
+        """Test"""
         print("pyglet render")
