@@ -1,5 +1,6 @@
 from typing import Any
 from typing_extensions import Protocol
+import numpy as np
 
 
 class CVModel(Protocol):

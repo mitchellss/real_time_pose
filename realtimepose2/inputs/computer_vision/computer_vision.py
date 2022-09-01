@@ -1,5 +1,4 @@
-from .cv_model import CVModel
-from .frame_input import FrameInput
+from realtimepose2.core.recieving.service import CVModel, FrameInput
 import numpy as np
 
 class ComputerVisionPose:

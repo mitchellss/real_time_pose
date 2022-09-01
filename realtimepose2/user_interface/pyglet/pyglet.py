@@ -1,6 +1,6 @@
 from realtimepose2.core.displaying.components import Button
 
-class PyGame:
+class Pyglet:
     """"""
     def add_component(self, component):
         """"""
@@ -9,9 +9,9 @@ class PyGame:
         """"""
     
     def button(self, x:float, y:float) -> Button:
-        return PyGameButton(x, y)
+        return PygletButton(x, y)
     
-class PyGameButton:
+class PygletButton:
     def __init__(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
@@ -20,5 +20,4 @@ class PyGameButton:
         return False
     
     def render(self):
-        print("pygame render")
-    
+        print("pyglet render")
