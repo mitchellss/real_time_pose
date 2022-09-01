@@ -15,3 +15,6 @@ class UserInterface(Protocol):
 
     def button(self, x_coord: float, y_coord: float) -> Button:  # type: ignore
         """Test"""
+
+    def update(self):
+        """Test"""

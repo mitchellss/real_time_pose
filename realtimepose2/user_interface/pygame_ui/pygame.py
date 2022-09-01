@@ -1,5 +1,7 @@
 """Test"""
+import sys
 import pygame
+from pygame.constants import QUIT
 from realtimepose2.core.displaying.components import Button
 
 WINDOW_WIDTH: int = 1920//2
@@ -19,6 +21,15 @@ class PyGameUI:
 
     def clear(self):
         """test"""
+
+    def update(self):
+        """test"""
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+        pygame.display.update()
 
     def button(self, x_coord: float, y_coord: float) -> Button:
         """tset"""
@@ -44,6 +55,7 @@ class PyGameUI:
 
 class PyGameButton:
     """test"""
+
     def __init__(self, x_coord: float, y_coord: float) -> None:
         """test"""
         self.x_coord = x_coord
