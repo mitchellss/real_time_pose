@@ -10,16 +10,16 @@ blazepose: rtp.CVModel = rtp.BlazePose()
 webcam_pose: rtp.PoseGenerator = rtp.ComputerVisionPose(frame_input=webcam, model=blazepose)
 
 # Specify GUI
-ui: rtp.UserInterface = rtp.PyGame()
+ui: rtp.UserInterface = rtp.PyGameUI()
 # ui: rtp.UserInterface = rtp.Pyglet()
 
 # Create activity
-activity = rtp.Activity(input=webcam_pose, frontend=ui)
+activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
 
 # Add scene to activity
 scene_1 = rtp.Scene()
 
-button_1: rtp.Button = button(ui=ui, x=0.0, y=0.0)
+button_1: rtp.Button = button(gui=ui, x_coord=0.0, y_coord=0.0)
 
 scene_1.add_component(button_1)
 

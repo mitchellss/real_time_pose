@@ -1,16 +1,19 @@
-from typing import Any
+"""Test"""
 from typing_extensions import Protocol
 import numpy as np
 
 
 class CVModel(Protocol):
-    def get_pose(self, frame: np.array) -> np.array:
-        """"""
+    """Test"""
+    def get_pose(self, frame: np.ndarray) -> np.ndarray:  # type: ignore
+        """Test"""
 
 class FrameInput(Protocol):
-    def get_frame(self) -> np.array:
-        """"""
+    """Test"""
+    def get_frame(self) -> np.ndarray:  # type: ignore
+        """Test"""
 
 class PoseGenerator(Protocol):
-    def get_pose(self) -> np.array:
-        """"""
+    """Test"""
+    def get_pose(self) -> np.ndarray:  # type: ignore
+        """Test"""

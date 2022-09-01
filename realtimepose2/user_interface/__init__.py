@@ -1,2 +1,2 @@
-from .pygame.pygame import *
+from .pygame_ui.pygame import *
 from .pyglet.pyglet import *
