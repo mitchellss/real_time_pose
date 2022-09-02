@@ -10,14 +10,15 @@ WINDOW_HEIGHT: int = 1000
 
 class PyGameUI:
     """test"""
-    FPS = 60
     BACKGROUND = (0, 0, 0)
 
     window: pygame.surface.Surface
     fps_clock: pygame.time.Clock
 
-    def add_component(self, component):
-        """test"""
+    def __init__(self, height: int, width: int, fps: int) -> None:
+        self.width = width
+        self.height = height
+        self.fps = fps
 
     def clear(self):
         """test"""
@@ -30,6 +31,7 @@ class PyGameUI:
                 sys.exit()
 
         pygame.display.update()
+        self.fps_clock.tick(self.fps)
 
     def button(self, x_coord: float, y_coord: float) -> Button:
         """tset"""
@@ -40,15 +42,11 @@ class PyGameUI:
         pygame.init()
         pygame.font.init()
 
-        # pygame_icon = pygame.image.load('ui/pygame/forsyth-jason.jpg')
-        # pygame.display.set_icon(pygame_icon)
-        # Colours
-
         # Game Setup
         self.fps_clock = pygame.time.Clock()
 
         self.window: pygame.surface.Surface = pygame.display.set_mode(
-            (WINDOW_WIDTH, WINDOW_HEIGHT))
+            (self.width, self.height))
         pygame.display.set_caption('WCRG Video Feedback System')
         self.window.fill(self.BACKGROUND)
 
