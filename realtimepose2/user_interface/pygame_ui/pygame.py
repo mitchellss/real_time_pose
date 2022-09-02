@@ -1,11 +1,9 @@
 """Test"""
 import sys
+from typing import Callable
 import pygame
 from pygame.constants import QUIT
 from realtimepose2.core.displaying.components import Button
-
-WINDOW_WIDTH: int = 1920//2
-WINDOW_HEIGHT: int = 1000
 
 
 class PyGameUI:
@@ -63,6 +61,10 @@ class PyGameButton:
         """test"""
         return False
 
-    def render(self):
+    def render(self, window):
         """test"""
-        print("pygame render")
+        pygame.draw.circle(
+            window, pygame.color.Color(255, 0, 0, 255),
+            (self.x_coord, self.y_coord),
+            100
+        )

@@ -1,4 +1,5 @@
 """Test"""
+from typing import Any
 from typing_extensions import Protocol
 
 from realtimepose2.core.displaying.components import Button
@@ -6,6 +7,7 @@ from realtimepose2.core.displaying.components import Button
 
 class UserInterface(Protocol):
     """Test"""
+    window: Any
 
     def clear(self) -> None:
         """Test"""

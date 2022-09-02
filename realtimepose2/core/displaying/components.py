@@ -1,5 +1,6 @@
 
 """test"""
+from typing import Any, Callable
 from typing_extensions import Protocol
 
 
@@ -8,7 +9,7 @@ class Component(Protocol):
     x_coord: float
     y_coord: float
 
-    def render(self):
+    def render(self, window: Any):
         """test"""
 
 
@@ -20,7 +21,7 @@ class Button(Protocol):
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:  # type: ignore
         """test"""
 
-    def render(self):
+    def render(self, window: Any):
         """test"""
 
 
@@ -33,24 +34,4 @@ class HasButton(Protocol):
 
 def button(gui: HasButton, x_coord: float, y_coord: float) -> Button:
     """test"""
-    return ButtonImpl(gui, x_coord, y_coord)
-
-
-class ButtonImpl:
-    """test"""
-
-    def __init__(self, gui: HasButton, x_coord: float, y_coord: float) -> None:
-        self.gui = gui
-        self.x_coord = x_coord
-        self.y_coord = y_coord
-
-    def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:
-        """test"""
-        if abs(self.x_coord - x_coord) < distance and abs(self.y_coord - y_coord) < distance:
-            return True
-        return False
-
-    def render(self):
-        """test"""
-        print("Shared render logic")
-        self.gui.button(self.x_coord, self.y_coord).render()
+    return gui.button(x_coord=x_coord, y_coord=y_coord)

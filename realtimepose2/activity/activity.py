@@ -12,7 +12,8 @@ class Activity:
     """Test"""
 
     scenes: List[Scene] = []
-    active_components: List[Component] = []
+    active_scene: int = 0
+    # active_components: List[Component] = []
 
     def __init__(self, pose_input: PoseGenerator, frontend: UserInterface) -> None:
         self.pose_input = pose_input
@@ -26,4 +27,7 @@ class Activity:
         """Test"""
         self.frontend.new_gui()
         while True:
+            for component in self.scenes[self.active_scene].components:
+                component.render(self.frontend.window)
+
             self.frontend.update()
