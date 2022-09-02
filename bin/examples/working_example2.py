@@ -1,6 +1,5 @@
 """Test"""
 import realtimepose2 as rtp
-from realtimepose2.core.displaying.components import button
 
 
 def callback_func():
@@ -9,7 +8,7 @@ def callback_func():
 
 
 # Specify input
-webcam: rtp.FrameInput = rtp.Webcam()
+webcam: rtp.FrameInput = rtp.Webcam(device_num=0)
 blazepose: rtp.CVModel = rtp.BlazePose()
 webcam_pose: rtp.PoseGenerator = rtp.ComputerVisionPose(
     frame_input=webcam, model=blazepose)
@@ -23,9 +22,11 @@ activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
 # Add scene to activity
 scene_1 = rtp.Scene()
 
-button_1: rtp.Button = button(gui=ui, x_coord=1920/2, y_coord=1080/2)
+button_1: rtp.Button = rtp.button(gui=ui, x_coord=1920/2, y_coord=1080/2)
+skeleton: rtp.Skeleton = rtp.skeleton(gui=ui)
 
 scene_1.add_component(button_1)
+scene_1.add_component(skeleton)
 
 activity.add_scene(scene_1)
 

@@ -28,6 +28,8 @@ class Activity:
         self.frontend.new_gui()
         while True:
             for component in self.scenes[self.active_scene].components:
+                # print(self.pose_input.get_pose())
+
                 component.render(self.frontend.window)
 
             self.frontend.update()
