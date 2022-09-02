@@ -29,7 +29,7 @@ activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
 
 # Create new scene
 scene_1 = rtp.Scene()
-scene_1.add_component(button(gui=ui, x_coord=0.0, y_coord=0.0))
+scene_1.add_component(rtp.button(gui=ui, x_coord=0.0, y_coord=0.0))
 
 # Add scene to activity
 activity.add_scene(scene_1)
