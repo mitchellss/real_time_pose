@@ -1,7 +1,7 @@
 
 """test"""
 from typing import Any, Callable
-from typing_extensions import Protocol
+from typing_extensions import Protocol, runtime_checkable
 import numpy as np
 
 
@@ -33,6 +33,7 @@ class HasButton(Protocol):
         """test"""
 
 
+@runtime_checkable
 class Skeleton(Protocol):
     """test"""
     x_coord: float

@@ -21,6 +21,7 @@ class PyGameUI:
 
     def clear(self):
         """test"""
+        self.window.fill(self.BACKGROUND)
 
     def update(self):
         """test"""
