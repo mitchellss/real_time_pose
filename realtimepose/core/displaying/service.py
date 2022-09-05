@@ -1,22 +1,25 @@
-"""Test"""
+"""The interface to implement to be considered a user interface."""
 from typing import Any
 from typing_extensions import Protocol
 
-from realtimepose.core.displaying.components import Button
+from realtimepose.core.displaying.components import Button, Skeleton
 
 
 class UserInterface(Protocol):
-    """Test"""
+    """An abstract user interface capable of rendering components."""
     window: Any
 
     def clear(self) -> None:
-        """Test"""
+        """Resets the user interface display."""
 
     def new_gui(self) -> None:
-        """Test"""
+        """Sets up the user interface."""
 
     def button(self, x_coord: float, y_coord: float) -> Button:  # type: ignore
-        """Test"""
+        """Creates a new button on the user interface at the location specfied."""
 
-    def update(self):
-        """Test"""
+    def skeleton(self, x_coord: float, y_coord: float) -> Skeleton:  # type: ignore
+        """Creates a new skeleton on the user interface at the location specfied."""
+
+    def update(self) -> None:
+        """Refreshes the user interface display."""

@@ -1,19 +1,29 @@
-"""Test"""
-import logging
+"""Generates poses based on a computer vision model and a frame input."""
 import numpy as np
 from realtimepose.core.recieving.service import CVModel, FrameInput
 
 
 class ComputerVisionPose:
-    """Test"""
+    """Generates poses based on a computer vision model and a frame input."""
 
     def __init__(self, frame_input: FrameInput, model: CVModel):
-        self.frame_input = frame_input
-        self.model = model
+        """Creates a new pose generator based on a computer vision
+        model.
+
+        Args:
+            frame_input (FrameInput): The input of images to the computer
+            vision model.
+            model (CVModel): The model use to interpret the images from
+            the frame input.
+        """
+        self.frame_input: FrameInput = frame_input
+        self.model: CVModel = model
 
     def get_pose(self) -> np.ndarray:
-        """Test"""
-        frame = self.frame_input.get_frame()
-        frame.flags.writeable = False # Shaves about 5ms off each frame by passing by reference, not value
-        pose = self.model.get_pose(frame)
+        """Uses the frame input and computer vision model in tandem
+        to generate a single pose."""
+        frame: np.ndarray = self.frame_input.get_frame()
+        # Shaves about 5ms off each frame by passing by reference, not value
+        frame.flags.writeable = False
+        pose: np.ndarray = self.model.get_pose(frame)
         return pose
