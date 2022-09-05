@@ -8,7 +8,7 @@ def callback_func():
 
 
 # Specify input
-webcam: rtp.FrameInput = rtp.Webcam(device_num=0)
+webcam: rtp.FrameInput = rtp.Webcam(device_num=0, fps=30)
 blazepose: rtp.CVModel = rtp.BlazePose()
 webcam_pose: rtp.PoseGenerator = rtp.ComputerVisionPose(
     frame_input=webcam, model=blazepose)
@@ -23,7 +23,7 @@ activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
 scene_1 = rtp.Scene()
 
 button_1: rtp.Button = rtp.button(gui=ui, x_coord=1920/2, y_coord=1080/2)
-skeleton: rtp.Skeleton = rtp.skeleton(gui=ui)
+skeleton: rtp.Skeleton = rtp.skeleton(gui=ui, x_coord=200, y_coord=200)
 
 scene_1.add_component(button_1)
 scene_1.add_component(skeleton)

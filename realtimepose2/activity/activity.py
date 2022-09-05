@@ -20,42 +20,42 @@ class Activity:
     pose = mp.Array("d", 33*4)
 
     def __init__(self, pose_input: PoseGenerator, frontend: UserInterface) -> None:
-        self.pose_input = pose_input
-        self.frontend = frontend
+        self.pose_input: PoseGenerator = pose_input
+        self.frontend: UserInterface = frontend
 
-    def add_scene(self, scene: Scene):
+    def add_scene(self, scene: Scene) -> None:
         """Test"""
         self.scenes.append(scene)
 
-    def run(self):
+    def run(self) -> None:
         """Test"""
         logger = mp.log_to_stderr()
         logger.setLevel(mp.SUBDEBUG)  # type: ignore
 
-        p = mp.Process(target=self.update_ui,
-                       args=[self.frontend, self.scenes, self.pose])
+        p: mp.Process = mp.Process(target=self.update_ui,
+                       args=[self.frontend, self.scenes])
         p.start()
-
-        # print(self.pose_input.get_pose())
 
         try:
             self.update_pose()
+        except KeyboardInterrupt:
+            p.kill()
         except Exception as e:
             logging.error(e)
             p.kill()
+            raise(e)
 
         p.join()
 
     def update_pose(self):
         """test"""
         while True:
-            pose = self.pose_input.get_pose()
-            pose_list = pose.flatten().tolist()
-            # logging.warning(pose_list)
+            pose: np.ndarray = self.pose_input.get_pose()
+            pose_list: List[float] = pose.flatten().tolist()
             for i in range(0, len(pose_list)):
                 self.pose[i] = pose_list[i] * 450 + 600
 
-    def update_ui(self, frontend: UserInterface, scenes: List[Scene], pose):
+    def update_ui(self, frontend: UserInterface, scenes: List[Scene]):
         """Test"""
         try:
             frontend.new_gui()
@@ -66,9 +66,7 @@ class Activity:
                 frontend.clear()
                 for component in scenes[0].components:
                     if isinstance(component, Skeleton):
-                        # logging.warning("Setting new skeleton points")
                         component.skeleton_points = np.array(self.pose.get_obj()).reshape((33, 4))
-                        # logging.warning(component.skeleton_points)
 
                     component.render(frontend.window)
 

@@ -56,6 +56,6 @@ def button(gui: HasButton, x_coord: float, y_coord: float) -> Button:
     return gui.button(x_coord=x_coord, y_coord=y_coord)
 
 
-def skeleton(gui: HasSkeleton) -> Skeleton:
+def skeleton(gui: HasSkeleton, x_coord: float, y_coord: float) -> Skeleton:
     """"""
-    return gui.skeleton(x_coord=0, y_coord=0)
+    return gui.skeleton(x_coord=x_coord, y_coord=y_coord)
