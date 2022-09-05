@@ -30,41 +30,48 @@ class Activity:
     def run(self):
         """Test"""
         logger = mp.log_to_stderr()
-        logger.setLevel(mp.SUBDEBUG)
+        logger.setLevel(mp.SUBDEBUG)  # type: ignore
 
-        p = mp.Process(target=self.update_pose,
-                       args=[self.pose_input, self.pose])
+        p = mp.Process(target=self.update_ui,
+                       args=[self.frontend, self.scenes, self.pose])
         p.start()
 
         # print(self.pose_input.get_pose())
 
         try:
-            self.frontend.new_gui()
-            self.update_ui()
-        except:
-            pass
+            self.update_pose()
+        except Exception as e:
+            logging.error(e)
             p.kill()
 
         p.join()
 
-    def update_pose(self, poseinput, poseabc):
+    def update_pose(self):
         """test"""
         while True:
-            pose_list = poseinput.get_pose().flatten().tolist()
+            pose = self.pose_input.get_pose()
+            pose_list = pose.flatten().tolist()
+            # logging.warning(pose_list)
             for i in range(0, len(pose_list)):
-                poseabc[i] = pose_list[i] * 450 + 600
+                self.pose[i] = pose_list[i] * 450 + 600
 
-    def update_ui(self):
+    def update_ui(self, frontend: UserInterface, scenes: List[Scene], pose):
         """Test"""
-        while True:
-            self.frontend.clear()
-            for component in self.scenes[self.active_scene].components:
-                if isinstance(component, Skeleton):
-                    # logging.warning("Setting new skeleton points")
-                    component.skeleton_points = np.array(
-                        self.pose.get_obj()).reshape((33, 4))
-                    # logging.warning(component.skeleton_points)
+        try:
+            frontend.new_gui()
+        except Exception as e:
+            logging.error(str(e))
+        try:
+            while True:
+                frontend.clear()
+                for component in scenes[0].components:
+                    if isinstance(component, Skeleton):
+                        # logging.warning("Setting new skeleton points")
+                        component.skeleton_points = np.array(self.pose.get_obj()).reshape((33, 4))
+                        # logging.warning(component.skeleton_points)
 
-                component.render(self.frontend.window)
+                    component.render(frontend.window)
 
-            self.frontend.update()
+                frontend.update()
+        except Exception as e:
+            logging.error(str(e))
