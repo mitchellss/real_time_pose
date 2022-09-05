@@ -3,7 +3,7 @@ import sys
 from typing import Callable, Literal
 import pygame
 from pygame.constants import QUIT
-from realtimepose2.core.displaying.components import Button, Skeleton
+from realtimepose.core.displaying.components import Button, Skeleton
 import numpy as np
 
 

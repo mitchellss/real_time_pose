@@ -1,27 +1,21 @@
+"""Test"""
 import numpy as np
 import cv2
 
 
 
 class Webcam:
-    """FrameInput implementation representing a video capture 0 webcam"""
+    """Test"""
 
-    def __init__(self) -> None:
-        self.cap = cv2.VideoCapture(0)
-        self.vid_width= int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.vid_height= int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    def __init__(self, device_num: int, fps: int) -> None:
+        self.cap = cv2.VideoCapture(device_num)
+        self.cap.set(cv2.CAP_PROP_FPS, fps)
+        self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc("M", "J", "P", "G"))
 
-    def get_video_frame(self) -> np.ndarray:
+    def get_frame(self) -> np.ndarray:
+        """Test"""
+        color_image: np.ndarray
         success, color_image = self.cap.read()
         if not success:
-            return None
+            return np.zeros(0)
         return color_image
-    
-    def get_frame_width(self) -> int:
-        return int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-
-    def get_frame_height(self) -> int:
-        return int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    
-    def close(self):
-        self.cap.release()

@@ -2,7 +2,7 @@
 from typing import Any
 from typing_extensions import Protocol
 
-from realtimepose2.core.displaying.components import Button
+from realtimepose.core.displaying.components import Button
 
 
 class UserInterface(Protocol):

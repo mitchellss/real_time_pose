@@ -1,25 +1,19 @@
-
+"""Test"""
+import logging
 import numpy as np
+from realtimepose.core.recieving.service import CVModel, FrameInput
 
-from pose_detection.computer_vision.cv_model.cv_model import CVModel
-from pose_detection.computer_vision.cv_model.cv_model_factory import CVModelFactory
 
-import cv2
+class ComputerVisionPose:
+    """Test"""
 
-class ComputerVision:
-    
-    def __init__(self, queue, cv_model_name: str, **kwargs) -> None:
-        self.pose = None
-        cv_model_factory = CVModelFactory()
-        self.cv_model: CVModel = cv_model_factory.get_cv_model(cv_model_name)
-    
-    def get_skeleton(self, preprocessed_image: any) -> np.ndarray:
-        # To improve performance, optionally mark the image as not writeable to
-        # pass by reference.
-        preprocessed_image.flags.writeable = False
-        self.pose = self.cv_model.get_pose(preprocessed_image)
-        preprocessed_image.flags.writeable = True
-        return self.pose
+    def __init__(self, frame_input: FrameInput, model: CVModel):
+        self.frame_input = frame_input
+        self.model = model
 
-    def _preprocess(self, frame: np.ndarray):
-        return cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
+    def get_pose(self) -> np.ndarray:
+        """Test"""
+        frame = self.frame_input.get_frame()
+        frame.flags.writeable = False # Shaves about 5ms off each frame by passing by reference, not value
+        pose = self.model.get_pose(frame)
+        return pose

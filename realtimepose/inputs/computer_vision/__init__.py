@@ -1,3 +1,3 @@
-from .computer_vision import ComputerVision
-from .cv_model import BlazePose, CVModel
-from .frame_input import FrameInput, Realsense, VideoFileInput, Webcam
+from .cv_model.blazepose import BlazePose
+from .frame_input.webcam import Webcam
+from .computer_vision import ComputerVisionPose

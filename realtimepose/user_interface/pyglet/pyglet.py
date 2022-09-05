@@ -1,5 +1,5 @@
 """Test"""
-from realtimepose2.core.displaying.components import Button
+from realtimepose.core.displaying.components import Button
 
 
 class Pyglet:

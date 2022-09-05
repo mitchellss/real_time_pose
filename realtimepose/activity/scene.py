@@ -1,11 +1,14 @@
-from ..ui.ui_component import UIComponent
+"""Test"""
+from typing import List
+from realtimepose.core.displaying.components import Component
+
 
 class Scene:
-    """
-    Represents a scene. A scene is a group of related
-    components and the logic that controls their interactions.
-    """
+    """Test"""
 
-    def add_component(component: UIComponent):
-        """Add a component to the scene."""
-        pass
+    def __init__(self) -> None:
+        self.components: List[Component] = []
+
+    def add_component(self, component: Component):
+        """Test"""
+        self.components.append(component)
