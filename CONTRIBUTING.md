@@ -31,8 +31,8 @@ such that it can more easily support a varied array of inputs, graphical
 outputs, and feedback devices. Core business logic is stored in
 sub-packages under the `core` package. These include:
 - `displaying`: Interfaces and logic for displaying data
-- `feedback_providing`: Interfaces and logic for providing feedback to user
-- `logging`: Interfaces and logic for logging 
+<!-- - `feedback_providing`: Interfaces and logic for providing feedback to user -->
+<!-- - `logging`: Interfaces and logic for logging  -->
 - `recieving`: Interfaces and logic for data input
 
 The interfaces ("Protocols" in python) in these core packages define
@@ -41,10 +41,10 @@ program. By implementing these interfaces, concrete classes create
 "adapters" that allow them to "plug in" to the project. 
 
 The rest of the packages under `realtimepose` provide adapters to the ports
-defined in `core`. For instance, the `gui` package provides different
+defined in `core`. For instance, the `user_interface` package provides
 graphical user interface implementations that conform to the `displaying`
-core package port (found under `core/displaying/gui.py`).
+core package port (found under `core/displaying/service.py`).
 
-## tests
+<!-- ## tests
 
-lol
+lol -->
