@@ -1,9 +1,8 @@
 # Real Time Pose
 
-Real Time Pose is a library created by the wearable computing research
-group, headed and advised by Dr. Jason Forsyth. The purpose of the 
-library is to enable users to create body-interactive GUIs through
-the use of computer vision. 
+Real Time Pose is a library for prototyping novel methods of
+user feedback by creating body-interactive GUIs using computer
+vison.
 
 ## Installation
 
