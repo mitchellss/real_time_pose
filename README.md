@@ -6,7 +6,7 @@ vison.
 
 ## Installation
 
-> pip install realtimepose
+> pip install .
 
 Requires Python 3.9 or later
 
