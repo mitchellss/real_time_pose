@@ -25,4 +25,10 @@ class Webcam:
         success, color_image = self.cap.read()
         if not success:
             return np.zeros(0)
+        color_image = cv2.flip(color_image, 1)
+
+        cv2.imshow("Video Playback", color_image)
+        c = cv2.waitKey(1)
+        if c == 27:
+            pass
         return color_image
