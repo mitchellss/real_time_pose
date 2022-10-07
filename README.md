@@ -16,22 +16,27 @@ Requires Python 3.9 or later
 import realtimepose as rtp
 
 # Specify input
-webcam: rtp.FrameInput = rtp.Webcam(device_num=0, fps=30)
-blazepose: rtp.CVModel = rtp.BlazePose()
-webcam_pose: rtp.PoseGenerator = rtp.ComputerVisionPose(
-    frame_input=webcam, model=blazepose)
+frame_input: rtp.FrameInput = rtp.Webcam(device_num=0, fps=30)
+cv_model: rtp.CVModel = rtp.BlazePose()
+pose_input: rtp.PoseGenerator = rtp.ComputerVisionPose(
+    frame_input=frame_input, model=cv_model)
 
 # Specify GUI
 ui: rtp.UserInterface = rtp.PyGameUI(width=1920//2, height=1080//2, fps=60)
 
 # Create activity
-activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
+activity = rtp.Activity(pose_input=pose_input, frontend=ui)
+
+def print_message():
+    print("Hello world!")
 
 # Add components to scene
 scene_1 = rtp.Scene()
-button_1: rtp.Button = rtp.button(gui=ui, x_coord=1920//2, y_coord=1080//2)
+button_1: rtp.Button = rtp.button(
+    gui=ui, x_coord=1920//2, y_coord=1080//2, 
+    targets=[cv_model.LEFT_HAND, cv_model.RIGHT_HAND], 
+    activation_distance=50, callback=print_message)
 skeleton: rtp.Skeleton = rtp.skeleton(gui=ui, x_coord=200, y_coord=200)
-
 scene_1.add_component(button_1)
 scene_1.add_component(skeleton)
 
@@ -40,5 +45,4 @@ activity.add_scene(scene_1)
 
 # Start
 activity.run()
-
 ```

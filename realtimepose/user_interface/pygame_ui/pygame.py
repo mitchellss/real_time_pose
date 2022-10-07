@@ -93,7 +93,8 @@ class PyGameSkeleton:
     """Skeleton implementation in PyGame."""
 
     # Where to connect limbs. Refer to here
-    # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
+    # https://mediapipe.dev/images/mobile/pose_tracking_full_body_landmarks.png
+    # TODO: Move this somewhere else
     CONNECTIONS: np.ndarray = np.array([
         [16, 14], [16, 18], [16, 20], [16, 22],
         [18, 20], [14, 12], [12, 11], [12, 24],

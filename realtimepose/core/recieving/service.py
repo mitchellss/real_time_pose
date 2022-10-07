@@ -5,6 +5,18 @@ import numpy as np
 
 class CVModel(Protocol):
     """Interface describing a computer vision model's methods."""
+    LEFT_HAND: int
+    LEFT_ELBOW: int
+    LEFT_SHOULDER: int
+    LEFT_HIP: int
+    LEFT_KNEE: int
+    LEFT_FOOT: int
+    RIGHT_HAND: int
+    RIGHT_ELBOW: int
+    RIGHT_SHOULDER: int
+    RIGHT_HIP: int
+    RIGHT_KNEE: int
+    RIGHT_FOOT: int
 
     def get_pose(self, frame: np.ndarray) -> np.ndarray:  # type: ignore
         """Retrieves the points making up a pose (skeleton) for a given
