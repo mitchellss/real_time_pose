@@ -2,7 +2,7 @@
 """Abstract components to be implemented by concrete
 gui classes and interafaces that require the implementation
 of said classes."""
-from typing import Any
+from typing import Any, Callable, List
 from typing_extensions import Protocol, runtime_checkable
 import numpy as np
 
@@ -27,6 +27,9 @@ class Button(Protocol):
     """Interface describing what a button must do."""
     x_coord: float
     y_coord: float
+    activation_distance: float
+    targets: List[int]
+    callback: Callable
 
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:  # type: ignore
         """Method to check whether or not the button is clicked given 
@@ -53,7 +56,9 @@ class HasButton(Protocol):
     creation of a button.
     """
 
-    def button(self, x_coord: float, y_coord: float) -> Button:  # type: ignore
+    def button(self, x_coord: float, y_coord: float, 
+        activation_distance: float, targets: List[int],
+        callback: Callable) -> Button:  # type: ignore
         """Creates an abstract button.
 
         Args:
@@ -98,7 +103,9 @@ class HasSkeleton(Protocol):
         """
 
 
-def button(gui: HasButton, x_coord: float, y_coord: float) -> Button:
+def button(gui: HasButton, x_coord: float, y_coord: float,
+    activation_distance: float, targets: List[int],
+    callback: Callable) -> Button:
     """Function that can be called to create a button for any gui
     that implements the HasButton interface. This method is used
     instead of instantiating concrete types of ui components to

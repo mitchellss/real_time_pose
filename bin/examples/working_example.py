@@ -18,9 +18,15 @@ ui: rtp.UserInterface = rtp.PyGameUI(width=1920//2, height=1080//2, fps=60)
 # Create activity
 activity = rtp.Activity(pose_input=webcam_pose, frontend=ui)
 
+def print_message():
+    print("Hello world!")
+
 # Add components to scene
 scene_1 = rtp.Scene()
-button_1: rtp.Button = rtp.button(gui=ui, x_coord=1920//2, y_coord=1080//2)
+button_1: rtp.Button = rtp.button(
+    gui=ui, x_coord=1920//2, y_coord=1080//2, 
+    targets=[rtp.LEFT_HAND, rtp.RIGHT_HAND], 
+    activation_distance=50, callback=print_message)
 skeleton: rtp.Skeleton = rtp.skeleton(gui=ui, x_coord=200, y_coord=200)
 scene_1.add_component(button_1)
 scene_1.add_component(skeleton)

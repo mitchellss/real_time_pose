@@ -1,6 +1,6 @@
 """User interface implementation of PyGame."""
 import sys
-from typing import Literal
+from typing import Callable, List, Literal
 import pygame
 from pygame.constants import QUIT
 import numpy as np
@@ -34,9 +34,13 @@ class PyGameUI:
         pygame.display.update()
         self.fps_clock.tick(self.fps)
 
-    def button(self, x_coord: float, y_coord: float) -> Button:
+    def button(self, x_coord: float, y_coord: float,
+        activation_distance: float, targets: List[int],
+        callback: Callable) -> Button:
         """Creates a PyGame button at the specified location."""
-        return PyGameButton(x_coord=x_coord, y_coord=y_coord)
+        return PyGameButton(x_coord=x_coord, y_coord=y_coord,
+            activation_distance=activation_distance, targets=targets,
+            callback=callback)
 
     def skeleton(self, x_coord: float, y_coord: float) -> Skeleton:
         """Creates a PyGame skeleton at the specified location."""
@@ -59,14 +63,22 @@ class PyGameUI:
 class PyGameButton:
     """Button implementation for PyGame."""
 
-    def __init__(self, x_coord: float, y_coord: float) -> None:
+    def __init__(self, x_coord: float, y_coord: float,
+        activation_distance: float, targets: List[int],
+        callback: Callable) -> None:
         """Creates a new PyGameButton at the location specified."""
         self.x_coord: float = x_coord
         self.y_coord: float = y_coord
+        self.activation_distance: float = activation_distance
+        self.targets: List[int] = targets
+        self.callback: Callable = callback
 
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:
         """Checks if the button has been clicked."""
-        return False
+        if abs(self.x_coord - x_coord) > distance or abs(self.y_coord - y_coord) > distance:
+            return False
+        else:
+            return True
 
     def render(self, window) -> None:
         """Draws the button on the pygame window."""
