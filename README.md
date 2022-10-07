@@ -1,8 +1,11 @@
 # Real Time Pose
 
-Real Time Pose is a library for prototyping novel methods of
+RealTimePose is a library for prototyping novel methods of
 user feedback by creating body-interactive GUIs using computer
 vison.
+
+**RealTimePose is a prototype. No guarantees can
+be made about the stability of the API or the library itself.**
 
 ## Installation
 
