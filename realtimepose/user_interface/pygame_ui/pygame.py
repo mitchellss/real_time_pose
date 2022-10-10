@@ -35,12 +35,10 @@ class PyGameUI:
         self.fps_clock.tick(self.fps)
 
     def button(self, x_coord: float, y_coord: float,
-        activation_distance: float, targets: List[int],
-        callback: Callable) -> Button:
+               activation_distance: float) -> Button:
         """Creates a PyGame button at the specified location."""
         return PyGameButton(x_coord=x_coord, y_coord=y_coord,
-            activation_distance=activation_distance, targets=targets,
-            callback=callback)
+                            activation_distance=activation_distance)
 
     def skeleton(self, x_coord: float, y_coord: float) -> Skeleton:
         """Creates a PyGame skeleton at the specified location."""
@@ -64,21 +62,27 @@ class PyGameButton:
     """Button implementation for PyGame."""
 
     def __init__(self, x_coord: float, y_coord: float,
-        activation_distance: float, targets: List[int],
-        callback: Callable) -> None:
+                 activation_distance: float) -> None:
         """Creates a new PyGameButton at the location specified."""
         self.x_coord: float = x_coord
         self.y_coord: float = y_coord
         self.activation_distance: float = activation_distance
-        self.targets: List[int] = targets
-        self.callback: Callable = callback
+        self.targets: List[int]
+        self.callback: Callable
 
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:
         """Checks if the button has been clicked."""
         if abs(self.x_coord - x_coord) > distance or abs(self.y_coord - y_coord) > distance:
             return False
-        else:
-            return True
+        return True
+
+    def set_targets(self, targets: List[int]):
+        """Sets targets."""
+        self.targets = targets
+
+    def set_callback(self, callback: Callable):
+        """Sets callback function."""
+        self.callback = callback
 
     def render(self, window) -> None:
         """Draws the button on the pygame window."""

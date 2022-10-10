@@ -8,7 +8,7 @@ import numpy as np
 
 from realtimepose.activity.scene import Scene
 from realtimepose.core.displaying import UserInterface
-from realtimepose.core.displaying.components import Skeleton
+from realtimepose.core.displaying.components import Button, Skeleton
 from realtimepose.core.recieving import PoseGenerator
 
 
@@ -92,8 +92,8 @@ class Activity:
                 elif isinstance(component, Button):
                     for target in component.targets:
                         if component.is_clicked(
-                            skeleton_points[target][0], skeleton_points[target][1], 
-                            component.activation_distance):
+                                skeleton_points[target][0], skeleton_points[target][1],
+                                component.activation_distance):
                             component.callback()
 
                 component.render(frontend.window)

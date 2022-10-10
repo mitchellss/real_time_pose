@@ -23,6 +23,7 @@ class Component(Protocol):
         """
 
 
+@runtime_checkable
 class Button(Protocol):
     """Interface describing what a button must do."""
     x_coord: float
@@ -32,7 +33,7 @@ class Button(Protocol):
     callback: Callable
 
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:  # type: ignore
-        """Method to check whether or not the button is clicked given 
+        """Method to check whether or not the button is clicked given
         the coordinates of an action and the actuation distance.
 
         Args:
@@ -45,6 +46,12 @@ class Button(Protocol):
             conditions, False otherwise.
         """
 
+    def set_targets(self, targets: List[int]):
+        """Sets the targets for the button."""
+
+    def set_callback(self, callback: Callable):
+        """Sets the callback function for the button."""
+
     def render(self, window: Any) -> None:
         """Required method to fulfill the requirements of the
         Component interface."""
@@ -56,9 +63,8 @@ class HasButton(Protocol):
     creation of a button.
     """
 
-    def button(self, x_coord: float, y_coord: float, 
-        activation_distance: float, targets: List[int],
-        callback: Callable) -> Button:  # type: ignore
+    def button(self, x_coord: float, y_coord: float,
+               activation_distance: float) -> Button:  # type: ignore
         """Creates an abstract button.
 
         Args:
@@ -104,8 +110,7 @@ class HasSkeleton(Protocol):
 
 
 def button(gui: HasButton, x_coord: float, y_coord: float,
-    activation_distance: float, targets: List[int],
-    callback: Callable) -> Button:
+           activation_distance: float) -> Button:
     """Function that can be called to create a button for any gui
     that implements the HasButton interface. This method is used
     instead of instantiating concrete types of ui components to
@@ -120,7 +125,8 @@ def button(gui: HasButton, x_coord: float, y_coord: float,
     Returns:
         Button: The button implementation for the respective gui.
     """
-    return gui.button(x_coord=x_coord, y_coord=y_coord)
+    return gui.button(x_coord=x_coord, y_coord=y_coord,
+                      activation_distance=activation_distance)
 
 
 def skeleton(gui: HasSkeleton, x_coord: float, y_coord: float) -> Skeleton:

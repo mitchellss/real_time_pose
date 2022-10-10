@@ -24,11 +24,19 @@ activity = rtp.Activity(pose_input=pose_input, frontend=ui)
 scene_1 = rtp.Scene()
 activity.add_scene(scene_1)
 
+
+def callback(button: rtp.Button):
+    button.x_coord = 0
+    button.y_coord = 0
+
+
 # Create a button that prints "Hello world!" when clicked
-button_1: rtp.Button = rtp.button(
-    gui=ui, x_coord=1920//2, y_coord=1080//2, 
-    targets=[cv_model.LEFT_HAND, cv_model.RIGHT_HAND], 
-    activation_distance=50, callback=lambda: print("Hello world!"))
+button_1: rtp.Button = rtp.button(gui=ui,
+                                  x_coord=1920//2, y_coord=1080//2,
+                                  activation_distance=100)
+button_1.set_targets([cv_model.LEFT_HAND, cv_model.RIGHT_HAND])
+button_1.set_callback(callback=lambda: callback(button_1))
+
 
 # Create a skeleton to map pose points to
 skeleton: rtp.Skeleton = rtp.skeleton(gui=ui, x_coord=200, y_coord=200)

@@ -16,8 +16,7 @@ class UserInterface(Protocol):
         """Sets up the user interface."""
 
     def button(self, x_coord: float, y_coord: float,
-        activation_distance: float, targets: List[int],
-        callback: Callable) -> Button:  # type: ignore
+               activation_distance: float) -> Button:  # type: ignore
         """Creates a new button on the user interface at the location specfied."""
 
     def skeleton(self, x_coord: float, y_coord: float) -> Skeleton:  # type: ignore
