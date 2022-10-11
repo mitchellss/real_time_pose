@@ -15,6 +15,10 @@ Requires Python 3.9 or later
 
 ## Working Example
 
+This example creates a simple activity with a skeleton and a button.
+When clicked, the buttton moves. Example programs can be found in the
+`bin/examples` directory.
+
 ```python
 import realtimepose as rtp
 
@@ -36,19 +40,19 @@ activity = rtp.Activity(pose_input=pose_input, frontend=ui)
 scene_1 = rtp.Scene()
 activity.add_scene(scene_1)
 
-
-def callback(button: rtp.Button):
-    button.x_coord = 0
-    button.y_coord = 0
-
-
-# Create a button that prints "Hello world!" when clicked
+# Create a button that can be clicked by the user's left or right hand
 button_1: rtp.Button = rtp.button(gui=ui,
                                   x_coord=1920//2, y_coord=1080//2,
                                   activation_distance=100)
 button_1.set_targets([cv_model.LEFT_HAND, cv_model.RIGHT_HAND])
-button_1.set_callback(callback=lambda: callback(button_1))
 
+# Define what the button should do when clicked
+def callback(button: rtp.Button):
+    button.x_coord = 0
+    button.y_coord = 0
+
+# Tie the callback method to the newly created button
+button_1.set_callback(callback=lambda: callback(button_1))
 
 # Create a skeleton to map pose points to
 skeleton: rtp.Skeleton = rtp.skeleton(gui=ui, x_coord=200, y_coord=200)
