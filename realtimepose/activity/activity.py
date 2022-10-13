@@ -8,7 +8,7 @@ import numpy as np
 
 from realtimepose.activity.scene import Scene
 from realtimepose.core.displaying import UserInterface
-from realtimepose.core.displaying.components import Skeleton
+from realtimepose.core.displaying.components import Button, Skeleton
 from realtimepose.core.recieving import PoseGenerator
 
 
@@ -84,10 +84,17 @@ class Activity:
         frontend.new_gui()
         while True:
             frontend.clear()
+            skeleton_points = np.array(self.pose.get_obj()).reshape((33, 4))
+
             for component in scenes[0].components:
                 if isinstance(component, Skeleton):
-                    component.skeleton_points = np.array(
-                        self.pose.get_obj()).reshape((33, 4))
+                    component.skeleton_points = skeleton_points
+                elif isinstance(component, Button):
+                    for target in component.targets:
+                        if component.is_clicked(
+                                skeleton_points[target][0], skeleton_points[target][1],
+                                component.activation_distance):
+                            component.callback()
 
                 component.render(frontend.window)
 

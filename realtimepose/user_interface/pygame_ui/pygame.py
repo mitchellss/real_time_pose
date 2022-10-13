@@ -1,6 +1,6 @@
 """User interface implementation of PyGame."""
 import sys
-from typing import Literal
+from typing import Callable, List, Literal
 import pygame
 from pygame.constants import QUIT
 import numpy as np
@@ -34,9 +34,11 @@ class PyGameUI:
         pygame.display.update()
         self.fps_clock.tick(self.fps)
 
-    def button(self, x_coord: float, y_coord: float) -> Button:
+    def button(self, x_coord: float, y_coord: float,
+               activation_distance: float) -> Button:
         """Creates a PyGame button at the specified location."""
-        return PyGameButton(x_coord=x_coord, y_coord=y_coord)
+        return PyGameButton(x_coord=x_coord, y_coord=y_coord,
+                            activation_distance=activation_distance)
 
     def skeleton(self, x_coord: float, y_coord: float) -> Skeleton:
         """Creates a PyGame skeleton at the specified location."""
@@ -59,14 +61,28 @@ class PyGameUI:
 class PyGameButton:
     """Button implementation for PyGame."""
 
-    def __init__(self, x_coord: float, y_coord: float) -> None:
+    def __init__(self, x_coord: float, y_coord: float,
+                 activation_distance: float) -> None:
         """Creates a new PyGameButton at the location specified."""
         self.x_coord: float = x_coord
         self.y_coord: float = y_coord
+        self.activation_distance: float = activation_distance
+        self.targets: List[int]
+        self.callback: Callable
 
     def is_clicked(self, x_coord: float, y_coord: float, distance: float) -> bool:
         """Checks if the button has been clicked."""
-        return False
+        if abs(self.x_coord - x_coord) > distance or abs(self.y_coord - y_coord) > distance:
+            return False
+        return True
+
+    def set_targets(self, targets: List[int]):
+        """Sets targets."""
+        self.targets = targets
+
+    def set_callback(self, callback: Callable):
+        """Sets callback function."""
+        self.callback = callback
 
     def render(self, window) -> None:
         """Draws the button on the pygame window."""
@@ -81,7 +97,8 @@ class PyGameSkeleton:
     """Skeleton implementation in PyGame."""
 
     # Where to connect limbs. Refer to here
-    # https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
+    # https://mediapipe.dev/images/mobile/pose_tracking_full_body_landmarks.png
+    # TODO: Move this somewhere else
     CONNECTIONS: np.ndarray = np.array([
         [16, 14], [16, 18], [16, 20], [16, 22],
         [18, 20], [14, 12], [12, 11], [12, 24],
