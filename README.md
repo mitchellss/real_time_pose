@@ -1,5 +1,7 @@
 # Real Time Pose
 
+**This repo is no longer maintained. For the package that is under active development go to [`cvgui`](https://github.com/mitchellss/cvgui).**
+
 RealTimePose is a library for prototyping novel methods of
 user feedback by creating body-interactive GUIs using computer
 vison.
